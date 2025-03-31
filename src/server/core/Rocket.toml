@@ -1,0 +1,5 @@
+[global]
+port = 8000
+
+[default]
+workers = 1
