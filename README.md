@@ -16,7 +16,7 @@
 1. **Clone the repository**
    ```bash
    git clone https://gitlab-stud.elka.pw.edu.pl/kgorski1/zpr_25l
-   cd your-repo
+   cd zpr_25l
 
 2. **Make the script executable**
    ```bash
