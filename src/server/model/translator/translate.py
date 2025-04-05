@@ -29,4 +29,13 @@ class Translator:
             raise ValueError(f"Language detection failed: {e}") from e
 
     def translate(self, text: str, target_language: str) -> str:
-        return "Bonjour"
+
+        src_lang = Translator.detect_language(text)
+        if src_lang == target_language:
+            return text
+
+        tokenizer, model = self._load_model(src_lang, target_language)
+        inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True)
+        translated_text = model.generate(**inputs)
+
+        return tokenizer.decode(translated_text[0], skip_special_tokens=True)

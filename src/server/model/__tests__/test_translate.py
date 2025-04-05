@@ -1,4 +1,5 @@
-from src.server.model.translate import Translator
+import pytest
+from src.server.model.translator.translate import Translator
 
 translator = Translator()
 
@@ -10,7 +11,7 @@ def test_translator_language_detect_en():
 
 
 def test_translator_language_detect_de():
-    text = "Guten tag!"
+    text = "Guten Tag!"
     detected_language = translator.detect_language(text)
     assert detected_language == "de", f"Expected 'de', got '{detected_language}'"
 
@@ -19,6 +20,11 @@ def test_translator_language_detect_pl():
     text = "Cześć, jak się masz?"
     detected_language = translator.detect_language(text)
     assert detected_language == "pl", f"Expected 'pl', got '{detected_language}'"
+
+
+def test_detect_language_invalid():
+    with pytest.raises(ValueError):
+        Translator.detect_language("")
 
 
 def test_translator_translate():
