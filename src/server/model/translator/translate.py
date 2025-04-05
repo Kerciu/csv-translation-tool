@@ -2,6 +2,7 @@ from langdetect import detect
 from langdetect.lang_detect_exception import LangDetectException
 from transformers import MarianMTModel, MarianTokenizer
 from typing import Set
+import argparse
 
 
 class Translator:
@@ -39,3 +40,15 @@ class Translator:
         translated_text = model.generate(**inputs)
 
         return tokenizer.decode(translated_text[0], skip_special_tokens=True)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Translate text using MarianMTModel")
+    parser.add_argument("text", type=str, help="Text to translate")
+    parser.add_argument("target_language", type=str, help="Target language code (e.g., 'es', 'fr')")
+
+    args = parser.parse_args()
+
+    translator = Translator()
+    translated_text = translator.translate(args.text, args.target_language)
+    print(translated_text)
