@@ -6,6 +6,9 @@ class Translator:
     def __init__(self):
         pass
 
+    def _get_model_name(self, src_lang: str, tgt_lang: str) -> str:
+        return f"Helsinki-NLP/opus-mt-{src_lang}-{tgt_lang}"
+
     @staticmethod
     def detect_language(self, text: str) -> str:
         try:
