@@ -14,27 +14,25 @@ const Navbar = () => {
     });
 
   return (
-    <header>
-        <div>
+    <header className='border-b'>
+        <div className='container mx-auto flex h-16 items-center justify-between px-4'>
 
-            <Link href='/'>
-                <FileSpreadsheet/>
-                <span>CSV Translation Tool</span>
+            <Link href='/' className='flex items-center gap-2'>
+                <FileSpreadsheet className='h-6 w-6'/>
+                <span className='text-x1 font-bold'>CSV Translation Tool</span>
             </Link>
 
-            <div>
+            <div className='flex items-center gap-4'>
                 <DropdownMenu>
 
                     <DropdownMenuTrigger asChild>
-
-                        <Button variant="ghost">
-                            <Avatar>
-                                <AvatarFallback>
+                        <Button variant="ghost" className='relative h-10 w-19 rounded-full'>
+                            <Avatar className='h-10 w-10'>
+                                <AvatarFallback className='bg-primary/10 text-primary'>
                                     {user.name.charAt(0).toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
                         </Button>
-
                     </DropdownMenuTrigger>
 
                 </DropdownMenu>
