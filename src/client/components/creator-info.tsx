@@ -2,11 +2,17 @@ import { Github, Linkedin } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
-const CreatorInfo = ({ fullName, githubLink, linkedinLink }: any) => {
+interface CreatorInfoProps {
+    fullName: string
+    githubLink: string
+    linkedinLink: string
+}
+
+const CreatorInfo = ({ fullName, githubLink, linkedinLink }: CreatorInfoProps) => {
   return (
     <div className='flex items-center gap-1'>
         <span className='text-sm font-medium'>{fullName}</span>
-        <div className='flex items-center'>
+        <div className='flex items-center gap-1'>
             <Link
                 href={githubLink}
                 target='_blank'
