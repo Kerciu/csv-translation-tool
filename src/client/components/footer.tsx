@@ -1,7 +1,26 @@
 import React from 'react'
 import CreatorInfo from './creator-info'
 
+interface Creator {
+  name: string
+  githubLink: string
+  linkedinLink: string
+}
+
 const Footer = () => {
+
+  const Kacper: Creator = {
+    name: "Kacper Górski",
+    githubLink: "https://github.com/Kerciu",
+    linkedinLink: "https://linkedin.com/in/kacper-gorski-se" 
+  }
+
+  const Szymon: Creator = {
+    name: "Szymon Kamiński",
+    githubLink: "https://github.com/RudyKarpus",
+    linkedinLink: "https://linkedin.com/in/szymonkaminski"
+  }
+
   return (
     <footer className='border-t py-6 md:py-0'>
       <div className='container mx-auto px-4'>
@@ -14,8 +33,16 @@ const Footer = () => {
             <div className='flex items-center gap-2'>
               <span className='text-sm text-muted-foreground'>Created by:</span>
               <div className='flex flex-col md:flex-row md:gap-4'>
-                <CreatorInfo fullName="Kacper Górski" githubLink="8.8.8.8" linkedinLink="8.8.8.8"/>
-                <CreatorInfo fullName="Szymon Kamiński" githubLink="8.8.8.8" linkedinLink="8.8.8.8"/>
+              <CreatorInfo
+                fullName={Kacper.name}
+                githubLink={Kacper.githubLink}
+                linkedinLink={Kacper.linkedinLink}
+              />
+              <CreatorInfo
+                fullName={Szymon.name}
+                githubLink={Szymon.githubLink}
+                linkedinLink={Szymon.linkedinLink}
+              />
               </div>
             </div>
           </div>
