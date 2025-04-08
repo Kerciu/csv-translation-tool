@@ -4,24 +4,26 @@ import React from 'react'
 
 const CreatorInfo = ({ fullName, githubLink, linkedinLink }: any) => {
   return (
-    <div>
-        <span>{fullName}</span>
-        <div>
+    <div className='flex items-center gap-1'>
+        <span className='text-sm font-medium'>{fullName}</span>
+        <div className='flex items-center'>
             <Link
                 href={githubLink}
                 target='_blank'
                 rel='noopener noreferrer'
+                className='text-muted-foreground hover:text-foreground'
             >
-                <Github />
-                <span>GitHub</span>
+                <Github className='h-4 w-4'/>
+                <span className='sr-only'>GitHub</span>
             </Link>
             <Link
                 href={linkedinLink}
                 target='_blank'
                 rel='noopener noreferrer'
+                className='text-muted-foreground hover:text-foreground m1-1'
             >
-                <Linkedin />
-                <span>LinkedIn</span>
+                <Linkedin className='h-4 w-4'/>
+                <span className='sr-only'>LinkedIn</span>
             </Link>
         </div>
     </div>
