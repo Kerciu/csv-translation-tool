@@ -1,12 +1,10 @@
-import { Github } from 'lucide-react'
-import Link from 'next/link'
 import React from 'react'
 import CreatorInfo from './creator-info'
 
 const Footer = () => {
   return (
-    <footer>
-      <div>
+    <footer className='border-t py-6 md:py-0'>
+      <div className='container mx-auto px-4'>
         <div>
           <p>
             CSV Translation Tool. All rights reserved.
