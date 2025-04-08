@@ -6,12 +6,21 @@ import Link from "next/link";
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
+import { usePathname } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
 
 const Navbar = () => {
 
+    const [showLoginDialog, setShowLoginDialog] = useState(false);
+
     const [user, setUser] = useState({
         name: "Kacper"
-    });
+    }); /* This will be replaced by this thing below TODO*/
+
+    // const { user, logout, isLoading } = useAuth();
+
+    const pathname = usePathname();
+    const isDashboard = pathname === '/dashboard';
 
   return (
     <header className='border-b'>
