@@ -7,7 +7,7 @@ const Footer = () => {
       <div className='container mx-auto px-4'>
         <div className='flex flex-col items-center justify-between gap-4 md:h-16 md:flex-row'>
           <p className='text-center text-sm text-muted-foreground md:text-left'>
-            CSV Translation Tool. All rights reserved.
+            &copy; {new Date().getFullYear()} CSV Translation Tool. All rights reserved.
           </p>
 
           <div className='flex flex-col items-center gap-4 md:flex-row'>
