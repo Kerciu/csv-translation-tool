@@ -1,2 +1,5 @@
 /src/client/node_modules
 /src/server/core/target
+node_modules/
+package-lock.json
+.next/
