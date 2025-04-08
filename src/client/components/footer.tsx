@@ -17,6 +17,7 @@ const Footer = () => {
               <span>Created by:</span>
               <div>
                 <CreatorInfo fullName="Kacper Górski" githubLink="8.8.8.8" linkedinLink="8.8.8.8"/>
+                <CreatorInfo fullName="Szymon Kamiński" githubLink="8.8.8.8" linkedinLink="8.8.8.8"/>
               </div>
             </div>
           </div>
