@@ -30,9 +30,27 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
         setIsSubmitting(true);
 
         try {
-            
+            if (activeTab === 'login')
+            {
+                await login(email, password);
+                toast({
+                    title: "Login successful",
+                    description: "Successfully logged in, welcome back!"
+                });
+                onOpenChange(false);
+            } else {
+                await login(email, password);
+                toast({
+                    title: "Registration successful",
+                    description: "Registered successfully!"
+                });
+                onOpenChange(false);
+            }
         } catch (error) {
-
+            toast({
+                title: activeTab === "login" ? "Login failed" : "Registration failed",
+                description: "Please check your credentials and try again."
+            });
         } finally {
             setIsSubmitting(false);
         }
