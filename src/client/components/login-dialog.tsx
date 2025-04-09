@@ -8,6 +8,7 @@ import LoginForm from './login-form'
 import { Tabs, TabsContent, TabsList } from './ui/tabs'
 import RegisterForm from './register-form'
 import { TabsTrigger } from '@radix-ui/react-tabs'
+import AuthButton from './auth-button'
 
 interface LoginDialogProps {
     isOpen: boolean
@@ -59,6 +60,7 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
                                 className='space-y-4 py-4'
                             >
                                 <LoginForm />
+                                <AuthButton message='Login with Email'/>
                             </TabsContent>
 
                             <TabsContent
@@ -66,6 +68,7 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
                                 className='space-y-4 py-4'
                             >
                                 <RegisterForm />
+                                <AuthButton message='Register with Email'/>
                             </TabsContent>
                         </Tabs>
                     </>
