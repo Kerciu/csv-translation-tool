@@ -3,6 +3,8 @@ import { Dialog, DialogHeader } from '@/components/ui/dialog'
 import { DialogContent, DialogDescription, DialogTitle } from '@radix-ui/react-dialog'
 import { Loader2 } from 'lucide-react'
 import LoadingState from './loading-state'
+import OAuthButtons from './oauth-buttons'
+import LoginForm from './login-form'
 
 interface LoginDialogProps {
     isOpen: boolean
@@ -35,9 +37,9 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
                     <LoadingState message={isSubmitting ? "Processing your request..." : "Loading..."}/>
                 ) : (
                     <>
+                        <OAuthButtons />
 
-
-
+            
                     </>
                     )
                 }
