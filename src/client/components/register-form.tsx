@@ -12,7 +12,7 @@ interface LoginFormProps {
     setPassword: (value: string) => void
 }
 
-const RegisterForm = () => {
+const RegisterForm = ({username, email, password, setUsername, setEmail, setPassword}: LoginFormProps) => {
   return (
     <>
         <div className='space-y-4'>
@@ -24,6 +24,8 @@ const RegisterForm = () => {
                     id='name'
                     type='name'
                     placeholder='Enter your username..'
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                 />
             </div>
             <div className='space-y-2'>
@@ -34,6 +36,8 @@ const RegisterForm = () => {
                     id='email'
                     type='email'
                     placeholder='Enter your email..'
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                 />
             </div>
             <div className='space-y-2'>
@@ -44,6 +48,8 @@ const RegisterForm = () => {
                     id='password'
                     type='password'
                     placeholder='Enter your password..'
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                 />
             </div>

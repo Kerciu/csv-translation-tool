@@ -10,7 +10,7 @@ interface LoginFormProps {
     setPassword: (value: string) => void
 }
 
-const LoginForm = () => {
+const LoginForm = ({email, password, setEmail, setPassword}: LoginFormProps) => {
   return (
     <>
         <div className='space-y-4'>
@@ -22,6 +22,8 @@ const LoginForm = () => {
                     id='email'
                     type='email'
                     placeholder='Enter your email..'
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                 />
             </div>
             <div className='space-y-2'>
@@ -32,6 +34,8 @@ const LoginForm = () => {
                     id='password'
                     type='password'
                     placeholder='Enter your password..'
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                 />
             </div>

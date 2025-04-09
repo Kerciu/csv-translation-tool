@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Dialog, DialogHeader } from '@/components/ui/dialog'
-import { DialogContent, DialogDescription, DialogTitle } from '@radix-ui/react-dialog'
+import { Dialog, DialogHeader, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import LoadingState from './loading-state'
 import OAuthButtons from './oauth-buttons'
 import LoginForm from './login-form'
@@ -15,11 +14,20 @@ interface LoginDialogProps {
 const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
 
     const [activeTab, setActiveTab] = useState<"login" | "register">("login");
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const isProcessing = isLoading || isSubmitting;
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        /* TODO: implement this */
+    }
 
     const handleOAuthLogin = (provider: string) => {
         /* TODO: implement this */
@@ -56,19 +64,33 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
                                 <TabsTrigger value='register'>Register</TabsTrigger>
                             </TabsList>
 
-                            <TabsContent
-                                value='login'
-                                className='space-y-4 py-4'
-                            >
-                                <LoginForm />
-                            </TabsContent>
+                            <form onSubmit={handleSubmit}>
+                                <TabsContent
+                                    value='login'
+                                    className='space-y-4 py-4'
+                                >
+                                    <LoginForm
+                                        email={email}
+                                        password={password}
+                                        setEmail={setEmail}
+                                        setPassword={setPassword}
+                                    />
+                                </TabsContent>
 
-                            <TabsContent
-                                value='register'
-                                className='space-y-4 py-4'
-                            >
-                                <RegisterForm />
-                            </TabsContent>
+                                <TabsContent
+                                    value='register'
+                                    className='space-y-4 py-4'
+                                >
+                                    <RegisterForm
+                                        username={username}
+                                        email={email}
+                                        password={password}
+                                        setUsername={setUsername}
+                                        setEmail={setEmail}
+                                        setPassword={setPassword}
+                                    />
+                                </TabsContent>
+                            </form>
                         </Tabs>
                     </>
                     )
