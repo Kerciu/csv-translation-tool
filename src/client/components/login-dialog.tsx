@@ -42,9 +42,17 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
         setIsSubmitting(true);
 
         try {
-
+            await loginWithProvider(provider);
+            toast({
+                title: "Login successful",
+                description: `Successfully logged in with ${provider}`
+            });
+            onOpenChange(false);
         } catch (error) {
-            
+            toast({
+                title: "Login failed",
+                description: `Could not log in with ${provider}`
+            })
         } finally {
             setIsSubmitting(false);
         }
