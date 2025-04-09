@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { Dialog, DialogHeader } from '@/components/ui/dialog'
 import { DialogContent, DialogDescription, DialogTitle } from '@radix-ui/react-dialog'
+import { Loader2 } from 'lucide-react'
 
 interface LoginDialogProps {
     isOpen: boolean
@@ -28,6 +29,21 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
                     <DialogTitle>Welcome to the CSV Translator</DialogTitle>
                     <DialogDescription>Sign in to access the full translation features</DialogDescription>
                 </DialogHeader>
+
+                {isProcessing ? (
+                    <div>
+                        <Loader2 />
+                        <p>{isSubmitting ? "Processing your request..." : "Loading"}</p>
+                    </div>
+                ) : (
+                    <>
+
+                        
+
+                    </>
+                    )
+                }
+
             </DialogContent>
         </Dialog>
     )
