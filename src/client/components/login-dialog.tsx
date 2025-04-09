@@ -5,8 +5,9 @@ import { Loader2 } from 'lucide-react'
 import LoadingState from './loading-state'
 import OAuthButtons from './oauth-buttons'
 import LoginForm from './login-form'
-import { Tabs, TabsContent } from './ui/tabs'
+import { Tabs, TabsContent, TabsList } from './ui/tabs'
 import RegisterForm from './register-form'
+import { TabsTrigger } from '@radix-ui/react-tabs'
 
 interface LoginDialogProps {
     isOpen: boolean
@@ -48,6 +49,11 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
                             value={activeTab}
                             onValueChange={(val) => setActiveTab(val as "login" | "register")}
                         >
+                            <TabsList>
+                                <TabsTrigger value='login'>Login</TabsTrigger>
+                                <TabsTrigger value='register'>Register</TabsTrigger>
+                            </TabsList>
+
                             <TabsContent
                                 value='login'
                             >
