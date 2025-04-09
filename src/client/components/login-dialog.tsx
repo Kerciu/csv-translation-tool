@@ -32,9 +32,9 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
                 }
             }
         >
-            <DialogContent>
+            <DialogContent className='sm:max-w-[425px]'>
                 <DialogHeader>
-                    <DialogTitle>Welcome to the CSV Translator</DialogTitle>
+                    <DialogTitle className='text-2x1'>Welcome to the CSV Translator</DialogTitle>
                     <DialogDescription>Sign in to access the full translation features</DialogDescription>
                 </DialogHeader>
 
@@ -49,19 +49,21 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
                             value={activeTab}
                             onValueChange={(val) => setActiveTab(val as "login" | "register")}
                         >
-                            <TabsList>
+                            <TabsList className='grid w-full grid-cols-2'>
                                 <TabsTrigger value='login'>Login</TabsTrigger>
                                 <TabsTrigger value='register'>Register</TabsTrigger>
                             </TabsList>
 
                             <TabsContent
                                 value='login'
+                                className='space-y-4 py-4'
                             >
                                 <LoginForm />
                             </TabsContent>
 
                             <TabsContent
                                 value='register'
+                                className='space-y-4 py-4'
                             >
                                 <RegisterForm />
                             </TabsContent>
