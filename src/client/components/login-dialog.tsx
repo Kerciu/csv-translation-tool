@@ -24,6 +24,10 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
 
     const isProcessing = isLoading || isSubmitting;
 
+    const handleOAuthLogin = (provider: string) => {
+        /* TODO: implement this */
+    }
+
     return (
         <Dialog
             open={isOpen}
@@ -43,7 +47,7 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
                     <LoadingState message={isSubmitting ? "Processing your request..." : "Loading..."}/>
                 ) : (
                     <>
-                        <OAuthButtons />
+                        <OAuthButtons handleOAuthLogin={handleOAuthLogin}/>
 
                         <Tabs
                             defaultValue='login'
