@@ -6,19 +6,25 @@ import AuthButton from './auth-button'
 const LoginForm = () => {
   return (
     <>
-        <div>
-            <div>
-                <Label>
+        <div className='space-y-4'>
+            <div className='space-y-2'>
+                <Label htmlFor='email'>
                     Email
                 </Label>
                 <Input
+                    id='email'
+                    type='email'
+                    placeholder='Enter your email..'
                 />
             </div>
-            <div>
-                <Label>
+            <div className='space-y-2'>
+                <Label htmlFor='password'>
                     Password
                 </Label>
                 <Input
+                    id='password'
+                    type='password'
+                    required
                 />
             </div>
 
