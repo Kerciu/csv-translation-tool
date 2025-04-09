@@ -49,7 +49,8 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
         } catch (error) {
             toast({
                 title: activeTab === "login" ? "Login failed" : "Registration failed",
-                description: "Please check your credentials and try again."
+                description: "Please check your credentials and try again.",
+                variant: 'destructive'
             });
         } finally {
             setIsSubmitting(false);
@@ -69,7 +70,8 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
         } catch (error) {
             toast({
                 title: "Login failed",
-                description: `Could not log in with ${provider}`
+                description: `Could not log in with ${provider}`,
+                variant: 'destructive'
             })
         } finally {
             setIsSubmitting(false);
