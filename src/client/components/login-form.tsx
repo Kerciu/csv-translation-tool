@@ -24,6 +24,7 @@ const LoginForm = () => {
                 <Input
                     id='password'
                     type='password'
+                    placeholder='Enter your password..'
                     required
                 />
             </div>
