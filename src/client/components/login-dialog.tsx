@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Dialog, DialogHeader } from '@/components/ui/dialog'
 import { DialogContent, DialogDescription, DialogTitle } from '@radix-ui/react-dialog'
-import { Loader2 } from 'lucide-react'
 import LoadingState from './loading-state'
 import OAuthButtons from './oauth-buttons'
 import LoginForm from './login-form'
 import { Tabs, TabsContent, TabsList } from './ui/tabs'
 import RegisterForm from './register-form'
 import { TabsTrigger } from '@radix-ui/react-tabs'
-import AuthButton from './auth-button'
-
 interface LoginDialogProps {
     isOpen: boolean
     onOpenChange: (open: boolean) => void
@@ -64,7 +61,6 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
                                 className='space-y-4 py-4'
                             >
                                 <LoginForm />
-                                <AuthButton message='Login with Email'/>
                             </TabsContent>
 
                             <TabsContent
@@ -72,7 +68,6 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
                                 className='space-y-4 py-4'
                             >
                                 <RegisterForm />
-                                <AuthButton message='Register with Email'/>
                             </TabsContent>
                         </Tabs>
                     </>
