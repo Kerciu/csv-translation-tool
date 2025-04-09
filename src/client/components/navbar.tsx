@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { Skeleton } from './ui/skeleton';
+import LoginDialog from './login-dialog';
 
 const Navbar = () => {
 
@@ -82,8 +83,9 @@ const Navbar = () => {
             </Button>
           )}
             </div>
-
         </div>
+
+        <LoginDialog isOpen={showLoginDialog} onOpenChange={setShowLoginDialog}/>
     </header>
   )
 }
