@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Dialog, DialogHeader } from '@/components/ui/dialog'
 import { DialogContent, DialogDescription, DialogTitle } from '@radix-ui/react-dialog'
 import { Loader2 } from 'lucide-react'
+import LoadingState from './loading-state'
 
 interface LoginDialogProps {
     isOpen: boolean
@@ -31,10 +32,7 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
                 </DialogHeader>
 
                 {isProcessing ? (
-                    <div>
-                        <Loader2 />
-                        <p>{isSubmitting ? "Processing your request..." : "Loading"}</p>
-                    </div>
+                    <LoadingState message={isSubmitting ? "Processing your request..." : "Loading..."}/>
                 ) : (
                     <>
 
