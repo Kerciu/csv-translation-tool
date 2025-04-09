@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Dialog, DialogHeader } from '@/components/ui/dialog'
 import { DialogContent, DialogDescription, DialogTitle } from '@radix-ui/react-dialog'
 import { Loader2 } from 'lucide-react'
@@ -10,8 +10,8 @@ interface LoginDialogProps {
 
 const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
 
-    const [isLoading, setIsLoading] = useEffect(false);
-    const [isSubmitting, setIsSubmitting] = useEffect(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const isProcessing = isLoading || isSubmitting;
 
@@ -38,7 +38,7 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
                 ) : (
                     <>
 
-                        
+
 
                     </>
                     )
