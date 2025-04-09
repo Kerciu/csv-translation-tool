@@ -76,6 +76,15 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
         }
     }
 
+    useEffect(() => {
+        if (!isLoading && !isSubmitting && !isOpen) {
+            setUsername("");
+            setEmail("");
+            setPassword("");
+            setActiveTab('login');
+        }
+    }, [isOpen, isLoading, isSubmitting])
+
     const isProcessing = isLoading || isSubmitting;
 
     return (
