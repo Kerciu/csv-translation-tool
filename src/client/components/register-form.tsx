@@ -3,6 +3,15 @@ import { Label } from './ui/label'
 import { Input } from './ui/input'
 import AuthButton from './auth-button'
 
+interface LoginFormProps {
+    username: string
+    email: string
+    password: string
+    setUsername: (value: string) => void
+    setEmail: (value: string) => void
+    setPassword: (value: string) => void
+}
+
 const RegisterForm = () => {
   return (
     <>
