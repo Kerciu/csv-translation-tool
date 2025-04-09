@@ -6,6 +6,9 @@ import LoginForm from './login-form'
 import { Tabs, TabsContent, TabsList } from './ui/tabs'
 import RegisterForm from './register-form'
 import { TabsTrigger } from '@radix-ui/react-tabs'
+import { useAuth } from '@/hooks/use-auth'
+import { useToast } from './ui/use-toast'
+
 interface LoginDialogProps {
     isOpen: boolean
     onOpenChange: (open: boolean) => void
@@ -18,20 +21,36 @@ const LoginDialog = ({isOpen, onOpenChange}: LoginDialogProps) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const [isLoading, setIsLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const isProcessing = isLoading || isSubmitting;
+    const { login, register, loginWithProvider, isLoading } = useAuth();
+    const { toast } = useToast();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsSubmitting(true);
 
-        /* TODO: implement this */
+        try {
+            
+        } catch (error) {
+
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
-    const handleOAuthLogin = (provider: string) => {
-        /* TODO: implement this */
+    const handleOAuthLogin = async (provider: string) => {
+        setIsSubmitting(true);
+
+        try {
+
+        } catch (error) {
+            
+        } finally {
+            setIsSubmitting(false);
+        }
     }
+
+    const isProcessing = isLoading || isSubmitting;
 
     return (
         <Dialog
