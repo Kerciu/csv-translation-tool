@@ -7,7 +7,7 @@ export default function Home() {
       <Navbar />
 
       <main className="flex-1">
-        Contents
+        content
       </main>
 
       <Footer/>
