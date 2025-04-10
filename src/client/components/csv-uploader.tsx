@@ -1,3 +1,5 @@
+'use client';
+
 import { FileSpreadsheet, Upload } from 'lucide-react'
 import React, { useState } from 'react'
 import { Button } from './ui/button'
@@ -29,7 +31,9 @@ const CSVUploader = ({ onFileUpload }: CSVUploaderProps) => {
     }
 
     return (
-        <div className='border-2 border-dashed rounded-lg p-10 text-center'>
+        <div className={`border-2 border-dashed rounded-lg p-10 text-center 
+            ${isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/20'}`
+            }>
             <input
                 type='file'
                 accept='.csv'

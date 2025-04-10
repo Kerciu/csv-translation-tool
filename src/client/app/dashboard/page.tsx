@@ -1,3 +1,5 @@
+'use client';
+
 import CSVUploader from '@/components/csv-uploader'
 import Footer from '@/components/footer'
 import Navbar from '@/components/navbar'
@@ -5,13 +7,14 @@ import React from 'react'
 
 const Dashboard = () => {
 
-    const onFileUpload = () => {}
+    const handleFileUpload = () => {}
+
     return (
         <div className="flex min-h-screen flex-col">
         <Navbar />
 
         <main className="flex-1">
-            <CSVUploader onFileUpload={onFileUpload}/>
+            <CSVUploader onFileUpload={handleFileUpload}/>
         </main>
 
         <Footer/>
