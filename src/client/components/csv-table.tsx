@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, TableHead, TableHeader, TableRow } from './ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
 
 interface CSVTableProps {
     headers: string[]
@@ -21,6 +21,20 @@ const CSVTable = ({ headers, data, selectedColumns, isEditable = false, onCellEd
                     ))}
                 </TableRow>
             </TableHeader>
+
+            <TableBody>
+                {
+                    data.map((row, rowIdx) => (
+                        <TableRow>
+                            <TableCell>{rowIdx + 1}</TableCell>
+                            {
+                            row.map((cell, colIdx) => (
+                                <TableCell key={colIdx}>{cell}</TableCell>
+                            ))
+                            }
+                        </TableRow>
+                ))}
+            </TableBody>
         </Table>
     </div>
   )
