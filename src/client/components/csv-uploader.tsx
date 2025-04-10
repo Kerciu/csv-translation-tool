@@ -39,6 +39,14 @@ const CSVUploader = ({ onFileUpload }: CSVUploaderProps) => {
         }
     }
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (files && files.length > 0)
+        {
+            processFile(files[0]);
+        }
+    }
+
     const processFile = (file: File) => {
         /* ... file processing ... */
         setLoading(true);
@@ -74,6 +82,7 @@ const CSVUploader = ({ onFileUpload }: CSVUploaderProps) => {
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDragDrop}
+                onChange={handleFileChange}
             />
 
             <FileSpreadsheet className='mx-auto h-12 w-12 text-muted-foreground mb-4'/>
