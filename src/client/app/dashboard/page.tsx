@@ -1,3 +1,4 @@
+import CSVUploader from '@/components/csv-uploader'
 import Footer from '@/components/footer'
 import Navbar from '@/components/navbar'
 import React from 'react'
@@ -8,7 +9,7 @@ const Dashboard = () => {
       <Navbar />
 
       <main className="flex-1">
-        CSV Uploader will be placed here TODO
+        <CSVUploader />
       </main>
 
       <Footer/>
