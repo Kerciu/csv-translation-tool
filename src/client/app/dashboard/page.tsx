@@ -1,11 +1,14 @@
 'use client';
 
+import CSVTable from '@/components/csv-table';
 import CSVUploader from '@/components/csv-uploader'
 import Footer from '@/components/footer'
 import Navbar from '@/components/navbar'
-import React from 'react'
+import React, { useState } from 'react'
 
 const Dashboard = () => {
+
+    const [fileUploaded, setFileUploaded] = useState<boolean>(true);
 
     const handleFileUpload = () => {}
 
@@ -14,7 +17,11 @@ const Dashboard = () => {
         <Navbar />
 
         <main className="flex-1">
-            <CSVUploader onFileUpload={handleFileUpload}/>
+            {fileUploaded ?
+                <CSVTable />
+                :
+                <CSVUploader onFileUpload={handleFileUpload}/>
+            }
         </main>
 
         <Footer/>
