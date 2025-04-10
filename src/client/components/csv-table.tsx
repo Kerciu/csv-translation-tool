@@ -26,10 +26,15 @@ const CSVTable = ({ headers, data, selectedColumns, isEditable = false, onCellEd
                 {
                     data.map((row, rowIdx) => (
                         <TableRow>
-                            <TableCell>{rowIdx + 1}</TableCell>
+                            <TableCell className='text-center font-medium text-muted-foreground'>{rowIdx + 1}</TableCell>
                             {
                             row.map((cell, colIdx) => (
-                                <TableCell key={colIdx}>{cell}</TableCell>
+                                <TableCell
+                                    key={colIdx}
+                                    className='max-w-[300px] truncate'
+                                >
+                                    {cell}
+                                </TableCell>
                             ))
                             }
                         </TableRow>
