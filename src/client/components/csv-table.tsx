@@ -1,4 +1,5 @@
 import React from 'react'
+import { Table, TableHead, TableHeader, TableRow } from './ui/table'
 
 interface CSVTableProps {
     headers: string[]
@@ -10,7 +11,18 @@ interface CSVTableProps {
 
 const CSVTable = ({ headers, data, selectedColumns, isEditable = false, onCellEdit }: CSVTableProps) => {
   return (
-    <div>CSVTable</div>
+    <div>
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead>#</TableHead>
+                    {headers.map((header, idx) => (
+                        <TableHead key={idx}>{header}</TableHead>
+                    ))}
+                </TableRow>
+            </TableHeader>
+        </Table>
+    </div>
   )
 }
 
