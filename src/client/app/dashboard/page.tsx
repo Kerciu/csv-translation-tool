@@ -4,17 +4,19 @@ import Navbar from '@/components/navbar'
 import React from 'react'
 
 const Dashboard = () => {
-  return (
-    <div className="flex min-h-screen flex-col">
-      <Navbar />
 
-      <main className="flex-1">
-        <CSVUploader />
-      </main>
+    const onFileUpload = () => {}
+    return (
+        <div className="flex min-h-screen flex-col">
+        <Navbar />
 
-      <Footer/>
-    </div>
-  )
+        <main className="flex-1">
+            <CSVUploader onFileUpload={onFileUpload}/>
+        </main>
+
+        <Footer/>
+        </div>
+    )
 }
 
 export default Dashboard

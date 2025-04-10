@@ -2,7 +2,11 @@ import { FileSpreadsheet, Upload } from 'lucide-react'
 import React from 'react'
 import { Button } from './ui/button'
 
-const CSVUploader = () => {
+interface CSVUploaderProps {
+    onFileUpload: (data: string[][], headers: string[]) => void
+}
+
+const CSVUploader = ({ onFileUpload }: CSVUploaderProps) => {
   return (
     <div className='border-2 border-dashed rounded-lg p-10 text-center'>
         <input
