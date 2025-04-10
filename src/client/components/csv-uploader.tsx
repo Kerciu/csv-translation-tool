@@ -3,6 +3,7 @@
 import { FileSpreadsheet, Upload } from 'lucide-react'
 import React, { useState } from 'react'
 import { Button } from './ui/button'
+import Papa from "papaparse";
 
 interface CSVUploaderProps {
     onFileUpload: (data: string[][], headers: string[]) => void
@@ -11,6 +12,7 @@ interface CSVUploaderProps {
 const CSVUploader = ({ onFileUpload }: CSVUploaderProps) => {
 
     const [isDragging, setDragging] = useState<boolean>(false);
+    const [isLoading, setLoading] = useState<boolean>(false);
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -39,6 +41,26 @@ const CSVUploader = ({ onFileUpload }: CSVUploaderProps) => {
 
     const processFile = (file: File) => {
         /* ... file processing ... */
+        setLoading(true);
+        Papa.parse(file, {
+            complete: (results) => {
+                const parsedData = results.data as string[][];
+                if (parsedData && parsedData.length > 0)
+                {
+                    const headers = parsedData[0];
+                    const data = parsedData.slice(1).filter(
+                        (row) => row.some((cell) => cell.trim() !== "")
+                    );
+                    
+                    onFileUpload(data, headers);
+                }
+
+                setLoading(false);
+            },
+            error: () => {
+                setLoading(false);
+            }
+        })
     }
 
     return (
