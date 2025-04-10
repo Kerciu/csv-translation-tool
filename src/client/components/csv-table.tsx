@@ -11,11 +11,11 @@ interface CSVTableProps {
 
 const CSVTable = ({ headers, data, selectedColumns, isEditable = false, onCellEdit }: CSVTableProps) => {
   return (
-    <div>
-        <Table>
-            <TableHeader>
+    <div className='overflow-auto max-h-[600px]'>
+        <Table >
+            <TableHeader className='sticky top-0 bg-background z-10'>
                 <TableRow>
-                    <TableHead>#</TableHead>
+                    <TableHead className='w-12 text-center'>#</TableHead>
                     {headers.map((header, idx) => (
                         <TableHead key={idx}>{header}</TableHead>
                     ))}
