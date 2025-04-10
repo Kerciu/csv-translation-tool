@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
 import { cn } from '@/lib/utils'
+import { Input } from './ui/input'
 
 interface CSVTableProps {
     headers: string[]
@@ -11,9 +12,21 @@ interface CSVTableProps {
 }
 
 const CSVTable = ({ headers, data, selectedColumns, isEditable = false, onCellEdit }: CSVTableProps) => {
+
+    const [editingCell, setEditingCell] = useState<{ row: number, col: number} | null>(null);
+    const [editValue, setEditValue] = useState("");
     
-    const handleCellEditClick = (rowIdx: number, colIdx: number, cell: string) => {
+    const handleCellEditClick = (rowIdx: number, colIdx: number, value: string) => {
         /* edit */
+        if (isEditable && selectedColumns.includes(headers[colIdx]))
+        {
+            setEditingCell({ row: rowIdx, col: colIdx });
+            setEditValue(value);
+        }
+    }
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setEditValue(e.target.value);
     }
 
     return (
@@ -53,7 +66,16 @@ const CSVTable = ({ headers, data, selectedColumns, isEditable = false, onCellEd
                                         )}
                                         onClick={() => handleCellEditClick(rowIdx, colIdx, cell)}
                                     >
-                                        {cell}
+                                        {editingCell?.row === rowIdx && editingCell?.col === colIdx ?
+                                            <Input
+                                                value={editValue}
+                                                onChange={handleInputChange}
+                                                autoFocus
+                                                className='p-0 h-auto'
+                                            />
+                                            :
+                                            cell
+                                        }
                                     </TableCell>
                                 ))
                                 }
