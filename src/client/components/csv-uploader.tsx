@@ -4,7 +4,7 @@ import { Button } from './ui/button'
 
 const CSVUploader = () => {
   return (
-    <div>
+    <div className='border-2 border-dashed rounded-lg p-10 text-center'>
         <input />
 
         <FileSpreadsheet/>
