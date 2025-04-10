@@ -15,19 +15,30 @@ const CSVUploader = ({ onFileUpload }: CSVUploaderProps) => {
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         setDragging(true);
-        /* ... */
     }
 
     const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         setDragging(false);
-        /* ... */
     }
 
     const handleDragDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         setDragging(false);
-        /* ... */
+        
+        const files = e.dataTransfer.files
+        if (files && files.length > 0)
+        {
+            const file = files[0]
+            if (file.type === 'text/csv' || file.name.endsWith('.csv'))
+            {
+                processFile(file);
+            }
+        }
+    }
+
+    const processFile = (file: File) => {
+        /* ... file processing ... */
     }
 
     return (
