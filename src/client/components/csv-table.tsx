@@ -37,6 +37,17 @@ const CSVTable = ({ headers, data, selectedColumns, isEditable = false, onCellEd
         }
     }
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter')
+        {
+            handleInputBlur();
+        }
+        else if (e.key === 'Escape')
+        {
+            setEditingCell(null);
+        }
+    }
+
     return (
         <div className="overflow-auto max-h-[600px]">
           <Table>
