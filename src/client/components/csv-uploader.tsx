@@ -73,15 +73,16 @@ const CSVUploader = ({ onFileUpload }: CSVUploaderProps) => {
 
     return (
         <div className={`border-2 border-dashed rounded-lg p-10 text-center 
-            ${isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/20'}`
-            }>
+            ${isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/20'
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDragDrop}    
+        >
             <input
                 type='file'
                 accept='.csv'
                 className='hidden'
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDragDrop}
                 onChange={handleFileChange}
             />
 
