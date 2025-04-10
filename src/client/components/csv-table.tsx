@@ -29,60 +29,58 @@ const CSVTable = ({ headers, data, selectedColumns, isEditable = false, onCellEd
         setEditValue(e.target.value);
     }
 
-    return (
-        <div className='overflow-auto max-h-[600px]'>
-            <Table >
-                <TableHeader className='sticky top-0 bg-background z-10'>
-                    <TableRow>
-                        <TableHead className='w-12 text-center'>#</TableHead>
-                        {headers.map((header, idx) => (
-                            <TableHead
-                                key={idx}
-                                className={cn(
-                                    selectedColumns.includes(header)
-                                    &&
-                                    "bg-primary/10 font-bold"
-                                )}
-                            >
-                                {header}
-                            </TableHead>
-                        ))}
-                    </TableRow>
-                </TableHeader>
+    const handleInputBlur = () => {
+        if (editingCell && onCellEdit)
+        {
+            onCellEdit(editingCell.row, editingCell.col, editValue);
+            setEditingCell(null);
+        }
+    }
 
-                <TableBody>
-                    {
-                        data.map((row, rowIdx) => (
-                            <TableRow key={rowIdx}>
-                                <TableCell className='text-center font-medium text-muted-foreground'>{rowIdx + 1}</TableCell>
-                                {
-                                row.map((cell, colIdx) => (
-                                    <TableCell
-                                        key={colIdx}
-                                        className={cn(
-                                            "max-w-[300px] truncate",
-                                            selectedColumns.includes(headers[colIdx]) && "bg-primary/5",
-                                            isEditable && selectedColumns.includes(headers[colIdx]) && "cursor-pointer hover:bg-primary/10"
-                                        )}
-                                        onClick={() => handleCellEditClick(rowIdx, colIdx, cell)}
-                                    >
-                                        {editingCell?.row === rowIdx && editingCell?.col === colIdx ?
-                                            <Input
-                                                value={editValue}
-                                                onChange={handleInputChange}
-                                                autoFocus
-                                                className='p-0 h-auto'
-                                            />
-                                            :
-                                            cell
-                                        }
-                                    </TableCell>
-                                ))
-                                }
-                            </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+    return (
+        <div className="overflow-auto max-h-[600px]">
+          <Table>
+            <TableHeader className="sticky top-0 bg-background z-10">
+              <TableRow>
+                <TableHead className="w-12 text-center">#</TableHead>
+                {headers.map((header, index) => (
+                  <TableHead key={index} className={cn(selectedColumns.includes(header) && "bg-primary/10 font-bold")}>
+                    {header}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.map((row, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  <TableCell className="text-center font-medium text-muted-foreground">{rowIndex + 1}</TableCell>
+                  {row.map((cell, colIndex) => (
+                    <TableCell
+                      key={colIndex}
+                      className={cn(
+                        "max-w-[300px] truncate",
+                        selectedColumns.includes(headers[colIndex]) && "bg-primary/5",
+                        isEditable && selectedColumns.includes(headers[colIndex]) && "cursor-pointer hover:bg-primary/10",
+                      )}
+                      onClick={() => handleCellEditClick(rowIndex, colIndex, cell)}
+                    >
+                      {editingCell?.row === rowIndex && editingCell?.col === colIndex ? (
+                        <Input
+                          value={editValue}
+                          onChange={handleInputChange}
+                          onBlur={handleInputBlur}
+                          autoFocus
+                          className="p-0 h-auto"
+                        />
+                      ) : (
+                        cell
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
     )
 }
