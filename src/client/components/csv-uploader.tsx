@@ -5,9 +5,13 @@ import { Button } from './ui/button'
 const CSVUploader = () => {
   return (
     <div className='border-2 border-dashed rounded-lg p-10 text-center'>
-        <input />
+        <input
+            type='file'
+            accept='.csv'
+            className='hidden'
+        />
 
-        <FileSpreadsheet/>
+        <FileSpreadsheet className='mx-auto h-12 w-12 text-muted-foreground mb-4'/>
 
         <h3>Upload your CSV File</h3>
         <p>Drag and drop your file here, or click the button below</p>
