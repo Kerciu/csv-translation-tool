@@ -80,6 +80,7 @@ const CSVTable = ({ headers, data, selectedColumns, isEditable = false, onCellEd
                           value={editValue}
                           onChange={handleInputChange}
                           onBlur={handleInputBlur}
+                          onKeyDown={handleKeyDown}
                           autoFocus
                           className="p-0 h-auto"
                         />
