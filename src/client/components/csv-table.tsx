@@ -1,5 +1,6 @@
 import React from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
+import { cn } from '@/lib/utils'
 
 interface CSVTableProps {
     headers: string[]
@@ -17,7 +18,16 @@ const CSVTable = ({ headers, data, selectedColumns, isEditable = false, onCellEd
                 <TableRow>
                     <TableHead className='w-12 text-center'>#</TableHead>
                     {headers.map((header, idx) => (
-                        <TableHead key={idx}>{header}</TableHead>
+                        <TableHead
+                            key={idx}
+                            className={cn(
+                                selectedColumns.includes(header)
+                                &&
+                                "bg-primary/10 font-bold"
+                            )}
+                        >
+                            {header}
+                        </TableHead>
                     ))}
                 </TableRow>
             </TableHeader>
