@@ -1,7 +1,7 @@
 'use client';
 
 import { FileSpreadsheet, Upload } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Button } from './ui/button'
 import Papa from "papaparse";
 
@@ -13,6 +13,8 @@ const CSVUploader = ({ onFileUpload }: CSVUploaderProps) => {
 
     const [isDragging, setDragging] = useState<boolean>(false);
     const [isLoading, setLoading] = useState<boolean>(false);
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -83,6 +85,7 @@ const CSVUploader = ({ onFileUpload }: CSVUploaderProps) => {
                 type='file'
                 accept='.csv'
                 className='hidden'
+                ref={fileInputRef}
                 onChange={handleFileChange}
             />
 
@@ -91,7 +94,11 @@ const CSVUploader = ({ onFileUpload }: CSVUploaderProps) => {
             <h3 className='text-lg font-medium mb-2'>Upload your CSV File</h3>
             <p className='text-muted-foreground mb-6'>Drag and drop your file here, or click the button below</p>
 
-            <Button className='gap-2'>
+            <Button
+                className='gap-2'
+                disabled={isLoading}
+                onClick={() => fileInputRef.current?.click()}
+            >
                 <Upload className='h-4 w-4'/>
                 Select your CSV File
             </Button>
