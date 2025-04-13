@@ -14,7 +14,7 @@ const Dashboard = () => {
 
     const [fileUploaded, setFileUploaded] = useState<boolean>(false);
     
-    const [isLoading, setLoading] = useState(true);
+    const [isLoading, setLoading] = useState(false);
     const { user, isLoading: authLoading } = useAuth();
 
     const handleFileUpload = () => {}
@@ -54,7 +54,7 @@ const Dashboard = () => {
         <div className="flex min-h-screen flex-col">
         <Navbar />
 
-        <main className="flex-1">
+        <main className="container mx-auto py-8 px-4 flex-1">
             {fileUploaded ?
                 <CSVTable
                     headers={headers} 
