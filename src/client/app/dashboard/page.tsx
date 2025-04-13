@@ -40,9 +40,9 @@ const Dashboard = () => {
         return <div className="flex min-h-screen flex-col">
             <Navbar />
             <main className='container mx-auto py-8 px-4 flex-1 flex items-center justify-center'>
-                <div>
-                    <Loader2/>
-                    <p>Loading your dashboard...</p>
+                <div className='flex flex-col items-center gap-4'>
+                    <Loader2 className='h-12 w-12 text-primary animate-spin'/>
+                    <p className='text-lg text-muted-foreground'>Loading your dashboard...</p>
                 </div>
             </main>
 
