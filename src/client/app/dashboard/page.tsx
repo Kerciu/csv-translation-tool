@@ -28,6 +28,7 @@ const Dashboard = () => {
     const [csvData, setCsvData] = useState<string[][]>(dataMock);
     const [headers, setHeaders] = useState<string[]>(headersMock);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(selectedColumnsMock);
+    const [targetLanguage, setTargetLanguage] = useState("");
 
     const [isTranslating, setTranslating] = useState(false);
     const [isTranslated, setTranslated] = useState(false);
@@ -37,12 +38,13 @@ const Dashboard = () => {
 
     const handleFileUpload = () => {}
 
-    
+    const handleColumnToggle = (column: string) => {}
+
+    const handleLanguageChange = (language: string) => {}
 
     const handleCellEdit = (rowIndex: number, colIndex: number, value: string) => {
         console.log(`Updated cell at row ${rowIndex + 1}, column ${colIndex}: ${value}`)
     }
-    /* DEBUG */
 
     if (isLoading || authLoading)
     {
@@ -77,7 +79,13 @@ const Dashboard = () => {
                 <CardContent>
                 {csvData.length > 0 ?
                     <div className='space-y-6'>
-                        <TranslationOptions />
+                        <TranslationOptions
+                            headers={headers}    
+                            selectedColumns={selectedColumns} 
+                            targetLanguage={targetLanguage} 
+                            onColumnToggle={handleColumnToggle} 
+                            onLanguageChange={handleLanguageChange} 
+                        />
 
                         <div className='flex flex-wrap justify-center gap-4 my-4'>
                             <Button className='gap-2'>    
