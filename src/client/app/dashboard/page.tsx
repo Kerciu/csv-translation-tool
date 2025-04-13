@@ -6,7 +6,7 @@ import Footer from '@/components/footer'
 import Navbar from '@/components/navbar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/use-auth';
-import { Loader2 } from 'lucide-react';
+import { FileSpreadsheet, Loader2 } from 'lucide-react';
 import React, { useState } from 'react'
 
 
@@ -59,10 +59,11 @@ const Dashboard = () => {
             <Card>
                 <CardHeader>
                     <CardTitle>
-
+                        <FileSpreadsheet className='w-8 h-8'/>
+                        CSV Translation Tool
                     </CardTitle>
                     <CardDescription>
-
+                        Upload a CSV file, select columns to translate, and download the translated file
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
