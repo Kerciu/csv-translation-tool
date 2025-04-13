@@ -18,7 +18,11 @@ const TranslationOptions = ({ headers, selectedColumns, targetLanguage, onColumn
             selectedColumns={selectedColumns}
             onColumnToggle={onColumnToggle}
         />
-        <LanguageTranslationOption/>
+        <LanguageTranslationOption
+            selectedColumnsCount={selectedColumns.length}
+            targetLanguage={targetLanguage}
+            onLanguageChange={onLanguageChange}
+        />
     </div>
   )
 }

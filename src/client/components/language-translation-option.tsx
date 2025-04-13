@@ -1,6 +1,12 @@
 import React from 'react'
 
-const LanguageTranslationOption = () => {
+interface LanguageTranslationOptionProps {
+    selectedColumnsCount: number
+    targetLanguage: string
+    onLanguageChange: (language: string) => void
+}
+
+const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLanguageChange }: LanguageTranslationOptionProps) => {
   return (
     <div>LanguageTranslationOption</div>
   )
