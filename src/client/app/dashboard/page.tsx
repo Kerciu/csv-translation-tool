@@ -81,12 +81,14 @@ const Dashboard = () => {
                 }
                 </CardContent>
 
-                <CardFooter>
+                <CardFooter className='flex justify-center text-sm text-muted-foreground'>
                     {
                         csvData.length > 0 &&
                         <Button
                             variant='ghost'
-                            onClick={() => {}}
+                            onClick={() => {
+                                setCsvData([])
+                            }}
                             className='gap-2'
                         >
                             <Upload className='h-4 w-4'/>
