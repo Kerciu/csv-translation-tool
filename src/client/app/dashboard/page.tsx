@@ -4,9 +4,10 @@ import CSVTable from '@/components/csv-table';
 import CSVUploader from '@/components/csv-uploader'
 import Footer from '@/components/footer'
 import Navbar from '@/components/navbar'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/use-auth';
-import { FileSpreadsheet, Loader2 } from 'lucide-react';
+import { FileSpreadsheet, Loader2, Upload } from 'lucide-react';
 import React, { useState } from 'react'
 
 
@@ -14,9 +15,10 @@ import React, { useState } from 'react'
 const Dashboard = () => {
 
     const [fileUploaded, setFileUploaded] = useState<boolean>(false);
-    
     const [isLoading, setLoading] = useState(false);
     const { user, isLoading: authLoading } = useAuth();
+
+    const [csvData, setCsvData] = useState<string[][]>([['abc']]);
 
     const handleFileUpload = () => {}
 
@@ -56,9 +58,9 @@ const Dashboard = () => {
         <Navbar />
 
         <main className="container mx-auto py-8 px-4 flex-1">
-            <Card>
-                <CardHeader>
-                    <CardTitle>
+            <Card className='w-full'>
+                <CardHeader className='text-center'>
+                    <CardTitle className='text-3x1 flex items-center justify-center gap-4'>
                         <FileSpreadsheet className='w-8 h-8'/>
                         CSV Translation Tool
                     </CardTitle>
@@ -78,6 +80,20 @@ const Dashboard = () => {
                     <CSVUploader onFileUpload={handleFileUpload}/>
                 }
                 </CardContent>
+
+                <CardFooter>
+                    {
+                        csvData.length > 0 &&
+                        <Button
+                            variant='ghost'
+                            onClick={() => {}}
+                            className='gap-2'
+                        >
+                            <Upload className='h-4 w-4'/>
+                            Upload a different file
+                        </Button>
+                    }
+                </CardFooter>
             </Card>
         </main>
 
