@@ -4,10 +4,11 @@ import CSVTable from '@/components/csv-table';
 import CSVUploader from '@/components/csv-uploader'
 import Footer from '@/components/footer'
 import Navbar from '@/components/navbar'
+import TranslationOptions from '@/components/translation-options';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/use-auth';
-import { FileSpreadsheet, Loader2, Upload } from 'lucide-react';
+import { FileSpreadsheet, Languages, Loader2, Upload } from 'lucide-react';
 import React, { useState } from 'react'
 
 
@@ -27,7 +28,9 @@ const Dashboard = () => {
     const [csvData, setCsvData] = useState<string[][]>(dataMock);
     const [headers, setHeaders] = useState<string[]>(headersMock);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(selectedColumnsMock);
-    
+
+    const [isTranslating, setTranslating] = useState(false);
+    const [isTranslated, setTranslated] = useState(false);
     const [isLoading, setLoading] = useState(false);
     const { user, isLoading: authLoading } = useAuth();
 
@@ -73,12 +76,24 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent>
                 {csvData.length > 0 ?
-                    <CSVTable
-                        headers={headers} 
-                        data={csvData}
-                        selectedColumns={selectedColumns} 
-                        onCellEdit={handleCellEdit}
-                    />
+                    <div>
+                        <TranslationOptions />
+
+                        <div>
+                            <Languages/>
+                            {isTranslating ? "Translating..." : "Translate Selected Columns"}
+                        </div>
+
+                        <div>
+                            <CSVTable
+                                headers={headers}
+                                data={csvData}
+                                selectedColumns={selectedColumns}
+                                isEditable={isTranslated}
+                                onCellEdit={handleCellEdit}
+                            />
+                        </div>
+                    </div>
                     :
                     <CSVUploader onFileUpload={handleFileUpload}/>
                 }
