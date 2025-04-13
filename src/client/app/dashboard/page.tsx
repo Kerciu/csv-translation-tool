@@ -4,6 +4,7 @@ import CSVTable from '@/components/csv-table';
 import CSVUploader from '@/components/csv-uploader'
 import Footer from '@/components/footer'
 import Navbar from '@/components/navbar'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/use-auth';
 import { Loader2 } from 'lucide-react';
 import React, { useState } from 'react'
@@ -55,16 +56,28 @@ const Dashboard = () => {
         <Navbar />
 
         <main className="container mx-auto py-8 px-4 flex-1">
-            {fileUploaded ?
-                <CSVTable
-                    headers={headers} 
-                    data={data}
-                    selectedColumns={selectedColumns} 
-                    onCellEdit={handleCellEdit}
-                />
-                :
-                <CSVUploader onFileUpload={handleFileUpload}/>
-            }
+            <Card>
+                <CardHeader>
+                    <CardTitle>
+
+                    </CardTitle>
+                    <CardDescription>
+
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                {fileUploaded ?
+                    <CSVTable
+                        headers={headers} 
+                        data={data}
+                        selectedColumns={selectedColumns} 
+                        onCellEdit={handleCellEdit}
+                    />
+                    :
+                    <CSVUploader onFileUpload={handleFileUpload}/>
+                }
+                </CardContent>
+            </Card>
         </main>
 
         <Footer/>
