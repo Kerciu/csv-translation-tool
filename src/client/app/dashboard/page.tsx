@@ -39,7 +39,7 @@ const Dashboard = () => {
     {
         return <div className="flex min-h-screen flex-col">
             <Navbar />
-            <main>
+            <main className='container mx-auto py-8 px-4 flex-1 flex items-center justify-center'>
                 <div>
                     <Loader2/>
                     <p>Loading your dashboard...</p>
