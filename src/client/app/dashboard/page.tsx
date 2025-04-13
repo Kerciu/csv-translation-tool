@@ -86,7 +86,7 @@ const Dashboard = () => {
                             </Button>
                         </div>
 
-                        <div>
+                        <div className='border rounded-lg overflow-hidden'>
                             <CSVTable
                                 headers={headers}
                                 data={csvData}
