@@ -13,7 +13,11 @@ interface TranslationOptionsProps {
 const TranslationOptions = ({ headers, selectedColumns, targetLanguage, onColumnToggle, onLanguageChange }: TranslationOptionsProps) => {
   return (
     <div className='grid md:grid-cols-2 gap-4'>
-        <DataTranslationOption/>
+        <DataTranslationOption
+            headers={headers}
+            selectedColumns={selectedColumns}
+            onColumnToggle={onColumnToggle}
+        />
         <LanguageTranslationOption/>
     </div>
   )

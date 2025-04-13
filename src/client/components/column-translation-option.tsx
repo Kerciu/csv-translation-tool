@@ -1,6 +1,12 @@
 import React from 'react'
 
-const DataTranslationOption = () => {
+interface DataTranslationOptionProps {
+    headers: string[]
+    selectedColumns: string[]
+    onColumnToggle: (column: string) => void
+}
+
+const DataTranslationOption = ({ headers, selectedColumns, onColumnToggle }: DataTranslationOptionProps) => {
   return (
     <div>DataTranslationOption</div>
   )
