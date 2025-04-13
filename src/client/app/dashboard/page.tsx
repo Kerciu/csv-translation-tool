@@ -76,12 +76,14 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent>
                 {csvData.length > 0 ?
-                    <div>
+                    <div className='space-y-6'>
                         <TranslationOptions />
 
-                        <div>
-                            <Languages/>
-                            {isTranslating ? "Translating..." : "Translate Selected Columns"}
+                        <div className='flex flex-wrap justify-center gap-4 my-4'>
+                            <Button className='gap-2'>    
+                                <Languages className='h-4 w-4'/>
+                                {isTranslating ? "Translating..." : "Translate Selected Columns"}
+                            </Button>
                         </div>
 
                         <div>
