@@ -14,24 +14,27 @@ import React, { useState } from 'react'
 
 const Dashboard = () => {
 
-    const [fileUploaded, setFileUploaded] = useState<boolean>(false);
-    const [isLoading, setLoading] = useState(false);
-    const { user, isLoading: authLoading } = useAuth();
-
-    const [csvData, setCsvData] = useState<string[][]>([['abc']]);
-
-    const handleFileUpload = () => {}
-
     /* DEBUG: Mock Data */
-    const headers = ["Name", "Age", "Country", "Email"]
-    const data = [
+    const headersMock = ["Name", "Age", "Country", "Email"]
+    const dataMock = [
         ["John Doe", "30", "USA", "john.doe@example.com"],
         ["Jane Smith", "25", "Canada", "jane.smith@example.com"],
         ["Sam Brown", "28", "UK", "sam.brown@example.com"],
         ["Emily White", "22", "Australia", "emily.white@example.com"]
     ]
+    const selectedColumnsMock = ["Name", "Age", "Email"]
 
-    const selectedColumns = ["Name", "Age", "Email"]
+    const [csvData, setCsvData] = useState<string[][]>(dataMock);
+    const [headers, setHeaders] = useState<string[]>(headersMock);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(selectedColumnsMock);
+    
+    const [isLoading, setLoading] = useState(false);
+    const { user, isLoading: authLoading } = useAuth();
+
+
+    const handleFileUpload = () => {}
+
+    
 
     const handleCellEdit = (rowIndex: number, colIndex: number, value: string) => {
         console.log(`Updated cell at row ${rowIndex + 1}, column ${colIndex}: ${value}`)
@@ -69,10 +72,10 @@ const Dashboard = () => {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                {fileUploaded ?
+                {csvData.length > 0 ?
                     <CSVTable
                         headers={headers} 
-                        data={data}
+                        data={csvData}
                         selectedColumns={selectedColumns} 
                         onCellEdit={handleCellEdit}
                     />
