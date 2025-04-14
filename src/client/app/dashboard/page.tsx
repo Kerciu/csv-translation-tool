@@ -63,6 +63,10 @@ const Dashboard = () => {
         /* translate */
     }
 
+    const downloadCSV = () => {
+        /* download */
+    }
+
     if (isLoading || authLoading)
     {
         return <div className="flex min-h-screen flex-col">
@@ -106,7 +110,9 @@ const Dashboard = () => {
 
                         <TranslationButtons 
                             translateCSV={translateCSV}
+                            downloadCSV={downloadCSV}
                             isTranslating={isTranslating}
+                            isTranslated={isTranslated}
                             selectedColumnsCount={selectedColumns.length}
                         />
 
