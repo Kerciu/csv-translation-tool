@@ -80,6 +80,12 @@ const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLan
               </Command>
           </PopoverContent>
         </Popover>
+
+        <p className='mt-4 text-sm text-muted-foreground'>
+          Selected {selectedColumnsCount === 1 ? "Column" : "Columns"} to translate to{" "}
+          {languages.find(lang => lang.value === targetLanguage)?.label || targetLanguage}
+
+        </p>
       </CardContent>
     </Card>
   )
