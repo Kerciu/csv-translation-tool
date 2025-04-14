@@ -4,6 +4,7 @@ import CSVTable from '@/components/csv-table';
 import CSVUploader from '@/components/csv-uploader'
 import Footer from '@/components/footer'
 import Navbar from '@/components/navbar'
+import TranslationButtons from '@/components/translation-buttons';
 import TranslationOptions from '@/components/translation-options';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -99,12 +100,9 @@ const Dashboard = () => {
                             onLanguageChange={handleLanguageChange} 
                         />
 
-                        <div className='flex flex-wrap justify-center gap-4 my-4'>
-                            <Button className='gap-2'>    
-                                <Languages className='h-4 w-4'/>
-                                {isTranslating ? "Translating..." : "Translate Selected Columns"}
-                            </Button>
-                        </div>
+                        <TranslationButtons 
+                        
+                        />
 
                         <div className='border rounded-lg overflow-hidden'>
                             <CSVTable
