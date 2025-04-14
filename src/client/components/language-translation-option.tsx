@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Popover, PopoverContent } from './ui/popover'
 import { PopoverTrigger } from '@radix-ui/react-popover'
 import { Button } from './ui/button'
+import { ChevronsUpDown } from 'lucide-react'
 
 interface LanguageTranslationOptionProps {
     selectedColumnsCount: number
@@ -38,6 +39,7 @@ const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLan
               {targetLanguage ? languages.find((lang) => (lang.value === targetLanguage))?.label
                 : "Select language..."
               }
+              <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50'/>
             </Button>
           </PopoverTrigger>
 
