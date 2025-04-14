@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Popover, PopoverContent } from './ui/popover'
 import { PopoverTrigger } from '@radix-ui/react-popover'
 import { Button } from './ui/button'
-import { ChevronsUpDown } from 'lucide-react'
+import { Check, ChevronsUpDown } from 'lucide-react'
 import { CommandInput, Command, CommandList, CommandEmpty, CommandGroup, CommandItem } from './ui/command'
+import { cn } from '@/lib/utils'
 
 interface LanguageTranslationOptionProps {
     selectedColumnsCount: number
@@ -63,6 +64,12 @@ const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLan
                           setOpen(false)
                         }}
                       >
+                        <Check 
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            targetLanguage === lang.value ? "opacity-100" : "opacity-0"
+                          )}
+                        />
                         {lang.label}
                       </CommandItem>
                     ))}
