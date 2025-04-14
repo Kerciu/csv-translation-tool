@@ -2,6 +2,7 @@ import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Popover, PopoverContent } from './ui/popover'
 import { PopoverTrigger } from '@radix-ui/react-popover'
+import { Button } from './ui/button'
 
 interface LanguageTranslationOptionProps {
     selectedColumnsCount: number
@@ -23,7 +24,7 @@ const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLan
     { value: "ko", label: "Korean" },
     { value: "ar", label: "Arabic" },
   ]
-  
+
   return (
     <Card>
       <CardHeader>
@@ -33,7 +34,11 @@ const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLan
       <CardContent>
         <Popover>
           <PopoverTrigger asChild>
-
+            <Button variant='outline' role='combobox' className='w-full justify-between'>
+              {targetLanguage ? languages.find((lang) => (lang.value === targetLanguage))?.label
+                : "Select language..."
+              }
+            </Button>
           </PopoverTrigger>
 
           <PopoverContent>
