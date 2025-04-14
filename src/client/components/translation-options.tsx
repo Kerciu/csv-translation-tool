@@ -1,5 +1,5 @@
 import React from 'react'
-import DataTranslationOption from './column-translation-option'
+import DataTranslationOption from './data-translation-option'
 import LanguageTranslationOption from './language-translation-option'
 
 interface TranslationOptionsProps {
