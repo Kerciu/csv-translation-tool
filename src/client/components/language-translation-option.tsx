@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Popover, PopoverContent } from './ui/popover'
 import { PopoverTrigger } from '@radix-ui/react-popover'
@@ -12,6 +12,8 @@ interface LanguageTranslationOptionProps {
 }
 
 const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLanguageChange }: LanguageTranslationOptionProps) => {
+
+  const [open, setOpen] = useState(false);
 
   const languages = [
     { value: "es", label: "Spanish" },
@@ -33,7 +35,7 @@ const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLan
       </CardHeader>
 
       <CardContent>
-        <Popover>
+        <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button variant='outline' role='combobox' className='w-full justify-between'>
               {targetLanguage ? languages.find((lang) => (lang.value === targetLanguage))?.label
