@@ -11,9 +11,9 @@ interface DataTranslationOptionProps {
 
 const DataTranslationOption = ({ headers, selectedColumns, onColumnToggle }: DataTranslationOptionProps) => {
   return (
-    <Card>
+    <Card className='grid md-grid:cols-2 gap-4'>
       <CardHeader>
-          <CardTitle>Select Columns to Translate</CardTitle>
+          <CardTitle className='text-lg'>Select Columns to Translate</CardTitle>
       </CardHeader>
 
       <CardContent>
