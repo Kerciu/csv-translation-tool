@@ -23,6 +23,8 @@ const Dashboard = () => {
 
     const [isTranslating, setTranslating] = useState(false);
     const [isTranslated, setTranslated] = useState(false);
+    const [translatedData, setTranslatedData] = useState<string[][]>([]);
+
     const [isLoading, setLoading] = useState(false);
     const { user, isLoading: authLoading } = useAuth();
 
@@ -51,7 +53,9 @@ const Dashboard = () => {
     }
 
     const handleCellEdit = (rowIndex: number, colIndex: number, value: string) => {
-        console.log(`Updated cell at row ${rowIndex + 1}, column ${colIndex}: ${value}`)
+        const newData = [...translatedData];
+        newData[rowIndex][colIndex] = value;
+        setTranslatedData(newData);
     }
 
     if (isLoading || authLoading)
