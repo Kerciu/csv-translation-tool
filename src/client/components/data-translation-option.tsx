@@ -11,20 +11,22 @@ interface DataTranslationOptionProps {
 
 const DataTranslationOption = ({ headers, selectedColumns, onColumnToggle }: DataTranslationOptionProps) => {
   return (
-    <Card className='grid md-grid:cols-2 gap-4'>
+    <Card className='grid md:grid-cols-2 gap-4'>
       <CardHeader>
           <CardTitle className='text-lg'>Select Columns to Translate</CardTitle>
       </CardHeader>
 
       <CardContent>
+        <div className='grid grid-cols-2 gap-4'>
           {headers.map((header, idx) => (
-            <div>
-              <Checkbox />
-              <Label>
-                {header}
-              </Label>
-            </div>
-          ))}
+              <div className='flex items-center space-x-2'>
+                <Checkbox />
+                <Label>
+                  {header}
+                </Label>
+              </div>
+            ))}
+        </div>
       </CardContent>
     </Card>
   )
