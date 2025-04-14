@@ -59,6 +59,10 @@ const Dashboard = () => {
         setTranslatedData(newData);
     }
 
+    const translateCSV = async () => {
+        /* translate */
+    }
+
     if (isLoading || authLoading)
     {
         return <div className="flex min-h-screen flex-col">
@@ -101,7 +105,9 @@ const Dashboard = () => {
                         />
 
                         <TranslationButtons 
-                        
+                            translateCSV={translateCSV}
+                            isTranslating={isTranslating}
+                            selectedColumnsCount={selectedColumns.length}
                         />
 
                         <div className='border rounded-lg overflow-hidden'>
