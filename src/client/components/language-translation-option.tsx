@@ -46,7 +46,7 @@ const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLan
             </Button>
           </PopoverTrigger>
 
-          <PopoverContent>
+          <PopoverContent className='w-full p-0'>
               <Command>
                 <CommandInput placeholder='Search a language...'/>
 
@@ -55,7 +55,14 @@ const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLan
 
                   <CommandGroup>
                     {languages.map((lang, idx) => (
-                      <CommandItem>
+                      <CommandItem
+                        key={lang.value}
+                        value={lang.value}
+                        onSelect={(currValue) => {
+                          onLanguageChange(currValue)
+                          setOpen(false)
+                        }}
+                      >
                         {lang.label}
                       </CommandItem>
                     ))}
