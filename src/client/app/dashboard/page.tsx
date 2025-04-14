@@ -38,9 +38,15 @@ const Dashboard = () => {
 
     const handleFileUpload = () => {}
 
-    const handleColumnToggle = (column: string) => {}
+    const handleColumnToggle = (column: string) => {
+        setSelectedColumns((prev) => (
+            prev.includes(column) ? prev.filter(col => col !== column) : [...prev, column]
+        ))
+    }
 
-    const handleLanguageChange = (language: string) => {}
+    const handleLanguageChange = (language: string) => {
+        setTargetLanguage(language);
+    }
 
     const handleCellEdit = (rowIndex: number, colIndex: number, value: string) => {
         console.log(`Updated cell at row ${rowIndex + 1}, column ${colIndex}: ${value}`)
