@@ -1,4 +1,5 @@
 import React from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 
 interface LanguageTranslationOptionProps {
     selectedColumnsCount: number
@@ -8,7 +9,15 @@ interface LanguageTranslationOptionProps {
 
 const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLanguageChange }: LanguageTranslationOptionProps) => {
   return (
-    <div>LanguageTranslationOption</div>
+    <Card>
+      <CardHeader>
+        <CardTitle className='text-lg'>Target Language</CardTitle>
+      </CardHeader>
+
+      <CardContent>
+
+      </CardContent>
+    </Card>
   )
 }
 
