@@ -4,6 +4,7 @@ import { Popover, PopoverContent } from './ui/popover'
 import { PopoverTrigger } from '@radix-ui/react-popover'
 import { Button } from './ui/button'
 import { ChevronsUpDown } from 'lucide-react'
+import { CommandInput, Command, CommandList, CommandEmpty, CommandGroup, CommandItem } from './ui/command'
 
 interface LanguageTranslationOptionProps {
     selectedColumnsCount: number
@@ -46,7 +47,23 @@ const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLan
           </PopoverTrigger>
 
           <PopoverContent>
+              <Command>
+                <CommandInput placeholder='Search a language...'/>
 
+                <CommandList>
+                  <CommandEmpty>No language found.</CommandEmpty>
+
+                  <CommandGroup>
+                    {languages.map((lang, idx) => (
+                      <CommandItem>
+                        {lang.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+
+                </CommandList>
+
+              </Command>
           </PopoverContent>
         </Popover>
       </CardContent>
