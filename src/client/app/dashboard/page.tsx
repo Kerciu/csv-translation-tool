@@ -14,21 +14,11 @@ import React, { useState } from 'react'
 
 
 const Dashboard = () => {
-
-    /* DEBUG: Mock Data */
-    const headersMock = ["Name", "Age", "Country", "Email"]
-    const dataMock = [
-        ["John Doe", "30", "USA", "john.doe@example.com"],
-        ["Jane Smith", "25", "Canada", "jane.smith@example.com"],
-        ["Sam Brown", "28", "UK", "sam.brown@example.com"],
-        ["Emily White", "22", "Australia", "emily.white@example.com"]
-    ]
-    const selectedColumnsMock = ["Name", "Age", "Email"]
-
-    const [csvData, setCsvData] = useState<string[][]>(dataMock);
-    const [headers, setHeaders] = useState<string[]>(headersMock);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(selectedColumnsMock);
-    const [targetLanguage, setTargetLanguage] = useState("");
+    
+    const [csvData, setCsvData] = useState<string[][]>([]);
+    const [headers, setHeaders] = useState<string[]>([]);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+    const [targetLanguage, setTargetLanguage] = useState("de");
 
     const [isTranslating, setTranslating] = useState(false);
     const [isTranslated, setTranslated] = useState(false);
@@ -36,7 +26,12 @@ const Dashboard = () => {
     const { user, isLoading: authLoading } = useAuth();
 
 
-    const handleFileUpload = () => {}
+    const handleFileUpload = (uploadedData: string[][], uploadedHeaders: string[]) => {
+        setCsvData(uploadedData);
+        setHeaders(uploadedHeaders);
+        setSelectedColumns([]);
+        setTranslated(false);
+    }
 
     const handleColumnToggle = (column: string) => {
         setSelectedColumns((prev) => (
