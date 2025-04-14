@@ -8,13 +8,14 @@ import TranslationOptions from '@/components/translation-options';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/use-auth';
+import { useToast } from '@/hooks/use-toast';
 import { FileSpreadsheet, Languages, Loader2, Upload } from 'lucide-react';
 import React, { useState } from 'react'
 
 
 
 const Dashboard = () => {
-    
+
     const [csvData, setCsvData] = useState<string[][]>([]);
     const [headers, setHeaders] = useState<string[]>([]);
     const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
@@ -25,12 +26,18 @@ const Dashboard = () => {
     const [isLoading, setLoading] = useState(false);
     const { user, isLoading: authLoading } = useAuth();
 
+    const { toast } = useToast();
 
     const handleFileUpload = (uploadedData: string[][], uploadedHeaders: string[]) => {
         setCsvData(uploadedData);
         setHeaders(uploadedHeaders);
         setSelectedColumns([]);
         setTranslated(false);
+
+        toast({
+            title: "CSV File uploaded successfully!",
+            description: `${uploadedData.length} rows and ${uploadedHeaders.length} columns detected`,
+        })
     }
 
     const handleColumnToggle = (column: string) => {
