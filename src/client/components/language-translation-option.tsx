@@ -1,5 +1,7 @@
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
+import { Popover, PopoverContent } from './ui/popover'
+import { PopoverTrigger } from '@radix-ui/react-popover'
 
 interface LanguageTranslationOptionProps {
     selectedColumnsCount: number
@@ -15,7 +17,15 @@ const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLan
       </CardHeader>
 
       <CardContent>
+        <Popover>
+          <PopoverTrigger asChild>
 
+          </PopoverTrigger>
+
+          <PopoverContent>
+            
+          </PopoverContent>
+        </Popover>
       </CardContent>
     </Card>
   )
