@@ -13,8 +13,8 @@ const RowRangeSelector = () => {
         <Card>
             <CardContent>
                 <div>
-                    <div>
-                        <div>
+                    <div className='grid grid-cols-2 gap-4'>
+                        <div className='space-y-2'>
                             <Label  htmlFor='start-row'>
                                 Start Row
                             </Label>
@@ -25,7 +25,7 @@ const RowRangeSelector = () => {
                             />
                         </div>
 
-                        <div>
+                        <div className='space-y-2'>
                             <Label  htmlFor='end-row'>
                                 End Row
                             </Label>
