@@ -30,6 +30,8 @@ const RowRangeSelector = ({ totalRows }: RowRangeSelectorProps) => {
                             <Input
                                 id='start-row'
                                 type='number'
+                                min={1}
+                                max={totalRows}
                                 value={startRow}
                             />
                         </div>
@@ -41,6 +43,8 @@ const RowRangeSelector = ({ totalRows }: RowRangeSelectorProps) => {
                             <Input
                                 id='end-row'
                                 type='number'
+                                min={1}
+                                max={totalRows}
                                 value={endRow}
                             />
                         </div>
