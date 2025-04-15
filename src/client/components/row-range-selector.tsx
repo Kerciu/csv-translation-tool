@@ -11,8 +11,13 @@ const RowRangeSelector = () => {
         
     return (
         <Card>
-            <CardContent>
-                <div>
+            <CardContent className='pt-6'>
+                <div className='flex flex-col space-y-4'>
+                    
+                    <div className='flex items-center justify-between'>
+                        <h3 className='text-lg font-medium'>Row Selection</h3>
+                    </div>
+
                     <div className='grid grid-cols-2 gap-4'>
                         <div className='space-y-2'>
                             <Label  htmlFor='start-row'>
