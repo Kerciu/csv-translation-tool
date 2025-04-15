@@ -6,9 +6,10 @@ import { Input } from './ui/input'
 
 interface RowRangeSelectorProps {
     totalRows: number
+    onRangeChange: (range: [number, number]) => void
 }
 
-const RowRangeSelector = ({ totalRows }: RowRangeSelectorProps) => {
+const RowRangeSelector = ({ totalRows, onRangeChange }: RowRangeSelectorProps) => {
 
     const [startRow, setStartRow] = useState<number>(1);
     const [endRow, setEndRow] = useState<number>(1);
@@ -21,6 +22,11 @@ const RowRangeSelector = ({ totalRows }: RowRangeSelectorProps) => {
             if (value > endRow)
             {
                 setEndRow(value);
+                onRangeChange([value, value]);
+            } 
+            else 
+            {
+                onRangeChange([value, endRow]);
             }
         }
     }
@@ -30,12 +36,14 @@ const RowRangeSelector = ({ totalRows }: RowRangeSelectorProps) => {
         if (!isNaN(value) && value >= startRow && value <= totalRows)
         {
             setEndRow(value);
+            onRangeChange([startRow, value]);
         }
     }
 
     const handleSelectAll = () => {
         setStartRow(1);
         setEndRow(totalRows);
+        onRangeChange([1, totalRows]);
     }
 
     return (
