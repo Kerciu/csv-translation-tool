@@ -4,6 +4,7 @@ import CSVTable from '@/components/csv-table';
 import CSVUploader from '@/components/csv-uploader'
 import Footer from '@/components/footer'
 import Navbar from '@/components/navbar'
+import RowRangeSelector from '@/components/row-range-selector';
 import TranslationButtons from '@/components/translation-buttons';
 import TranslationOptions from '@/components/translation-options';
 import { Button } from '@/components/ui/button';
@@ -106,6 +107,10 @@ const Dashboard = () => {
                             targetLanguage={targetLanguage} 
                             onColumnToggle={handleColumnToggle} 
                             onLanguageChange={handleLanguageChange} 
+                        />
+
+                        <RowRangeSelector 
+                        
                         />
 
                         <TranslationButtons 
