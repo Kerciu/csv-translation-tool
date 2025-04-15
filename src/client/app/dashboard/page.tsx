@@ -74,6 +74,11 @@ const Dashboard = () => {
         setSelectedRows(rangeRows);
     }
 
+    const handleRowSelect = (rowIdx: number) => {
+        setSelectedRows([rowIdx]);
+        setRowRange([rowIdx + 1, rowIdx + 1]);
+    }
+
     const translateCSV = async () => {
         /* translate */
     }
@@ -144,6 +149,7 @@ const Dashboard = () => {
                                 selectedColumns={selectedColumns}
                                 isEditable={isTranslated}
                                 onCellEdit={handleCellEdit}
+                                onRowSelect={handleRowSelect}
                             />
                         </div>
                     </div>

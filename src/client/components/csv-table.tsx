@@ -9,9 +9,10 @@ interface CSVTableProps {
     selectedColumns: string[]
     isEditable?: boolean
     onCellEdit?: (rowIndex: number, colIndex: number, value: string) => void
+    onRowSelect?: (rowIndex: number) => void
 }
 
-const CSVTable = ({ headers, data, selectedColumns, isEditable = false, onCellEdit }: CSVTableProps) => {
+const CSVTable = ({ headers, data, selectedColumns, isEditable = false, onCellEdit, onRowSelect }: CSVTableProps) => {
 
     const [editingCell, setEditingCell] = useState<{ row: number, col: number} | null>(null);
     const [editValue, setEditValue] = useState("");
@@ -23,6 +24,13 @@ const CSVTable = ({ headers, data, selectedColumns, isEditable = false, onCellEd
             setEditingCell({ row: rowIdx, col: colIdx });
             setEditValue(value);
         }
+    }
+
+    const handleRowClick = (rowIndex: number, e: React.MouseEvent) => {
+      if (onRowSelect)
+      {
+        onRowSelect(rowIndex);  // will extend this to use keyboard shortcuts
+      }
     }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,7 +72,12 @@ const CSVTable = ({ headers, data, selectedColumns, isEditable = false, onCellEd
             <TableBody>
               {data.map((row, rowIndex) => (
                 <TableRow key={rowIndex}>
-                  <TableCell className="text-center font-medium text-muted-foreground">{rowIndex + 1}</TableCell>
+                  <TableCell 
+                    className="text-center font-medium text-muted-foreground"
+                    onClick={(e) => handleRowClick(rowIndex, e)}
+                  >
+                    {rowIndex + 1}
+                  </TableCell>
                   {row.map((cell, colIndex) => (
                     <TableCell
                       key={colIndex}
