@@ -8,9 +8,12 @@ import { AuthProvider } from "@/hooks/use-auth"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "CSV Translator",
+  title: "CSV Translation Tool",
   description: "Translate your CSV files with ease",
-    generator: 'v0.dev'
+    generator: 'v0.dev',
+    icons: {
+      icon: "/favicon.png"
+    }
 }
 
 export default function RootLayout({
