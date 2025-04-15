@@ -7,12 +7,13 @@ interface CSVTableProps {
     headers: string[]
     data: string[][]
     selectedColumns: string[]
+    selectedRows: number[]
     isEditable?: boolean
     onCellEdit?: (rowIndex: number, colIndex: number, value: string) => void
     onRowSelect?: (rowIndex: number) => void
 }
 
-const CSVTable = ({ headers, data, selectedColumns, isEditable = false, onCellEdit, onRowSelect }: CSVTableProps) => {
+const CSVTable = ({ headers, data, selectedColumns, selectedRows, isEditable = false, onCellEdit, onRowSelect }: CSVTableProps) => {
 
     const [editingCell, setEditingCell] = useState<{ row: number, col: number} | null>(null);
     const [editValue, setEditValue] = useState("");
@@ -71,9 +72,16 @@ const CSVTable = ({ headers, data, selectedColumns, isEditable = false, onCellEd
             </TableHeader>
             <TableBody>
               {data.map((row, rowIndex) => (
-                <TableRow key={rowIndex}>
+                <TableRow
+                  key={rowIndex}
+                  className={cn(selectedRows.includes(rowIndex) && "bg-primary/20 font-bold")}
+                >
                   <TableCell 
-                    className="text-center font-medium text-muted-foreground"
+                    className={
+                      cn("text-center font-medium text-muted-foreground cursor-pointer hover:bg-secondary/10",
+                        selectedRows.includes(rowIndex) && "bg-secondary/30"
+                      )
+                    }
                     onClick={(e) => handleRowClick(rowIndex, e)}
                   >
                     {rowIndex + 1}
@@ -85,6 +93,7 @@ const CSVTable = ({ headers, data, selectedColumns, isEditable = false, onCellEd
                         "max-w-[300px] truncate",
                         selectedColumns.includes(headers[colIndex]) && "bg-primary/5",
                         isEditable && selectedColumns.includes(headers[colIndex]) && "cursor-pointer hover:bg-primary/10",
+                        selectedRows.includes(rowIndex) && selectedColumns.includes(headers[colIndex]) && "bg-primary/20",
                       )}
                       onClick={() => handleCellEditClick(rowIndex, colIndex, cell)}
                     >

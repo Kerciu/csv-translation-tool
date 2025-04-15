@@ -147,6 +147,7 @@ const Dashboard = () => {
                                 headers={headers}
                                 data={csvData}
                                 selectedColumns={selectedColumns}
+                                selectedRows={selectedRows}
                                 isEditable={isTranslated}
                                 onCellEdit={handleCellEdit}
                                 onRowSelect={handleRowSelect}
