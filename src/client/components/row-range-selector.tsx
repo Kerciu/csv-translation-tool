@@ -46,10 +46,12 @@ const RowRangeSelector = ({ totalRows }: RowRangeSelectorProps) => {
                         </div>
                     </div>
 
-                    <div>
-                        <div> Selected {endRow - startRow + 1} of {totalRows} rows</div>
+                    <div className='flex justify-between items-center'>
+                        <div className='text-sm text-muted-foreground'>
+                            Selected {endRow - startRow + 1} of {totalRows} rows
+                        </div>
 
-                        <Button>
+                        <Button variant='outline' size='sm'>
                             Select All Rows
                         </Button>
                     </div>
