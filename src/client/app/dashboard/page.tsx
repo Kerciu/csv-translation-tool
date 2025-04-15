@@ -125,6 +125,7 @@ const Dashboard = () => {
 
                         <RowRangeSelector 
                             totalRows={csvData.length}
+                            selectedRange={rowRange}
                             onRangeChange={handleRowRangeChange}
                         />
 

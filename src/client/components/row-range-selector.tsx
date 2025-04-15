@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, CardContent } from './ui/card'
 import { Button } from './ui/button'
 import { Label } from './ui/label'
@@ -6,13 +6,19 @@ import { Input } from './ui/input'
 
 interface RowRangeSelectorProps {
     totalRows: number
+    selectedRange: [number, number]
     onRangeChange: (range: [number, number]) => void
 }
 
-const RowRangeSelector = ({ totalRows, onRangeChange }: RowRangeSelectorProps) => {
+const RowRangeSelector = ({ totalRows, selectedRange, onRangeChange }: RowRangeSelectorProps) => {
 
-    const [startRow, setStartRow] = useState<number>(1);
-    const [endRow, setEndRow] = useState<number>(1);
+    const [startRow, setStartRow] = useState<number>(selectedRange[0]);
+    const [endRow, setEndRow] = useState<number>(selectedRange[1]);
+
+    useEffect(() => {
+        setStartRow(selectedRange[0]);
+        setEndRow(selectedRange[1]);
+    }, [selectedRange])
     
     const handleStartRowChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = Number.parseInt(e.target.value);
