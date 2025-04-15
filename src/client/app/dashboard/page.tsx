@@ -110,7 +110,7 @@ const Dashboard = () => {
                         />
 
                         <RowRangeSelector 
-                        
+                            totalRows={csvData.length}
                         />
 
                         <TranslationButtons 

@@ -4,7 +4,11 @@ import { Button } from './ui/button'
 import { Label } from './ui/label'
 import { Input } from './ui/input'
 
-const RowRangeSelector = () => {
+interface RowRangeSelectorProps {
+    totalRows: number
+}
+
+const RowRangeSelector = ({ totalRows }: RowRangeSelectorProps) => {
 
     const [startRow, setStartRow] = useState<number>(1);
     const [endRow, setEndRow] = useState<number>(1);
@@ -13,7 +17,7 @@ const RowRangeSelector = () => {
         <Card>
             <CardContent className='pt-6'>
                 <div className='flex flex-col space-y-4'>
-                    
+
                     <div className='flex items-center justify-between'>
                         <h3 className='text-lg font-medium'>Row Selection</h3>
                     </div>
@@ -43,7 +47,7 @@ const RowRangeSelector = () => {
                     </div>
 
                     <div>
-                        <div> Selected # of # rows</div>
+                        <div> Selected {endRow - startRow + 1} of {totalRows} rows</div>
 
                         <Button>
                             Select All Rows
