@@ -33,6 +33,11 @@ const RowRangeSelector = ({ totalRows }: RowRangeSelectorProps) => {
         }
     }
 
+    const handleSelectAll = () => {
+        setStartRow(1);
+        setEndRow(totalRows);
+    }
+
     return (
         <Card>
             <CardContent className='pt-6'>
@@ -77,7 +82,7 @@ const RowRangeSelector = ({ totalRows }: RowRangeSelectorProps) => {
                             Selected {endRow - startRow + 1} of {totalRows} rows
                         </div>
 
-                        <Button variant='outline' size='sm'>
+                        <Button variant='outline' size='sm' onClick={handleSelectAll}>
                             Select All Rows
                         </Button>
                     </div>
