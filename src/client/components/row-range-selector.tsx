@@ -12,7 +12,27 @@ const RowRangeSelector = ({ totalRows }: RowRangeSelectorProps) => {
 
     const [startRow, setStartRow] = useState<number>(1);
     const [endRow, setEndRow] = useState<number>(1);
-        
+    
+    const handleStartRowChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = Number.parseInt(e.target.value);
+        if (!isNaN(value) && value >= 1 && value <= totalRows)
+        {
+            setStartRow(value);
+            if (value > endRow)
+            {
+                setEndRow(value);
+            }
+        }
+    }
+
+    const handleEndRowChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = Number.parseInt(e.target.value);
+        if (!isNaN(value) && value >= startRow && value <= totalRows)
+        {
+            setEndRow(value);
+        }
+    }
+
     return (
         <Card>
             <CardContent className='pt-6'>
@@ -33,6 +53,7 @@ const RowRangeSelector = ({ totalRows }: RowRangeSelectorProps) => {
                                 min={1}
                                 max={totalRows}
                                 value={startRow}
+                                onChange={handleStartRowChange}
                             />
                         </div>
 
@@ -46,6 +67,7 @@ const RowRangeSelector = ({ totalRows }: RowRangeSelectorProps) => {
                                 min={1}
                                 max={totalRows}
                                 value={endRow}
+                                onChange={handleEndRowChange}
                             />
                         </div>
                     </div>
