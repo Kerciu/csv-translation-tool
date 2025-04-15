@@ -21,6 +21,8 @@ const Dashboard = () => {
     const [csvData, setCsvData] = useState<string[][]>([]);
     const [headers, setHeaders] = useState<string[]>([]);
     const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+    const [selectedRows, setSelectedRows] = useState<number[]>([]);
+    const [rowRange, setRowRange] = useState<[number, number]>([1, 1]);
     const [targetLanguage, setTargetLanguage] = useState("de");
 
     const [isTranslating, setTranslating] = useState(false);
@@ -36,6 +38,8 @@ const Dashboard = () => {
         setCsvData(uploadedData);
         setHeaders(uploadedHeaders);
         setSelectedColumns([]);
+        setSelectedRows([]);
+        setRowRange([1, uploadedData.length])
         setTranslated(false);
 
         toast({
@@ -58,6 +62,16 @@ const Dashboard = () => {
         const newData = [...translatedData];
         newData[rowIndex][colIndex] = value;
         setTranslatedData(newData);
+    }
+
+    const handleRowRangeChange = (range: [number, number]) => {
+        setRowRange(range);
+
+        const start = range[0] - 1;
+        const end = range[1] - 1;
+
+        const rangeRows = Array.from({ length: end - start + 1 }, (_, i) => start + i)
+        setSelectedRows(rangeRows);
     }
 
     const translateCSV = async () => {
@@ -111,6 +125,7 @@ const Dashboard = () => {
 
                         <RowRangeSelector 
                             totalRows={csvData.length}
+                            onRangeChange={handleRowRangeChange}
                         />
 
                         <TranslationButtons 
