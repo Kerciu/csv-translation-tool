@@ -1,15 +1,16 @@
 import React from 'react'
   import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog'
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, Download, Upload } from 'lucide-react'
 import { Button } from './ui/button'
 
 interface UploadConfirmationDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onDownload: () => void
   onConfirm: () => void
 }
 
-const UploadConfirmationDialog = ({ open, onOpenChange, onConfirm }: UploadConfirmationDialogProps) => {
+const UploadConfirmationDialog = ({ open, onOpenChange, onDownload, onConfirm }: UploadConfirmationDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -34,15 +35,23 @@ const UploadConfirmationDialog = ({ open, onOpenChange, onConfirm }: UploadConfi
         </div>
 
         <DialogFooter>
-          <Button>
+          <Button
+            onClick={() => onOpenChange(false)}
+          >
             Cancel
           </Button>
 
-          <Button>
+          <Button
+            onClick={onDownload}
+          >
+            <Download className='w-4 h-4 mr-2'/>
             Download Current File
           </Button>
 
-          <Button>
+          <Button
+            onClick={onConfirm}
+          >
+            <Upload className='w-4 h-4 mr-2'/>
             Proceed to Upload
           </Button>
         </DialogFooter>

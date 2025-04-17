@@ -198,6 +198,7 @@ const Dashboard = () => {
         <UploadConfirmationDialog
             open={showUploadConfirmation}
             onOpenChange={setShowUploadConfirmation}
+            onDownload={downloadCSV}
             onConfirm={clearDashboard}
         />
         </div>
