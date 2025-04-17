@@ -16,12 +16,12 @@ const UploadConfirmationDialog = ({ open, onOpenChange, onDownload, onConfirm }:
       <DialogContent className='max-w-lg w-full px-2'>
 
         <DialogHeader>
-          <DialogTitle>
-            <AlertTriangle className='w-5 h-5'/>
+          <DialogTitle className='flex items-center gap-2'>
+            <AlertTriangle className='w-5 h-5 text-amber-500'/>
             <span>Upload New File</span>
           </DialogTitle>
 
-          <DialogDescription>
+          <DialogDescription className='text-sm'>
             You are about to clear your current work. Would you like to download your current file before proceeding?
           </DialogDescription>
 
