@@ -79,6 +79,16 @@ const Dashboard = () => {
         setRowRange([rowIdx + 1, rowIdx + 1]);
     }
 
+    const handleDataReset = () => {
+        setCsvData([]);
+        setHeaders([]);
+        setSelectedColumns([]);
+        setSelectedRows([]);
+        setRowRange([1, 1]);
+        setTranslatedData([]);
+        setTranslated(false);
+    }
+
     const translateCSV = async () => {
         /* translate */
     }
@@ -164,9 +174,7 @@ const Dashboard = () => {
                         csvData.length > 0 &&
                         <Button
                             variant='ghost'
-                            onClick={() => {
-                                setCsvData([])
-                            }}
+                            onClick={handleDataReset}
                             className='gap-2'
                         >
                             <Upload className='h-4 w-4'/>
