@@ -4,10 +4,12 @@ import CSVTable from '@/components/csv-table';
 import CSVUploader from '@/components/csv-uploader'
 import Footer from '@/components/footer'
 import Navbar from '@/components/navbar'
+import RowRangeSelector from '@/components/row-range-selector';
 import TranslationButtons from '@/components/translation-buttons';
 import TranslationOptions from '@/components/translation-options';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import UploadConfirmationDialog from '@/components/upload-confirmation-dialog';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { FileSpreadsheet, Languages, Loader2, Upload } from 'lucide-react';
@@ -20,6 +22,8 @@ const Dashboard = () => {
     const [csvData, setCsvData] = useState<string[][]>([]);
     const [headers, setHeaders] = useState<string[]>([]);
     const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+    const [selectedRows, setSelectedRows] = useState<number[]>([]);
+    const [rowRange, setRowRange] = useState<[number, number]>([1, 1]);
     const [targetLanguage, setTargetLanguage] = useState("de");
 
     const [isTranslating, setTranslating] = useState(false);
@@ -29,12 +33,15 @@ const Dashboard = () => {
     const [isLoading, setLoading] = useState(false);
     const { user, isLoading: authLoading } = useAuth();
 
+    const [showUploadConfirmation, setShowUploadConfirmation] = useState(false);
     const { toast } = useToast();
 
     const handleFileUpload = (uploadedData: string[][], uploadedHeaders: string[]) => {
         setCsvData(uploadedData);
         setHeaders(uploadedHeaders);
         setSelectedColumns([]);
+        setSelectedRows([]);
+        setRowRange([1, uploadedData.length])
         setTranslated(false);
 
         toast({
@@ -57,6 +64,37 @@ const Dashboard = () => {
         const newData = [...translatedData];
         newData[rowIndex][colIndex] = value;
         setTranslatedData(newData);
+    }
+
+    const handleRowRangeChange = (range: [number, number]) => {
+        setRowRange(range);
+
+        const start = range[0] - 1;
+        const end = range[1] - 1;
+
+        const rangeRows = Array.from({ length: end - start + 1 }, (_, i) => start + i)
+        setSelectedRows(rangeRows);
+    }
+
+    const handleRowSelect = (rowIdx: number) => {
+        setSelectedRows([rowIdx]);
+        setRowRange([rowIdx + 1, rowIdx + 1]);
+    }
+
+    const clearDashboard = () => {
+        setCsvData([]);
+        setHeaders([]);
+        setSelectedColumns([]);
+        setSelectedRows([]);
+        setRowRange([1, 1]);
+        setTranslatedData([]);
+        setTranslated(false);
+        setShowUploadConfirmation(false);
+
+        toast({
+            title: "Dashboard cleared",
+            description: "You can now upload a new CSV file",
+        })
     }
 
     const translateCSV = async () => {
@@ -86,7 +124,7 @@ const Dashboard = () => {
         <div className="flex min-h-screen flex-col">
         <Navbar />
 
-        <main className="container mx-auto py-8 px-4 flex-1">
+        <main className="container mx-auto py-8 px-4 flex-1 relative">
             <Card className='w-full'>
                 <CardHeader className='text-center'>
                     <CardTitle className='text-3x1 flex items-center justify-center gap-4'>
@@ -108,6 +146,12 @@ const Dashboard = () => {
                             onLanguageChange={handleLanguageChange} 
                         />
 
+                        <RowRangeSelector 
+                            totalRows={csvData.length}
+                            selectedRange={rowRange}
+                            onRangeChange={handleRowRangeChange}
+                        />
+
                         <TranslationButtons 
                             translateCSV={translateCSV}
                             downloadCSV={downloadCSV}
@@ -121,8 +165,10 @@ const Dashboard = () => {
                                 headers={headers}
                                 data={csvData}
                                 selectedColumns={selectedColumns}
+                                selectedRows={selectedRows}
                                 isEditable={isTranslated}
                                 onCellEdit={handleCellEdit}
+                                onRowSelect={handleRowSelect}
                             />
                         </div>
                     </div>
@@ -136,9 +182,7 @@ const Dashboard = () => {
                         csvData.length > 0 &&
                         <Button
                             variant='ghost'
-                            onClick={() => {
-                                setCsvData([])
-                            }}
+                            onClick={() => setShowUploadConfirmation(true)}
                             className='gap-2'
                         >
                             <Upload className='h-4 w-4'/>
@@ -150,6 +194,13 @@ const Dashboard = () => {
         </main>
 
         <Footer/>
+
+        <UploadConfirmationDialog
+            open={showUploadConfirmation}
+            onOpenChange={setShowUploadConfirmation}
+            onDownload={downloadCSV}
+            onConfirm={clearDashboard}
+        />
         </div>
     )
 }
