@@ -1,6 +1,7 @@
 import React from 'react'
-  import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
+  import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog'
 import { AlertTriangle } from 'lucide-react'
+import { Button } from './ui/button'
 
 interface UploadConfirmationDialogProps {
   open: boolean
@@ -31,6 +32,20 @@ const UploadConfirmationDialog = ({ open, onOpenChange, onConfirm }: UploadConfi
             Uploading a new file will clear all your current data, including any translations you've made.
           </p>
         </div>
+
+        <DialogFooter>
+          <Button>
+            Cancel
+          </Button>
+
+          <Button>
+            Download Current File
+          </Button>
+
+          <Button>
+            Proceed to Upload
+          </Button>
+        </DialogFooter>
 
       </DialogContent>
     </Dialog>
