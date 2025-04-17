@@ -124,7 +124,7 @@ const Dashboard = () => {
         <div className="flex min-h-screen flex-col">
         <Navbar />
 
-        <main className="container mx-auto py-8 px-4 flex-1">
+        <main className="container mx-auto py-8 px-4 flex-1 relative">
             <Card className='w-full'>
                 <CardHeader className='text-center'>
                     <CardTitle className='text-3x1 flex items-center justify-center gap-4'>
