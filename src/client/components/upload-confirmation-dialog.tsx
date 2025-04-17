@@ -1,5 +1,5 @@
 import React from 'react'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
+  import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
 import { AlertTriangle } from 'lucide-react'
 
 interface UploadConfirmationDialogProps {
@@ -21,10 +21,16 @@ const UploadConfirmationDialog = ({ open, onOpenChange, onConfirm }: UploadConfi
           </DialogTitle>
 
           <DialogDescription>
-
+            You are about to clear your current work. Would you like to download your current file before proceeding?
           </DialogDescription>
 
         </DialogHeader>
+
+        <div className="py-2">
+          <p className="text-sm text-muted-foreground">
+            Uploading a new file will clear all your current data, including any translations you've made.
+          </p>
+        </div>
 
       </DialogContent>
     </Dialog>
