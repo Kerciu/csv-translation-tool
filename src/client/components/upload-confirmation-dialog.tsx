@@ -13,13 +13,12 @@ interface UploadConfirmationDialogProps {
 const UploadConfirmationDialog = ({ open, onOpenChange, onDownload, onConfirm }: UploadConfirmationDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className='max-w-lg w-full px-2'>
 
         <DialogHeader>
+          <DialogTitle>
             <AlertTriangle className='w-5 h-5'/>
             <span>Upload New File</span>
-          <DialogTitle>
-
           </DialogTitle>
 
           <DialogDescription>
