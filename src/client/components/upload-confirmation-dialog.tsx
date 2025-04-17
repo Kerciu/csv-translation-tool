@@ -4,9 +4,10 @@ import { Dialog } from './ui/dialog'
 interface UploadConfirmationDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onConfirm: () => void
 }
 
-const UploadConfirmationDialog = ({ open, onOpenChange }: UploadConfirmationDialogProps) => {
+const UploadConfirmationDialog = ({ open, onOpenChange, onConfirm }: UploadConfirmationDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
 

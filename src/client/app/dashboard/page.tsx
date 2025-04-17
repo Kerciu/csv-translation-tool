@@ -81,7 +81,7 @@ const Dashboard = () => {
         setRowRange([rowIdx + 1, rowIdx + 1]);
     }
 
-    const handleDataReset = () => {
+    const clearDashboard = () => {
         setCsvData([]);
         setHeaders([]);
         setSelectedColumns([]);
@@ -90,6 +90,11 @@ const Dashboard = () => {
         setTranslatedData([]);
         setTranslated(false);
         setShowUploadConfirmation(false);
+
+        toast({
+            title: "Dashboard cleared",
+            description: "You can now upload a new CSV file",
+        })
     }
 
     const translateCSV = async () => {
@@ -193,6 +198,7 @@ const Dashboard = () => {
         <UploadConfirmationDialog
             open={showUploadConfirmation}
             onOpenChange={setShowUploadConfirmation}
+            onConfirm={clearDashboard}
         />
         </div>
     )
