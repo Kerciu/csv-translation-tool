@@ -9,6 +9,7 @@ import TranslationButtons from '@/components/translation-buttons';
 import TranslationOptions from '@/components/translation-options';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import UploadConfirmationDialog from '@/components/upload-confirmation-dialog';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { FileSpreadsheet, Languages, Loader2, Upload } from 'lucide-react';
@@ -32,6 +33,7 @@ const Dashboard = () => {
     const [isLoading, setLoading] = useState(false);
     const { user, isLoading: authLoading } = useAuth();
 
+    const [showUploadConfirmation, setShowUploadConfirmation] = useState(false);
     const { toast } = useToast();
 
     const handleFileUpload = (uploadedData: string[][], uploadedHeaders: string[]) => {
@@ -87,6 +89,7 @@ const Dashboard = () => {
         setRowRange([1, 1]);
         setTranslatedData([]);
         setTranslated(false);
+        setShowUploadConfirmation(false);
     }
 
     const translateCSV = async () => {
@@ -174,7 +177,7 @@ const Dashboard = () => {
                         csvData.length > 0 &&
                         <Button
                             variant='ghost'
-                            onClick={handleDataReset}
+                            onClick={() => setShowUploadConfirmation(true)}
                             className='gap-2'
                         >
                             <Upload className='h-4 w-4'/>
@@ -186,6 +189,11 @@ const Dashboard = () => {
         </main>
 
         <Footer/>
+
+        <UploadConfirmationDialog
+            open={showUploadConfirmation}
+            onOpenChange={setShowUploadConfirmation}
+        />
         </div>
     )
 }

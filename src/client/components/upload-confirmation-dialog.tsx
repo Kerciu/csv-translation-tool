@@ -1,8 +1,16 @@
 import React from 'react'
+import { Dialog } from './ui/dialog'
 
-const UploadConfirmationDialog = () => {
+interface UploadConfirmationDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+const UploadConfirmationDialog = ({ open, onOpenChange }: UploadConfirmationDialogProps) => {
   return (
-    <div>UploadConfirmationDialog</div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+
+    </Dialog>
   )
 }
 
