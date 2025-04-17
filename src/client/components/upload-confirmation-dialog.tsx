@@ -13,7 +13,7 @@ interface UploadConfirmationDialogProps {
 const UploadConfirmationDialog = ({ open, onOpenChange, onDownload, onConfirm }: UploadConfirmationDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-w-lg w-full px-2'>
+      <DialogContent className='w-full px-2'>
 
         <DialogHeader>
           <DialogTitle className='flex items-center gap-2'>
@@ -33,15 +33,19 @@ const UploadConfirmationDialog = ({ open, onOpenChange, onDownload, onConfirm }:
           </p>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className='flex flex-col sm:flex-row gap-1 mt-2'>
           <Button
+            variant='outline'
             onClick={() => onOpenChange(false)}
+            className="sm:order-first"
           >
             Cancel
           </Button>
 
           <Button
+            variant='secondary'
             onClick={onDownload}
+            className="sm:order-2"
           >
             <Download className='w-4 h-4 mr-2'/>
             Download Current File
@@ -49,6 +53,7 @@ const UploadConfirmationDialog = ({ open, onOpenChange, onDownload, onConfirm }:
 
           <Button
             onClick={onConfirm}
+            className="sm:order-3"
           >
             <Upload className='w-4 h-4 mr-2'/>
             Proceed to Upload
