@@ -170,9 +170,12 @@ const Dashboard = () => {
                                 onRangeChange={handleRowRangeChange}
                             />
 
+                            <div className='flex justify-center'>
                             <ShortcutsHelpDialog
 
                             />
+                            </div>
+
                         </div>
 
                         <TranslationButtons
