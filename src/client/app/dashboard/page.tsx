@@ -76,9 +76,25 @@ const Dashboard = () => {
         setSelectedRows(rangeRows);
     }
 
-    const handleRowSelect = (rowIdx: number) => {
-        setSelectedRows([rowIdx]);
-        setRowRange([rowIdx + 1, rowIdx + 1]);
+    const handleRowSelect = (rowIdx: number, isShiftKey: boolean, isCtrlKey: boolean) => {
+        if (isShiftKey && selectedRows.length > 0) {
+            const lastSelectedRow = selectedRows[selectedRows.length - 1];
+
+            const start = Math.min(lastSelectedRow, rowIdx);
+            const end = Math.max(lastSelectedRow, rowIdx);
+
+            const rangeRows = Array.from({ length: end - start + 1 }, (_, i) => start + i)
+            setSelectedRows(rangeRows);
+            setRowRange([start + 1, end + 1]);
+        } else if (isCtrlKey) {
+            if (selectedRows.includes(rowIdx)) {
+                setSelectedRows(selectedRows.filter(row => row !== rowIdx));
+                setRowRange([rowRange[0], rowRange[1] - 1]);
+            }
+        else {
+            setSelectedRows([rowIdx]);
+            setRowRange([rowIdx + 1, rowIdx + 1]);
+        }
     }
 
     const clearDashboard = () => {
@@ -139,20 +155,20 @@ const Dashboard = () => {
                 {csvData.length > 0 ?
                     <div className='space-y-6'>
                         <TranslationOptions
-                            headers={headers}    
-                            selectedColumns={selectedColumns} 
-                            targetLanguage={targetLanguage} 
-                            onColumnToggle={handleColumnToggle} 
-                            onLanguageChange={handleLanguageChange} 
+                            headers={headers}
+                            selectedColumns={selectedColumns}
+                            targetLanguage={targetLanguage}
+                            onColumnToggle={handleColumnToggle}
+                            onLanguageChange={handleLanguageChange}
                         />
 
-                        <RowRangeSelector 
+                        <RowRangeSelector
                             totalRows={csvData.length}
                             selectedRange={rowRange}
                             onRangeChange={handleRowRangeChange}
                         />
 
-                        <TranslationButtons 
+                        <TranslationButtons
                             translateCSV={translateCSV}
                             downloadCSV={downloadCSV}
                             isTranslating={isTranslating}

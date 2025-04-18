@@ -10,14 +10,14 @@ interface CSVTableProps {
     selectedRows: number[]
     isEditable?: boolean
     onCellEdit?: (rowIndex: number, colIndex: number, value: string) => void
-    onRowSelect?: (rowIndex: number) => void
+    onRowSelect?: (rowIndex: number, isShiftKey: boolean, isCtrlKey: boolean) => void
 }
 
 const CSVTable = ({ headers, data, selectedColumns, selectedRows, isEditable = false, onCellEdit, onRowSelect }: CSVTableProps) => {
 
     const [editingCell, setEditingCell] = useState<{ row: number, col: number} | null>(null);
     const [editValue, setEditValue] = useState("");
-    
+
     const handleCellEditClick = (rowIdx: number, colIdx: number, value: string) => {
         /* edit */
         if (isEditable && selectedColumns.includes(headers[colIdx]))
@@ -30,7 +30,7 @@ const CSVTable = ({ headers, data, selectedColumns, selectedRows, isEditable = f
     const handleRowClick = (rowIndex: number, e: React.MouseEvent) => {
       if (onRowSelect)
       {
-        onRowSelect(rowIndex);  // will extend this to use keyboard shortcuts
+        onRowSelect(rowIndex, false, false);  // will extend this to use keyboard shortcuts
       }
     }
 
@@ -76,7 +76,7 @@ const CSVTable = ({ headers, data, selectedColumns, selectedRows, isEditable = f
                   key={rowIndex}
                   className={cn(selectedRows.includes(rowIndex) && "bg-primary/20 font-bold")}
                 >
-                  <TableCell 
+                  <TableCell
                     className={
                       cn("text-center font-medium text-muted-foreground cursor-pointer hover:bg-secondary/10",
                         selectedRows.includes(rowIndex) && "bg-secondary/30"
