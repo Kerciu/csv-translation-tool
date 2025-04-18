@@ -95,6 +95,7 @@ const Dashboard = () => {
         else {
             setSelectedRows([rowIdx]);
             setRowRange([rowIdx + 1, rowIdx + 1]);
+            }
         }
     }
 
@@ -170,7 +171,7 @@ const Dashboard = () => {
                                 onRangeChange={handleRowRangeChange}
                             />
 
-                            <div className='flex justify-center'>
+                            <div className='flex justify-end'>
                             <ShortcutsHelpDialog
 
                             />
