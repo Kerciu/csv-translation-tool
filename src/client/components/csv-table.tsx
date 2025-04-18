@@ -30,7 +30,7 @@ const CSVTable = ({ headers, data, selectedColumns, selectedRows, isEditable = f
     const handleRowClick = (rowIndex: number, e: React.MouseEvent) => {
       if (onRowSelect)
       {
-        onRowSelect(rowIndex, false, false);  // will extend this to use keyboard shortcuts
+        onRowSelect(rowIndex, e.shiftKey, e.ctrlKey);
       }
     }
 
