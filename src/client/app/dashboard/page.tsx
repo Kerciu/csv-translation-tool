@@ -40,7 +40,15 @@ const Dashboard = () => {
             return;
         }
 
+        if (e.key === "Escape") {
+            setSelectedRows([]);
+            setRowRange([1, 1]);
 
+            toast({
+                title: "Selection cleared",
+                description: "All rows have been deselected",
+            })
+        }
     }
 
     const handleFileUpload = (uploadedData: string[][], uploadedHeaders: string[]) => {
