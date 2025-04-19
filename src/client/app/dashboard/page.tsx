@@ -49,6 +49,11 @@ const Dashboard = () => {
                 description: "All rows have been deselected",
             })
         }
+
+        if (e.key === " " && !isTranslating && selectedColumns.length > 0 && selectedRows.length > 0) {
+            e.preventDefault();
+            translateCSV();
+        }
     }
 
     const handleFileUpload = (uploadedData: string[][], uploadedHeaders: string[]) => {
