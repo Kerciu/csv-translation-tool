@@ -86,14 +86,10 @@ const Dashboard = () => {
             setSelectedRows(rangeRows);
             setRowRange([start + 1, end + 1]);
         } else if (isCtrlKey) {
-            if (selectedRows.includes(rowIdx)) {
-                setSelectedRows(selectedRows.filter(row => row !== rowIdx));
-                setRowRange([rowRange[0], rowRange[1] - 1]);
-            }
-        else {
+            setSelectedRows((prev) => (prev.includes(rowIdx) ? prev.filter((r) => r !== rowIdx) : [...prev, rowIdx]))
+        } else {
             setSelectedRows([rowIdx]);
             setRowRange([rowIdx + 1, rowIdx + 1]);
-            }
         }
     }
 
