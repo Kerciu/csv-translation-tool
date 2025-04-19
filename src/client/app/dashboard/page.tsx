@@ -54,6 +54,11 @@ const Dashboard = () => {
             e.preventDefault();
             translateCSV();
         }
+
+        if ((e.ctrlKey || e.metaKey) && e.key === "s" && (csvData.length || translatedData.length)) {
+            e.preventDefault();
+            downloadCSV();
+        }
     }
 
     const handleFileUpload = (uploadedData: string[][], uploadedHeaders: string[]) => {
