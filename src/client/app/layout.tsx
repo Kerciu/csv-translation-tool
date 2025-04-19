@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/hooks/use-auth"
+import ClientToaster from "@/components/client-toaster"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -21,17 +22,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <AuthProvider>{children}</AuthProvider>
+          <ClientToaster />
         </ThemeProvider>
       </body>
     </html>
   )
 }
 
-
-
-import './globals.css'

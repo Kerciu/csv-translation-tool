@@ -6,6 +6,7 @@ import { Button } from './ui/button'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { CommandInput, Command, CommandList, CommandEmpty, CommandGroup, CommandItem } from './ui/command'
 import { cn } from '@/lib/utils'
+import languages from '@/data/languages'
 
 interface LanguageTranslationOptionProps {
     selectedColumnsCount: number
@@ -16,19 +17,6 @@ interface LanguageTranslationOptionProps {
 const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLanguageChange }: LanguageTranslationOptionProps) => {
 
   const [open, setOpen] = useState(false);
-
-  const languages = [
-    { value: "es", label: "Spanish" },
-    { value: "fr", label: "French" },
-    { value: "de", label: "German" },
-    { value: "it", label: "Italian" },
-    { value: "pt", label: "Portuguese" },
-    { value: "ru", label: "Russian" },
-    { value: "zh", label: "Chinese" },
-    { value: "ja", label: "Japanese" },
-    { value: "ko", label: "Korean" },
-    { value: "ar", label: "Arabic" },
-  ]
 
   return (
     <Card>
@@ -64,7 +52,7 @@ const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLan
                           setOpen(false)
                         }}
                       >
-                        <Check 
+                        <Check
                           className={cn(
                             "mr-2 h-4 w-4",
                             targetLanguage === lang.value ? "opacity-100" : "opacity-0"

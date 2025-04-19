@@ -3,6 +3,9 @@ import { Card, CardContent } from './ui/card'
 import { Button } from './ui/button'
 import { Label } from './ui/label'
 import { Input } from './ui/input'
+import { Tooltip, TooltipContent, TooltipProvider } from './ui/tooltip'
+import { TooltipTrigger } from '@radix-ui/react-tooltip'
+import { HelpCircle } from 'lucide-react'
 
 interface RowRangeSelectorProps {
     totalRows: number
@@ -19,7 +22,7 @@ const RowRangeSelector = ({ totalRows, selectedRange, onRangeChange }: RowRangeS
         setStartRow(selectedRange[0]);
         setEndRow(selectedRange[1]);
     }, [selectedRange])
-    
+
     const handleStartRowChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = Number.parseInt(e.target.value);
         if (!isNaN(value) && value >= 1 && value <= totalRows)
@@ -29,8 +32,8 @@ const RowRangeSelector = ({ totalRows, selectedRange, onRangeChange }: RowRangeS
             {
                 setEndRow(value);
                 onRangeChange([value, value]);
-            } 
-            else 
+            }
+            else
             {
                 onRangeChange([value, endRow]);
             }
@@ -59,6 +62,25 @@ const RowRangeSelector = ({ totalRows, selectedRange, onRangeChange }: RowRangeS
 
                     <div className='flex items-center justify-between'>
                         <h3 className='text-lg font-medium'>Row Selection</h3>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Button variant='ghost' size='icon' className='h-8 w-8'>
+                                        <HelpCircle className='h-4 w-4'/>
+                                        <span className='sr-only'>Row Selection Help</span>
+                                    </Button>
+                                </TooltipTrigger>
+
+                                <TooltipContent className='max-w-sm' side='left' align='center'>
+                                <p className="text-sm">
+                                    You can also select rows in the table by:
+                                    <br />• Clicking a row number to select a single row
+                                    <br />• Shift+Click to select a range of rows
+                                    <br />• Ctrl+Click to select/deselect individual rows
+                                </p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     </div>
 
                     <div className='grid grid-cols-2 gap-4'>
