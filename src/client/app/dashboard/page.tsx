@@ -13,10 +13,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import UploadConfirmationDialog from '@/components/upload-confirmation-dialog';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { FileSpreadsheet, Languages, Loader2, Upload } from 'lucide-react';
+import { FileSpreadsheet, Loader2, Upload } from 'lucide-react';
 import React, { useState } from 'react'
-
-
 
 const Dashboard = () => {
 
