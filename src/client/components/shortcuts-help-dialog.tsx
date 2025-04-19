@@ -17,7 +17,7 @@ const ShortcutsHelpDialog = ({ trigger }: ShortcutsHelpDialogProps) => {
             {trigger || (
                 <Button variant='outline' size='icon' className='h-9 w-9'>
                     <HelpCircle className='h-4 w-4'/>
-                    <span className='sr-only'>Keyboard shortcuts</span>
+                    <span className='sr-only'>Usage Tips & Shortcuts</span>
                 </Button>
             )}
         </DialogTrigger>
@@ -25,7 +25,7 @@ const ShortcutsHelpDialog = ({ trigger }: ShortcutsHelpDialogProps) => {
         <DialogContent className='sm:max-w-[600px]'>
             <DialogHeader>
                 <DialogTitle>
-                    Keyboard Shortcuts
+                    Quick Usage & Shortcuts Guide
                 </DialogTitle>
 
                 <DialogDescription>

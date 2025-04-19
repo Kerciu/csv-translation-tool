@@ -202,7 +202,7 @@ const Dashboard = () => {
                                         trigger={
                                             <Button variant="outline" size="sm" className="gap-2">
                                                 <HelpCircle className="h-4 w-4" />
-                                                Keyboard Shortcuts
+                                                Usage Tips & Shortcuts
                                             </Button>
                                         }
                                     />
