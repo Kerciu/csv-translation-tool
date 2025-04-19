@@ -68,7 +68,12 @@ const RowRangeSelector = ({ totalRows, selectedRange, onRangeChange }: RowRangeS
                                 </TooltipTrigger>
 
                                 <TooltipContent>
-
+                                <p className="text-sm">
+                                    You can also select rows in the table by:
+                                    <br />• Clicking a row number to select a single row
+                                    <br />• Shift+Click to select a range of rows
+                                    <br />• Ctrl+Click to select/deselect individual rows
+                                </p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
