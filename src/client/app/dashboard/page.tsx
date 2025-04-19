@@ -5,6 +5,7 @@ import CSVUploader from '@/components/csv-uploader'
 import Footer from '@/components/footer'
 import Navbar from '@/components/navbar'
 import RowRangeSelector from '@/components/row-range-selector';
+import ShortcutsHelpDialog from '@/components/shortcuts-help-dialog';
 import TranslationButtons from '@/components/translation-buttons';
 import TranslationOptions from '@/components/translation-options';
 import { Button } from '@/components/ui/button';
@@ -12,10 +13,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import UploadConfirmationDialog from '@/components/upload-confirmation-dialog';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { FileSpreadsheet, Languages, Loader2, Upload } from 'lucide-react';
-import React, { useState } from 'react'
-
-
+import { FileSpreadsheet, HelpCircle, Loader2, Upload } from 'lucide-react';
+import React, { useEffect, useState } from 'react'
 
 const Dashboard = () => {
 
@@ -35,6 +34,32 @@ const Dashboard = () => {
 
     const [showUploadConfirmation, setShowUploadConfirmation] = useState(false);
     const { toast } = useToast();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+            return;
+        }
+
+        if (e.key === "Escape") {
+            setSelectedRows([]);
+            setRowRange([1, 1]);
+
+            toast({
+                title: "Selection cleared",
+                description: "All rows have been deselected",
+            })
+        }
+
+        if (e.key === " " && !isTranslating && selectedColumns.length > 0 && selectedRows.length > 0) {
+            e.preventDefault();
+            translateCSV();
+        }
+
+        if ((e.ctrlKey || e.metaKey) && e.key === "s" && (csvData.length || translatedData.length)) {
+            e.preventDefault();
+            downloadCSV();
+        }
+    }
 
     const handleFileUpload = (uploadedData: string[][], uploadedHeaders: string[]) => {
         setCsvData(uploadedData);
@@ -76,9 +101,22 @@ const Dashboard = () => {
         setSelectedRows(rangeRows);
     }
 
-    const handleRowSelect = (rowIdx: number) => {
-        setSelectedRows([rowIdx]);
-        setRowRange([rowIdx + 1, rowIdx + 1]);
+    const handleRowSelect = (rowIdx: number, isShiftKey: boolean, isCtrlKey: boolean) => {
+        if (isShiftKey && selectedRows.length > 0) {
+            const lastSelectedRow = selectedRows[selectedRows.length - 1];
+
+            const start = Math.min(lastSelectedRow, rowIdx);
+            const end = Math.max(lastSelectedRow, rowIdx);
+
+            const rangeRows = Array.from({ length: end - start + 1 }, (_, i) => start + i)
+            setSelectedRows(rangeRows);
+            setRowRange([start + 1, end + 1]);
+        } else if (isCtrlKey) {
+            setSelectedRows((prev) => (prev.includes(rowIdx) ? prev.filter((r) => r !== rowIdx) : [...prev, rowIdx]))
+        } else {
+            setSelectedRows([rowIdx]);
+            setRowRange([rowIdx + 1, rowIdx + 1]);
+        }
     }
 
     const clearDashboard = () => {
@@ -104,6 +142,11 @@ const Dashboard = () => {
     const downloadCSV = () => {
         /* download */
     }
+
+    useEffect(() => {
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [selectedRows, selectedColumns, isTranslating, translatedData, csvData])
 
     if (isLoading || authLoading)
     {
@@ -138,21 +181,36 @@ const Dashboard = () => {
                 <CardContent>
                 {csvData.length > 0 ?
                     <div className='space-y-6'>
-                        <TranslationOptions
-                            headers={headers}    
-                            selectedColumns={selectedColumns} 
-                            targetLanguage={targetLanguage} 
-                            onColumnToggle={handleColumnToggle} 
-                            onLanguageChange={handleLanguageChange} 
-                        />
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
+                            <TranslationOptions
+                                headers={headers}
+                                selectedColumns={selectedColumns}
+                                targetLanguage={targetLanguage}
+                                onColumnToggle={handleColumnToggle}
+                                onLanguageChange={handleLanguageChange}
+                            />
 
-                        <RowRangeSelector 
-                            totalRows={csvData.length}
-                            selectedRange={rowRange}
-                            onRangeChange={handleRowRangeChange}
-                        />
+                            <div className='space-y-4'>
+                                <RowRangeSelector
+                                    totalRows={csvData.length}
+                                    selectedRange={rowRange}
+                                    onRangeChange={handleRowRangeChange}
+                                />
 
-                        <TranslationButtons 
+                                <div className='flex justify-end'>
+                                    <ShortcutsHelpDialog
+                                        trigger={
+                                            <Button variant="outline" size="sm" className="gap-2">
+                                                <HelpCircle className="h-4 w-4" />
+                                                Usage Tips & Shortcuts
+                                            </Button>
+                                        }
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <TranslationButtons
                             translateCSV={translateCSV}
                             downloadCSV={downloadCSV}
                             isTranslating={isTranslating}
