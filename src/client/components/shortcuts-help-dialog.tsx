@@ -37,8 +37,10 @@ const ShortcutsHelpDialog = () => {
                     <TableBody>
                         {shortcuts.map((shortcut) => (
                             <TableRow key={shortcut.action}>
-                                <TableCell>{shortcut.action}</TableCell>
-                                <TableCell>{shortcut.shortcut}</TableCell>
+                                <TableCell className='font-medium'>{shortcut.action}</TableCell>
+                                <TableCell>
+                                    <kbd>{shortcut.shortcut}</kbd>
+                                </TableCell>
                                 <TableCell>{shortcut.description}</TableCell>
                             </TableRow>
                         ))}
