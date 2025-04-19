@@ -150,32 +150,33 @@ const Dashboard = () => {
                 <CardContent>
                 {csvData.length > 0 ?
                     <div className='space-y-6'>
-                        <TranslationOptions
-                            headers={headers}
-                            selectedColumns={selectedColumns}
-                            targetLanguage={targetLanguage}
-                            onColumnToggle={handleColumnToggle}
-                            onLanguageChange={handleLanguageChange}
-                        />
-
-                        <div className='space-y-4'>
-                            <RowRangeSelector
-                                totalRows={csvData.length}
-                                selectedRange={rowRange}
-                                onRangeChange={handleRowRangeChange}
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
+                            <TranslationOptions
+                                headers={headers}
+                                selectedColumns={selectedColumns}
+                                targetLanguage={targetLanguage}
+                                onColumnToggle={handleColumnToggle}
+                                onLanguageChange={handleLanguageChange}
                             />
 
-                            <div className='flex justify-end'>
-                            <ShortcutsHelpDialog
-                                trigger={
-                                    <Button variant="outline" size="sm" className="gap-2">
-                                        <HelpCircle className="h-4 w-4" />
-                                        Keyboard Shortcuts
-                                    </Button>
-                                }
-                            />
+                            <div className='space-y-4'>
+                                <RowRangeSelector
+                                    totalRows={csvData.length}
+                                    selectedRange={rowRange}
+                                    onRangeChange={handleRowRangeChange}
+                                />
+
+                                <div className='flex justify-end'>
+                                    <ShortcutsHelpDialog
+                                        trigger={
+                                            <Button variant="outline" size="sm" className="gap-2">
+                                                <HelpCircle className="h-4 w-4" />
+                                                Keyboard Shortcuts
+                                            </Button>
+                                        }
+                                    />
+                                </div>
                             </div>
-
                         </div>
 
                         <TranslationButtons
