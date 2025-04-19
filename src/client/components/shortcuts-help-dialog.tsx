@@ -3,12 +3,16 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from './ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
 import shortcuts from '@/data/shortcuts'
+import { HelpCircle } from 'lucide-react'
 
 const ShortcutsHelpDialog = () => {
   return (
     <Dialog>
         <DialogTrigger asChild>
-            <Button>Keyboard shortcuts</Button>
+            <Button variant='outline' size='icon' className='h-9 w-9'>
+                <HelpCircle className='h-4 w-4'/>
+                <span className='sr-only'>Keyboard shortcuts</span>
+            </Button>
         </DialogTrigger>
 
         <DialogContent>
