@@ -25,6 +25,31 @@ const shortcuts: Shortcut[] = [
         shortcut: "Escape",
         description: "Press Escape to clear all row selections",
       },
+      {
+        action: "Translate selected content",
+        shortcut: "Space",
+        description: "Press Space to translate the selected columns and rows",
+      },
+      {
+        action: "Download CSV file",
+        shortcut: "Ctrl/Cmd + S",
+        description: "Press Ctrl+S (Windows) or Cmd+S (Mac) to download the current CSV file",
+      },
+      {
+        action: "Edit a cell",
+        shortcut: "Click on cell",
+        description: "Click on a translated cell in a selected column to edit its content",
+      },
+      {
+        action: "Save cell edit",
+        shortcut: "Enter",
+        description: "Press Enter to save your changes when editing a cell",
+      },
+      {
+        action: "Cancel cell edit",
+        shortcut: "Escape",
+        description: "Press Escape to cancel your changes when editing a cell",
+      },
 ]
 
 export default shortcuts;
