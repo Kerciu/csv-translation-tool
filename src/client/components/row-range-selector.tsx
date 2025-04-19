@@ -3,7 +3,7 @@ import { Card, CardContent } from './ui/card'
 import { Button } from './ui/button'
 import { Label } from './ui/label'
 import { Input } from './ui/input'
-import { Tooltip, TooltipProvider } from './ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider } from './ui/tooltip'
 import { TooltipTrigger } from '@radix-ui/react-tooltip'
 
 interface RowRangeSelectorProps {
@@ -66,6 +66,10 @@ const RowRangeSelector = ({ totalRows, selectedRange, onRangeChange }: RowRangeS
                                 <TooltipTrigger>
                                     <Button>Row Selection Help</Button>
                                 </TooltipTrigger>
+
+                                <TooltipContent>
+
+                                </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
                     </div>
