@@ -14,7 +14,7 @@ import UploadConfirmationDialog from '@/components/upload-confirmation-dialog';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { FileSpreadsheet, HelpCircle, Loader2, Upload } from 'lucide-react';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const Dashboard = () => {
 
@@ -39,6 +39,8 @@ const Dashboard = () => {
         if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
             return;
         }
+
+
     }
 
     const handleFileUpload = (uploadedData: string[][], uploadedHeaders: string[]) => {
@@ -122,6 +124,11 @@ const Dashboard = () => {
     const downloadCSV = () => {
         /* download */
     }
+
+    useEffect(() => {
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [selectedRows, selectedColumns, isTranslating, translatedData, csvData])
 
     if (isLoading || authLoading)
     {
