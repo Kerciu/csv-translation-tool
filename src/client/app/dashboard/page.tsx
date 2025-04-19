@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import UploadConfirmationDialog from '@/components/upload-confirmation-dialog';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { FileSpreadsheet, Loader2, Upload } from 'lucide-react';
+import { FileSpreadsheet, HelpCircle, Loader2, Upload } from 'lucide-react';
 import React, { useState } from 'react'
 
 const Dashboard = () => {
@@ -167,7 +167,12 @@ const Dashboard = () => {
 
                             <div className='flex justify-end'>
                             <ShortcutsHelpDialog
-
+                                trigger={
+                                    <Button variant="outline" size="sm" className="gap-2">
+                                        <HelpCircle className="h-4 w-4" />
+                                        Keyboard Shortcuts
+                                    </Button>
+                                }
                             />
                             </div>
 

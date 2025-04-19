@@ -5,14 +5,21 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import shortcuts from '@/data/shortcuts'
 import { HelpCircle } from 'lucide-react'
 
-const ShortcutsHelpDialog = () => {
+interface ShortcutsHelpDialogProps {
+    trigger: React.ReactNode
+}
+
+const ShortcutsHelpDialog = ({ trigger }: ShortcutsHelpDialogProps) => {
   return (
     <Dialog>
         <DialogTrigger asChild>
-            <Button variant='outline' size='icon' className='h-9 w-9'>
-                <HelpCircle className='h-4 w-4'/>
-                <span className='sr-only'>Keyboard shortcuts</span>
-            </Button>
+
+            {trigger || (
+                <Button variant='outline' size='icon' className='h-9 w-9'>
+                    <HelpCircle className='h-4 w-4'/>
+                    <span className='sr-only'>Keyboard shortcuts</span>
+                </Button>
+            )}
         </DialogTrigger>
 
         <DialogContent className='sm:max-w-[600px]'>
