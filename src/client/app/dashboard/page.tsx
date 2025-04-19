@@ -35,6 +35,12 @@ const Dashboard = () => {
     const [showUploadConfirmation, setShowUploadConfirmation] = useState(false);
     const { toast } = useToast();
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+            return;
+        }
+    }
+
     const handleFileUpload = (uploadedData: string[][], uploadedHeaders: string[]) => {
         setCsvData(uploadedData);
         setHeaders(uploadedHeaders);
