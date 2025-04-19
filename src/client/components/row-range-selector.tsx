@@ -3,6 +3,8 @@ import { Card, CardContent } from './ui/card'
 import { Button } from './ui/button'
 import { Label } from './ui/label'
 import { Input } from './ui/input'
+import { Tooltip, TooltipProvider } from './ui/tooltip'
+import { TooltipTrigger } from '@radix-ui/react-tooltip'
 
 interface RowRangeSelectorProps {
     totalRows: number
@@ -19,7 +21,7 @@ const RowRangeSelector = ({ totalRows, selectedRange, onRangeChange }: RowRangeS
         setStartRow(selectedRange[0]);
         setEndRow(selectedRange[1]);
     }, [selectedRange])
-    
+
     const handleStartRowChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = Number.parseInt(e.target.value);
         if (!isNaN(value) && value >= 1 && value <= totalRows)
@@ -29,8 +31,8 @@ const RowRangeSelector = ({ totalRows, selectedRange, onRangeChange }: RowRangeS
             {
                 setEndRow(value);
                 onRangeChange([value, value]);
-            } 
-            else 
+            }
+            else
             {
                 onRangeChange([value, endRow]);
             }
@@ -59,6 +61,13 @@ const RowRangeSelector = ({ totalRows, selectedRange, onRangeChange }: RowRangeS
 
                     <div className='flex items-center justify-between'>
                         <h3 className='text-lg font-medium'>Row Selection</h3>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Button>Row Selection Help</Button>
+                                </TooltipTrigger>
+                            </Tooltip>
+                        </TooltipProvider>
                     </div>
 
                     <div className='grid grid-cols-2 gap-4'>
