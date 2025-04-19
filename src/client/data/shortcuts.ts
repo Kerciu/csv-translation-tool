@@ -11,3 +11,5 @@ const shortcuts: Shortcut[] = [
         description: "Click on a row number, then Shift+Click on another row to select all rows in between."
     }
 ]
+
+export default shortcuts;
