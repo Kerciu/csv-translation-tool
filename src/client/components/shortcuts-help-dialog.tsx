@@ -15,7 +15,7 @@ const ShortcutsHelpDialog = () => {
             </Button>
         </DialogTrigger>
 
-        <DialogContent>
+        <DialogContent className='sm:max-w-[600px]'>
             <DialogHeader>
                 <DialogTitle>
                     Keyboard Shortcuts
@@ -29,8 +29,8 @@ const ShortcutsHelpDialog = () => {
             <div className='max-h-[60vh] overflow-auto pr-2'>
                 <Table>
                     <TableHeader>
-                        <TableHead>Action</TableHead>
-                        <TableHead>Shortcut</TableHead>
+                        <TableHead className='w-[200px]'>Action</TableHead>
+                        <TableHead className='w-[150px]'>Shortcut</TableHead>
                         <TableHead>Description</TableHead>
                     </TableHeader>
 
