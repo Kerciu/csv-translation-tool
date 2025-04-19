@@ -1,7 +1,8 @@
 import React from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
 import { Button } from './ui/button'
-import { Table, TableHead, TableHeader } from './ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
+import shortcuts from '@/data/shortcuts'
 
 const ShortcutsHelpDialog = () => {
   return (
@@ -28,6 +29,16 @@ const ShortcutsHelpDialog = () => {
                         <TableHead>Shortcut</TableHead>
                         <TableHead>Description</TableHead>
                     </TableHeader>
+
+                    <TableBody>
+                        {shortcuts.map((shortcut) => (
+                            <TableRow key={shortcut.action}>
+                                <TableCell>{shortcut.action}</TableCell>
+                                <TableCell>{shortcut.shortcut}</TableCell>
+                                <TableCell>{shortcut.description}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
                 </Table>
             </div>
         </DialogContent>
