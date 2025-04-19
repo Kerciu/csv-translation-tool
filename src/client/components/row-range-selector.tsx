@@ -5,6 +5,7 @@ import { Label } from './ui/label'
 import { Input } from './ui/input'
 import { Tooltip, TooltipContent, TooltipProvider } from './ui/tooltip'
 import { TooltipTrigger } from '@radix-ui/react-tooltip'
+import { HelpCircle } from 'lucide-react'
 
 interface RowRangeSelectorProps {
     totalRows: number
@@ -64,10 +65,13 @@ const RowRangeSelector = ({ totalRows, selectedRange, onRangeChange }: RowRangeS
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger>
-                                    <Button>Row Selection Help</Button>
+                                    <Button variant='ghost' size='icon' className='h-8 w-8'>
+                                        <HelpCircle className='h-4 w-4'/>
+                                        <span className='sr-only'>Row Selection Help</span>
+                                    </Button>
                                 </TooltipTrigger>
 
-                                <TooltipContent>
+                                <TooltipContent className='max-w-sm' side='left' align='center'>
                                 <p className="text-sm">
                                     You can also select rows in the table by:
                                     <br />• Clicking a row number to select a single row
