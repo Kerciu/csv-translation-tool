@@ -10,6 +10,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { Skeleton } from './ui/skeleton';
 import LoginDialog from './login-dialog';
+import { ModeToggle } from './mode-toggle';
 
 const Navbar = () => {
 
@@ -22,7 +23,7 @@ const Navbar = () => {
         provider: "GitHub"
     });
     const [isLoading , setLoading] = useState(false);
-    const logout = () => {} 
+    const logout = () => {}
     /* This will be replaced by this thing below TODO*/
 
     // const { user, logout, isLoading } = useAuth();
@@ -40,6 +41,8 @@ const Navbar = () => {
             </Link>
 
         <div className="flex items-center gap-4">
+          <ModeToggle />
+
           {isLoading ? (
             <Skeleton className="h-10 w-10 rounded-full" />
           ) : user ? (
