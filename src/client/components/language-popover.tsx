@@ -2,11 +2,12 @@ import React from 'react'
 import { Label } from './ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { Button } from './ui/button'
-import { Check, ChevronsUpDown } from 'lucide-react'
+import { Check, ChevronsUpDown, Globe } from 'lucide-react'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command'
 import languages from '@/data/languages'
 import { cn } from '@/lib/utils'
 import { LanguageType } from '@/lib/types'
+import { getLanguageInfo } from '@/utils/getLanguageInfo'
 
 interface LanguagePopoverProps {
     operationType: "Target Language" | "Source Language"
@@ -26,8 +27,6 @@ const LanguagePopover = ({
 
     const languageType = operationType.split(' ')[0].toLowerCase() as LanguageType
     const htmlId = `language-select-${languageType}`
-    const selectedLanguage = languages.find(lang => lang.value === operationLanguage)
-    const buttonText = selectedLanguage?.label || "Select language..."
 
     return (
         <div className="space-y-2">
@@ -42,7 +41,17 @@ const LanguagePopover = ({
                 aria-expanded={open}
                 className="w-full justify-between"
             >
-                {buttonText}
+                {operationLanguage ? (
+                    <div className="flex items-center gap-2">
+                      <span>{getLanguageInfo(operationLanguage).flag}</span>
+                      <span>{getLanguageInfo(operationLanguage).label}</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Globe className="h-4 w-4" />
+                      <span>Select target language...</span>
+                    </div>
+                )}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
             </PopoverTrigger>
