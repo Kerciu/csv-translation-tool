@@ -22,7 +22,7 @@ const Navbar = () => {
         provider: "GitHub"
     });
     const [isLoading , setLoading] = useState(false);
-    const logout = () => {} 
+    const logout = () => {}
     /* This will be replaced by this thing below TODO*/
 
     // const { user, logout, isLoading } = useAuth();
