@@ -5,17 +5,13 @@ import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 
 export function ModeToggle() {
 
     const { theme, setTheme } = useTheme();
+
+    const ANIMATION_DELAY = 300;
     const [isAnimating, setAnimating] = React.useState(false);
 
     const themes = ["light", "dark"] as const;
@@ -24,9 +20,16 @@ export function ModeToggle() {
         dark: Moon
     } as const;
 
-    const Icon = themeIcons[theme as keyof typeof themeIcons] || Sun;
+    const Icon = themeIcons[theme as keyof typeof themeIcons] || Moon;
 
-    const handleClick = () => {}
+    const handleClick = () => {
+        setAnimating(true);
+        const currentIdx = themes.indexOf(theme as typeof themes[number]);
+        const nextIdx = (currentIdx + 1) % themes.length;
+
+        setTheme(themes[nextIdx]);
+        setTimeout(() => setAnimating(false), ANIMATION_DELAY);
+    }
 
     return (
         <Button
