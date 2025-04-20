@@ -1,19 +1,21 @@
 type Language = {
     value: string
     label: string
+    flag: string
 }
 
 const languages: Language[] = [
-    { value: "es", label: "Spanish" },
-    { value: "fr", label: "French" },
-    { value: "de", label: "German" },
-    { value: "it", label: "Italian" },
-    { value: "pt", label: "Portuguese" },
-    { value: "ru", label: "Russian" },
-    { value: "zh", label: "Chinese" },
-    { value: "ja", label: "Japanese" },
-    { value: "ko", label: "Korean" },
-    { value: "ar", label: "Arabic" },
+    { value: "en", label: "English", flag: "🇬🇧" },
+    { value: "es", label: "Spanish", flag: "🇪🇸" },
+    { value: "fr", label: "French", flag: "🇫🇷" },
+    { value: "de", label: "German", flag: "🇩🇪" },
+    { value: "it", label: "Italian", flag: "🇮🇹" },
+    { value: "pt", label: "Portuguese", flag: "🇵🇹" },
+    { value: "ru", label: "Russian", flag: "🇷🇺" },
+    { value: "zh", label: "Chinese", flag: "🇨🇳" },
+    { value: "ja", label: "Japanese", flag: "🇯🇵" },
+    { value: "ko", label: "Korean", flag: "🇰🇷" },
+    { value: "ar", label: "Arabic", flag: "🇸🇦" },
 ]
 
 export default languages;
