@@ -77,6 +77,7 @@ const LanguagePopover = ({
                             operationLanguage === lang.value ? "opacity-100" : "opacity-0"
                         )}
                         />
+                        <span className="mr-1">{lang.flag}</span>
                         {lang.label}
                     </CommandItem>
                     ))}
