@@ -1,12 +1,6 @@
 import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
-import { Popover, PopoverContent } from './ui/popover'
-import { PopoverTrigger } from '@radix-ui/react-popover'
-import { Button } from './ui/button'
-import { Check, ChevronsUpDown } from 'lucide-react'
-import { CommandInput, Command, CommandList, CommandEmpty, CommandGroup, CommandItem } from './ui/command'
-import { cn } from '@/lib/utils'
-import languages from '@/data/languages'
+import LanguagePopover from './language-popover'
 
 interface LanguageTranslationOptionProps {
     selectedColumnsCount: number
@@ -18,62 +12,32 @@ const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLan
 
   const [open, setOpen] = useState(false);
 
+  const operationType: string = "abc";
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className='text-lg'>Target Language</CardTitle>
+        <CardTitle className='text-lg'>Translation Languages</CardTitle>
       </CardHeader>
 
       <CardContent>
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button variant='outline' role='combobox' className='w-full justify-between'>
-              {targetLanguage ? languages.find((lang) => (lang.value === targetLanguage))?.label
-                : "Select language..."
-              }
-              <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50'/>
-            </Button>
-          </PopoverTrigger>
+        <div className='space-y-4'>
+          <LanguagePopover
+            operationType='Target Language'
+            operationLanguage={targetLanguage}
+            open={open}
+            setOpen={setOpen}
+            onLanguageChange={onLanguageChange}
+          />
 
-          <PopoverContent className='w-full p-0'>
-              <Command>
-                <CommandInput placeholder='Search a language...'/>
-
-                <CommandList>
-                  <CommandEmpty>No language found.</CommandEmpty>
-
-                  <CommandGroup>
-                    {languages.map((lang, idx) => (
-                      <CommandItem
-                        key={lang.value}
-                        value={lang.value}
-                        onSelect={(currValue) => {
-                          onLanguageChange(currValue)
-                          setOpen(false)
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            targetLanguage === lang.value ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        {lang.label}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-
-                </CommandList>
-
-              </Command>
-          </PopoverContent>
-        </Popover>
-
-        <p className='mt-4 text-sm text-muted-foreground'>
-          Selected {selectedColumnsCount} {selectedColumnsCount === 1 ? "Column" : "Columns"} to translate to{" "}
-          {languages.find(lang => lang.value === targetLanguage)?.label || targetLanguage}
-
-        </p>
+          <LanguagePopover
+            operationType='Target Language'
+            operationLanguage={targetLanguage}
+            open={open}
+            setOpen={setOpen}
+            onLanguageChange={onLanguageChange}
+          />
+        </div>
       </CardContent>
     </Card>
   )

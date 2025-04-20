@@ -22,13 +22,16 @@ const LanguagePopover = ({
     setOpen,
     onLanguageChange
     }: LanguagePopoverProps) => {
+
+  const htmlId: string = operationType.replace(" ", "-").toLowerCase();
+
   return (
     <div>
-          <Label htmlFor={operationType.replace(" ", "-").toLowerCase()}>{operationType}</Label>
+          <Label htmlFor={htmlId}>{operationType}</Label>
 
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-              <Button variant='outline' role='combobox' className='w-full justify-between'>
+              <Button id={htmlId} variant='outline' role='combobox' className='w-full justify-between'>
                 {operationLanguage ? languages.find((lang) => (lang.value === operationLanguage))?.label
                   : "Select language..."
                 }
