@@ -6,13 +6,14 @@ import { Check, ChevronsUpDown } from 'lucide-react'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command'
 import languages from '@/data/languages'
 import { cn } from '@/lib/utils'
+import { LanguageType } from '@/lib/types'
 
 interface LanguagePopoverProps {
     operationType: "Target Language" | "Source Language"
     operationLanguage: string
     open: boolean
     setOpen: (open: boolean) => void
-    onLanguageChange: (language: string) => void
+    onLanguageChange: (type: LanguageType, language: string) => void
 }
 
 const LanguagePopover = ({
@@ -23,57 +24,60 @@ const LanguagePopover = ({
     onLanguageChange
     }: LanguagePopoverProps) => {
 
-  const htmlId: string = operationType.replace(" ", "-").toLowerCase();
+    const languageType = operationType.split(' ')[0].toLowerCase() as LanguageType
+    const htmlId = `language-select-${languageType}`
+    const selectedLanguage = languages.find(lang => lang.value === operationLanguage)
+    const buttonText = selectedLanguage?.label || "Select language..."
 
-  return (
-    <div>
-          <Label htmlFor={htmlId}>{operationType}</Label>
+    return (
+        <div className="space-y-2">
+        <Label htmlFor={htmlId}>{operationType}</Label>
 
-          <Popover open={open} onOpenChange={setOpen}>
+        <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-              <Button id={htmlId} variant='outline' role='combobox' className='w-full justify-between'>
-                {operationLanguage ? languages.find((lang) => (lang.value === operationLanguage))?.label
-                  : "Select language..."
-                }
-                <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50'/>
-              </Button>
+            <Button
+                id={htmlId}
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-full justify-between"
+            >
+                {buttonText}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
             </PopoverTrigger>
 
-            <PopoverContent className='w-full p-0'>
-                <Command>
-                  <CommandInput placeholder='Search a language...'/>
-
-                  <CommandList>
-                    <CommandEmpty>No language found.</CommandEmpty>
-
-                    <CommandGroup>
-                      {languages.map((lang, idx) => (
-                        <CommandItem
-                          key={lang.value}
-                          value={lang.value}
-                          onSelect={(currValue) => {
-                            onLanguageChange(currValue)
-                            setOpen(false)
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              operationLanguage === lang.value ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                          {lang.label}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-
-                  </CommandList>
-
-                </Command>
+            <PopoverContent className="w-full p-0" align="start">
+            <Command>
+                <CommandInput placeholder="Search a language..." />
+                <CommandList>
+                <CommandEmpty>No language found.</CommandEmpty>
+                <CommandGroup>
+                    {languages.map((lang) => (
+                    <CommandItem
+                        key={lang.value}
+                        value={lang.value}
+                        onSelect={(currentValue) => {
+                        onLanguageChange(languageType, currentValue)
+                        setOpen(false)
+                        }}
+                    >
+                        <Check
+                        className={cn(
+                            "mr-2 h-4 w-4",
+                            operationLanguage === lang.value ? "opacity-100" : "opacity-0"
+                        )}
+                        />
+                        {lang.label}
+                    </CommandItem>
+                    ))}
+                </CommandGroup>
+                </CommandList>
+            </Command>
             </PopoverContent>
-          </Popover>
+        </Popover>
         </div>
-  )
-}
+    )
+    }
 
 export default LanguagePopover

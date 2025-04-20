@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import UploadConfirmationDialog from '@/components/upload-confirmation-dialog';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
+import { LanguageType } from '@/lib/types';
 import { FileSpreadsheet, HelpCircle, Loader2, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 
@@ -24,6 +25,7 @@ const Dashboard = () => {
     const [selectedRows, setSelectedRows] = useState<number[]>([]);
     const [rowRange, setRowRange] = useState<[number, number]>([1, 1]);
     const [targetLanguage, setTargetLanguage] = useState("de");
+    const [sourceLanguage, setSourceLanguage] = useState("en");
 
     const [isTranslating, setTranslating] = useState(false);
     const [isTranslated, setTranslated] = useState(false);
@@ -81,8 +83,8 @@ const Dashboard = () => {
         ))
     }
 
-    const handleLanguageChange = (language: string) => {
-        setTargetLanguage(language);
+    const handleLanguageChange = (type: LanguageType, language: string) => {
+        type === "source" ? setSourceLanguage(language) : setTargetLanguage(language);
     }
 
     const handleCellEdit = (rowIndex: number, colIndex: number, value: string) => {
@@ -185,6 +187,7 @@ const Dashboard = () => {
                             <TranslationOptions
                                 headers={headers}
                                 selectedColumns={selectedColumns}
+                                sourceLanguage={sourceLanguage}
                                 targetLanguage={targetLanguage}
                                 onColumnToggle={handleColumnToggle}
                                 onLanguageChange={handleLanguageChange}

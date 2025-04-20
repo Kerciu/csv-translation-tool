@@ -1,18 +1,18 @@
 import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import LanguagePopover from './language-popover'
+import { LanguageType } from '@/lib/types'
 
 interface LanguageTranslationOptionProps {
-    selectedColumnsCount: number
+    sourceLanguage: string
     targetLanguage: string
-    onLanguageChange: (language: string) => void
+    onLanguageChange: (type: LanguageType, language: string) => void
 }
 
-const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLanguageChange }: LanguageTranslationOptionProps) => {
+const LanguageTranslationOption = ({ sourceLanguage, targetLanguage, onLanguageChange }: LanguageTranslationOptionProps) => {
 
-  const [open, setOpen] = useState(false);
-
-  const operationType: string = "abc";
+  const [targetOpen, setTargetOpen] = useState(false);
+  const [sourceOpen, setSourceOpen] = useState(false);
 
   return (
     <Card>
@@ -25,16 +25,16 @@ const LanguageTranslationOption = ({ selectedColumnsCount, targetLanguage, onLan
           <LanguagePopover
             operationType='Target Language'
             operationLanguage={targetLanguage}
-            open={open}
-            setOpen={setOpen}
+            open={targetOpen}
+            setOpen={setTargetOpen}
             onLanguageChange={onLanguageChange}
           />
 
           <LanguagePopover
-            operationType='Target Language'
-            operationLanguage={targetLanguage}
-            open={open}
-            setOpen={setOpen}
+            operationType='Source Language'
+            operationLanguage={sourceLanguage}
+            open={sourceOpen}
+            setOpen={setSourceOpen}
             onLanguageChange={onLanguageChange}
           />
         </div>
