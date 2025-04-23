@@ -7,7 +7,7 @@ const HeroSection = () => {
         <div className='container px-4 mx-auto'>
             <div className='flex flex-col lg:flex-row items-center gap-12'>
                 <div className='lg:w-1/2 space-y-5'>
-                    <Badge variant='outline'>
+                    <Badge variant='outline' className='px-3 py-1 text-sm bg-primary/5 border-primary/2'>
                         AI-Powered Translator
                     </Badge>
                     <h1 className='text-4x1 md:text-5x1 font-bold tracking-tight'>
