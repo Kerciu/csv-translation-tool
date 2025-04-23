@@ -1,19 +1,11 @@
 import React from 'react'
-import CSVPreviewVisualisation from './csv-preview-visualisation'
-import CSVPreviewSteps from './csv-preview'
 
-const CSVPreview = () => {
+const CSVPreviewSteps = () => {
   return (
-    <div className='relative bg-card rounded-xl shadow-md border p-6'>
-        <div>
-            CSV Translator
-        </div>
-
-        <CSVPreviewVisualisation />
-
-        <CSVPreviewSteps />
+    <div>
+        Steps
     </div>
   )
 }
 
-export default CSVPreview
+export default CSVPreviewSteps
