@@ -1,5 +1,7 @@
 import React from 'react'
 import { Badge } from '../ui/badge'
+import { Button } from '../ui/button'
+import { ArrowRight } from 'lucide-react'
 
 const HeroSection = () => {
   return (
@@ -16,6 +18,12 @@ const HeroSection = () => {
                     <p className='text-lg text-muted-foreground'>
                         Translate your CSV files with ease. Choose columns & rows, select languages and edit translations manually.
                     </p>
+
+                    <div>
+                        <Button size='lg' className='gap-2'>
+                            Get Started <ArrowRight className='w-4 h-4'/>
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>
