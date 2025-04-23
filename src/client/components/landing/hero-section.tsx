@@ -19,7 +19,7 @@ const HeroSection = () => {
                         Translate your CSV files with ease. Choose columns & rows, select languages and edit translations manually.
                     </p>
 
-                    <div>
+                    <div className='flex flex-col sm:flex-row gap-3 pt-2'>
                         <Button size='lg' className='gap-2'>
                             Get Started <ArrowRight className='w-4 h-4'/>
                         </Button>
