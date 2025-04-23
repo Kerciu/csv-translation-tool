@@ -4,7 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [lib]
-name = "csv_translator"
+name = "translate"
+path = "src/translate/lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
@@ -14,8 +15,7 @@ candle-transformers = { git = "https://github.com/huggingface/candle.git", versi
 hf-hub = "0.4.2"
 tokenizers = "0.21.1"
 pyo3 = { version = "0.21", features = ["extension-module"] }
-csv = "1"
 serde = { version = "1", features = ["derive"] }
-
-[build-dependencies]
-maturin = "1"
+maturin = "0.15"
+pep508_rs = "0.2.3"
+rustls = "0.23.26"
