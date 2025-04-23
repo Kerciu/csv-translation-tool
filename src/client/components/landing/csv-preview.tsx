@@ -1,9 +1,11 @@
 import React from 'react'
 
-const CSVPreview = () => {
+const CSVPreviewSteps = () => {
   return (
-    <div>CSVPreview</div>
+    <div>
+        Steps
+    </div>
   )
 }
 
-export default CSVPreview
+export default CSVPreviewSteps
