@@ -6,7 +6,7 @@ const HeroSection = () => {
     <section className='relative py-16 md:py-24 overflow-hidden bg-gradient-to-b from-background-via-background to-muted/30'>
         <div className='container px-4 mx-auto'>
             <div className='flex flex-col lg:flex-row items-center gap-12'>
-                <div>
+                <div className='lg:w-1/2 space-y-5'>
                     <Badge variant='outline'>
                         AI-Powered Translator
                     </Badge>
