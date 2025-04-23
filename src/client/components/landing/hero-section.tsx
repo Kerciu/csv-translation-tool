@@ -5,7 +5,7 @@ const HeroSection = () => {
   return (
     <section className='relative py-16 md:py-24 overflow-hidden bg-gradient-to-b from-background-via-background to-muted/30'>
         <div className='container px-4 mx-auto'>
-            <div>
+            <div className='flex flex-col lg:flex-row items-center gap-12'>
                 <div>
                     <Badge variant='outline'>
                         AI-Powered Translator
