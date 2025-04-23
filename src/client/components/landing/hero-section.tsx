@@ -10,10 +10,10 @@ const HeroSection = () => {
                     <Badge variant='outline' className='px-3 py-1 text-sm bg-primary/5 border-primary/2'>
                         AI-Powered Translator
                     </Badge>
-                    <h1 className='text-4x1 md:text-5x1 font-bold tracking-tight'>
+                    <h1 className='text-4xl md:text-5xl font-bold tracking-tight'>
                         CSV Translations <span className='text-primary'>Made Simple</span>
                     </h1>
-                    <p>
+                    <p className='text-lg text-muted-foreground'>
                         Translate your CSV files with ease. Choose columns & rows, select languages and edit translations manually.
                     </p>
                 </div>
