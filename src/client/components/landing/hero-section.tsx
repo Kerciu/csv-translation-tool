@@ -3,8 +3,8 @@ import { Badge } from '../ui/badge'
 
 const HeroSection = () => {
   return (
-    <section>
-        <div>
+    <section className='relative py-16 md:py-24 overflow-hidden bg-gradient-to-b from-background-via-background to-muted/30'>
+        <div className='container px-4 mx-auto'>
             <div>
                 <div>
                     <Badge variant='outline'>
