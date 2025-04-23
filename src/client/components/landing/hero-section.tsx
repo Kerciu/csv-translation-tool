@@ -2,6 +2,7 @@ import React from 'react'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { ArrowRight } from 'lucide-react'
+import CSVPreview from './csv-preview'
 
 const HeroSection = () => {
   return (
@@ -24,6 +25,10 @@ const HeroSection = () => {
                             Get Started <ArrowRight className='w-4 h-4'/>
                         </Button>
                     </div>
+                </div>
+
+                <div className='lg:w=1/2'>
+                    <CSVPreview />
                 </div>
             </div>
         </div>
