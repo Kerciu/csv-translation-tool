@@ -19,20 +19,23 @@ const faqs: FAQItem[] = [
             </p>
             
             <ul className="grid gap-3">
-              {technologies.map((tech) => (
-                <li 
-                  key={tech.category}
-                  className="flex items-start gap-3 p-3 bg-muted/10 rounded-lg border"
-                >
-                  <div className="bg-primary/10 p-2 rounded-md shrink-0">
-                    {/* Optional: icon */}
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-primary">{tech.category}</h4>
-                    <p className="text-sm">{tech.used}</p>
-                  </div>
-                </li>
-              ))}
+              {technologies.map((tech) => {
+                  const Icon = tech.icon;
+                  return (
+                    <li 
+                      key={tech.category}
+                      className="flex items-start gap-3 p-3 bg-muted/10 rounded-lg border hover:bg-muted/20 transition-colors"
+                    >
+                      <div className="bg-primary/10 p-2 rounded-md shrink-0">
+                        <Icon className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-primary">{tech.category}</h4>
+                        <p className="text-sm">{tech.used}</p>
+                      </div>
+                    </li>
+                  );
+              })}
             </ul>
           </div>
         ),
