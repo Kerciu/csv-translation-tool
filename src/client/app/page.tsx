@@ -1,4 +1,5 @@
 import Footer from "@/components/footer";
+import LandingPage from "@/components/landing/landing-page";
 import Navbar from "@/components/navbar";
 
 export default function Home() {
@@ -7,7 +8,7 @@ export default function Home() {
       <Navbar />
 
       <main className="flex-1">
-        content
+        <LandingPage />
       </main>
 
       <Footer/>
