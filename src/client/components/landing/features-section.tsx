@@ -3,8 +3,8 @@ import React from 'react'
 
 const FeaturesSection = () => {
   return (
-    <section>
-      <div>
+    <section className='w-full py-12 md:py-24 lg:py-32 bg-background'>
+      <div className='container px-4 md:px-6'>
         <div>
           <div>
             <div>
@@ -21,7 +21,7 @@ const FeaturesSection = () => {
 
         <div>
           {features.map((feat, idx) => (
-            <div>
+            <div key={idx}>
               <div>
                 <feat.icon />
               </div>
