@@ -1,6 +1,6 @@
 import { FileSpreadsheet, Languages, Edit3, Download, Save, Shield, LucideIcon } from "lucide-react"
 
-type Feature = {
+export type Feature = {
     icon: LucideIcon,
     title: string,
     description: string
