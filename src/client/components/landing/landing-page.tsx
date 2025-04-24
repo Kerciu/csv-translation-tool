@@ -7,8 +7,8 @@ const LandingPage = () => {
   return (
     <div className='relative'>
         <HeroSection />
-        {/* <FeaturesSection />
-        <FAQSection /> */}
+        <FeaturesSection />
+        <FAQSection />
     </div>
   )
 }
