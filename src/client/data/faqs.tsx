@@ -13,16 +13,28 @@ const faqs: FAQItem[] = [
         id: "technologies",
         question: "What technologies are used in this project?",
         answer: (
-          <>
-            <p className="mb-2">Our CSV Translator uses a modern tech stack:</p>
-            <ul className="list-disc pl-5 space-y-1">
-              {technologies.map((tech, index) => (
-                <li key={index}>
-                  <span className="font-medium">{tech.category}:</span> {tech.name}
+          <div className="space-y-3">
+            <p className="text-muted-foreground mb-2">
+              Our CSV Translator uses this modern stack:
+            </p>
+            
+            <ul className="grid gap-3">
+              {technologies.map((tech) => (
+                <li 
+                  key={tech.category}
+                  className="flex items-start gap-3 p-3 bg-muted/10 rounded-lg border"
+                >
+                  <div className="bg-primary/10 p-2 rounded-md shrink-0">
+                    {/* Optional: icon */}
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-primary">{tech.category}</h4>
+                    <p className="text-sm">{tech.used}</p>
+                  </div>
                 </li>
               ))}
             </ul>
-          </>
+          </div>
         ),
     },
     {
