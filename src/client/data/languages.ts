@@ -1,4 +1,4 @@
-type Language = {
+export type Language = {
     value: string
     label: string
     flag: string

@@ -1,4 +1,4 @@
-type Shortcut = {
+export type Shortcut = {
     action: string;
     shortcut: string;
     description: string;
