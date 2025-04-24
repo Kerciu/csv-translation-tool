@@ -1,5 +1,6 @@
 import React from 'react';
 import technologies from "./technologies";
+import languages from './languages';
 
 export type FAQItem = {
     id: string;
@@ -45,6 +46,23 @@ const faqs: FAQItem[] = [
           accuracy. For specialized terminology or uncommon languages, we recommend using the manual editing
           feature to refine translations.
         </p>
+      ),
+    },
+    {
+      id: "languages",
+      question: "What languages are supported?",
+      answer: (
+        <>
+          <p className="mb-2">We currently support {languages.length} languages including:</p>
+          <div className="grid grid-cols-2 gap-2">
+            {languages.map((lang) => (
+              <div key={lang.value}>
+              {lang.flag && <span className="mr-2">{lang.flag}</span>}
+              • {lang.label}
+            </div>
+            ))}
+          </div>
+        </>
       ),
     },
 ];
