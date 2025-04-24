@@ -4,7 +4,7 @@ export type Technology = {
 };
 
 const technologies: Technology[] = [
-    { category: "Frontend", name: "TypeScript with React and Next.js" },
+    { category: "Frontend", name: "TypeScript with React, Next.js & Tailwind CSS" },
     { category: "Backend", name: "Django (Python) REST API" },
     { category: "Database", name: "MongoDB" },
     { category: "ML Translation", name: "HuggingFace's MarianMT models in Rust" },
