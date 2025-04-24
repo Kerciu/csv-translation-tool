@@ -35,6 +35,18 @@ const faqs: FAQItem[] = [
         </p>
       ),
     },
+    {
+      id: "accuracy",
+      question: "How accurate are the translations?",
+      answer: (
+        <p>
+          Our translation system uses MarianMT models, which provide high-quality translations for most common
+          languages. The accuracy varies by language pair, with European languages typically achieving 85-95%
+          accuracy. For specialized terminology or uncommon languages, we recommend using the manual editing
+          feature to refine translations.
+        </p>
+      ),
+    },
 ];
 
 export default faqs;
