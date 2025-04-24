@@ -65,6 +65,16 @@ const faqs: FAQItem[] = [
         </>
       ),
     },
+    {
+      id: "pricing",
+      question: "Is this service free to use?",
+      answer: (
+        <p>
+          Yes! This is currently a free academic project. We may introduce premium features in the future,
+          but the core translation functionality will always remain free to use.
+        </p>
+      ),
+    },
 ];
 
 export default faqs;
