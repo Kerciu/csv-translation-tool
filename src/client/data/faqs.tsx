@@ -24,6 +24,17 @@ const faqs: FAQItem[] = [
           </>
         ),
     },
+    {
+      id: "creators",
+      question: "Who created this project?",
+      answer: (
+        <p>
+          This project was created by Kacper Górski and Szymon Kamiński, students at the Warsaw University of
+          Technology (WUT). It was developed as part of our coursework in the Computer Science program,
+          combining our interests in machine learning, full-stack development, and data processing.
+        </p>
+      ),
+    },
 ];
 
 export default faqs;
