@@ -1,5 +1,5 @@
 import React from 'react'
-import { Accordion, AccordionItem, AccordionTrigger } from '../ui/accordion'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
 import faqs from '@/data/faqs'
 
 const FAQSection = () => {
@@ -16,7 +16,7 @@ const FAQSection = () => {
             {faqs.map((faq) => (
               <AccordionItem key={faq.id} value={faq.id}>
                 <AccordionTrigger>{faq.question}</AccordionTrigger>
-                <AccordionTrigger>{faq.question}</AccordionTrigger>
+                <AccordionContent>{faq.answer}</AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
