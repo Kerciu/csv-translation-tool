@@ -18,32 +18,32 @@ import {
   const technologies: Technology[] = [
     { 
       category: "Frontend", 
-      used: "TypeScript (React + Next.js) & Tailwind CSS", 
+      used: "TypeScript (React + Next.js) & Tailwind CSS - Modern reactive UI", 
       icon: Code2 
     },
     { 
       category: "Backend", 
-      used: "Django REST (Python)", 
+      used: "Django - Robust API endpoints with Django's ORM and authentication", 
       icon: Cpu 
     },
     { 
       category: "Database", 
-      used: "MongoDB", 
+      used: "MongoDB - NoSQL database for flexible document storage and queries", 
       icon: Database 
     },
     { 
-      category: "ML Translation", 
-      used: "HuggingFace's MarianMT models in Rust & PyO3", 
+      category: "ML Translation & Language Bindings", 
+      used: "HuggingFace's MarianMT models in Rust & PyO3 - High-performance machine translation", 
       icon: BrainCircuit 
     },
     { 
       category: "Infrastructure", 
-      used: "Docker & Redis", 
+      used: "Docker & Redis - Containerized deployment with in-memory caching layer", 
       icon: Container 
     },
     { 
       category: "Security", 
-      used: "JWT & OAuth2", 
+      used: "JWT & OAuth2 - Token-based authentication and third-party login flows", 
       icon: Lock 
     },
 ];
