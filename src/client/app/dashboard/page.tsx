@@ -14,6 +14,7 @@ import UploadConfirmationDialog from '@/components/upload-confirmation-dialog';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { LanguageType } from '@/lib/types';
+import { getLanguageName } from '@/utils/getLanguageName';
 import { FileSpreadsheet, HelpCircle, Loader2, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 
@@ -138,11 +139,128 @@ const Dashboard = () => {
     }
 
     const translateCSV = async () => {
-        /* translate */
+        if (selectedColumns.length === 0) {
+            toast({
+              title: "No columns selected",
+              description: "Please select at least one column to translate",
+              variant: "destructive",
+            })
+            return
+        }
+    
+        if (selectedRows.length === 0) {
+            toast({
+                title: "No rows selected",
+                description: "Please select at least one row to translate",
+                variant: "destructive",
+            })
+            return
+        }
+    
+        if (sourceLanguage === targetLanguage) {
+            toast({
+                title: "Same languages selected",
+                description: "Source and target languages must be different",
+                variant: "destructive",
+            })
+            return
+        }
+        
+        setTranslating(true);
+    
+        try {
+            const baseData = translatedData.length > 0 ? translatedData : csvData;
+            const newData = baseData.map(row => [...row]);
+
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            selectedRows.forEach(rowIndex => {
+            selectedColumns.forEach(column => {
+                const colIndex = headers.indexOf(column);
+                if (colIndex >= 0 && rowIndex < newData.length) {
+                const currentValue = newData[rowIndex][colIndex];
+                const newTranslation = currentValue.includes("[TRANSLATED TO") 
+                    ? currentValue
+                    : `${csvData[rowIndex][colIndex]} (${sourceLanguage} → ${targetLanguage}?)`;
+                    
+                newData[rowIndex][colIndex] = newTranslation;
+                }
+            });
+            });
+
+            setTranslatedData(newData);
+            setTranslated(true);
+            
+            toast({
+                title: "Translation completed",
+                description: `Translated ${selectedColumns.length} columns in ${selectedRows.length} rows ` +
+                           `from ${getLanguageName(sourceLanguage)} to ${getLanguageName(targetLanguage)}`,
+            });
+        } catch (error) {
+            console.error("Translation error:", error);
+            toast({
+                title: "Translation failed",
+                description: error instanceof Error ? error.message : "There was an error during translation",
+                variant: "destructive",
+            });
+        } finally {
+            setTranslating(false);
+        }
     }
 
     const downloadCSV = () => {
         /* download */
+        if (!translatedData.length && !csvData.length) {
+            toast({
+              title: "No data to download",
+              description: "There is no data available to download",
+              variant: "destructive",
+            })
+            return
+          }
+      
+        // BACKEND: Generate downloadable CSV file
+        // API Call: POST /api/csv/export
+        // Request body: { data: translatedData.length ? translatedData : csvData, headers }
+        // Response: Blob or download URL
+    
+        const dataToDownload = translatedData.length ? translatedData : csvData
+        const csvContent = [headers.join(","), ...dataToDownload.map((row) => row.join(","))].join("\n")
+    
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement("a")
+        link.setAttribute("href", url)
+        link.setAttribute("download", "translated_data.csv")
+        document.body.appendChild(link)
+        link.click()
+    
+        setTimeout(() => {
+            URL.revokeObjectURL(url)
+            document.body.removeChild(link)
+        }, 100)
+    
+        toast({
+            title: "File downloaded",
+            description: "Your CSV file has been downloaded successfully",
+        })
+    }
+
+    const handleCellRevert = (rowIndex: number, colIndex: number) => {
+        if (csvData.length > 0) {
+            // BACKEND: Revert a cell to its original value
+            // API Call: PUT /api/translations/revert-cell
+            // Request body: { rowIndex, colIndex, translationId? }
+      
+            const newData = [...translatedData]
+            newData[rowIndex][colIndex] = csvData[rowIndex][colIndex]
+            setTranslatedData(newData)
+
+            toast({
+              title: "Cell reverted",
+              description: "The cell has been reverted to its original value",
+            })
+        }
     }
 
     useEffect(() => {
@@ -223,13 +341,18 @@ const Dashboard = () => {
 
                         <div className='border rounded-lg overflow-hidden'>
                             <CSVTable
+                                key={translatedData.length}
                                 headers={headers}
-                                data={csvData}
+                                data={translatedData.length > 0 ? translatedData : csvData}
                                 selectedColumns={selectedColumns}
                                 selectedRows={selectedRows}
                                 isEditable={isTranslated}
                                 onCellEdit={handleCellEdit}
                                 onRowSelect={handleRowSelect}
+                                originalData={csvData}
+                                sourceLanguage={sourceLanguage}
+                                targetLanguage={targetLanguage}
+                                onCellRevert={handleCellRevert}
                             />
                         </div>
                     </div>

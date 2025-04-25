@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
 import { cn } from '@/lib/utils'
 import { Input } from './ui/input'
+import CellTranslationDialog from './cell-translation-dialog'
 
 interface CSVTableProps {
     headers: string[]
@@ -11,18 +12,44 @@ interface CSVTableProps {
     isEditable?: boolean
     onCellEdit?: (rowIndex: number, colIndex: number, value: string) => void
     onRowSelect?: (rowIndex: number, isShiftKey: boolean, isCtrlKey: boolean) => void
+    originalData?: string[][]
+    sourceLanguage?: string
+    targetLanguage?: string
+    onCellRevert?: (rowIndex: number, colIndex: number) => void
 }
 
-const CSVTable = ({ headers, data, selectedColumns, selectedRows, isEditable = false, onCellEdit, onRowSelect }: CSVTableProps) => {
+const CSVTable = ({
+      headers,
+      data,
+      selectedColumns,
+      selectedRows,
+      isEditable = false,
+      onCellEdit,
+      onRowSelect,
+      originalData,
+      sourceLanguage = "en",
+      targetLanguage = "en",
+      onCellRevert,
+    }: CSVTableProps) => {
 
     const [editingCell, setEditingCell] = useState<{ row: number, col: number} | null>(null);
     const [editValue, setEditValue] = useState("");
 
+    const [showTranslationDialog, setShowTranslationDialog] = useState(false);
+    const [selectedCell, setSelectedCell] = useState<{ row: number; col: number; value: string } | null>(null)
+
     const handleCellEditClick = (rowIdx: number, colIdx: number, value: string) => {
         /* edit */
-        if (isEditable && selectedColumns.includes(headers[colIdx]))
+        if (isEditable &&
+          selectedColumns.includes(headers[colIdx]) &&
+          selectedRows.includes(rowIdx))
         {
-            setEditingCell({ row: rowIdx, col: colIdx });
+            setShowTranslationDialog(true);
+            setSelectedCell({
+              row: rowIdx,
+              col: colIdx,
+              value,
+            })
             setEditValue(value);
         }
     }
@@ -57,65 +84,91 @@ const CSVTable = ({ headers, data, selectedColumns, selectedRows, isEditable = f
         }
     }
 
+    const handleApproveTranslation = (value: string) => {
+      if (selectedCell && onCellEdit) {
+        onCellEdit(selectedCell.row, selectedCell.col, value)
+      }
+    }
+  
+    const handleRevertTranslation = () => {
+      if (selectedCell && onCellRevert) {
+        onCellRevert(selectedCell.row, selectedCell.col)
+      }
+    }
+
+    useEffect(() => {
+      if (!showTranslationDialog) {
+        setSelectedCell(null);
+      }
+    }, [showTranslationDialog]);
+
     return (
-        <div className="overflow-auto max-h-[600px]">
-          <Table>
-            <TableHeader className="sticky top-0 bg-background z-10">
-              <TableRow>
-                <TableHead className="w-12 text-center">#</TableHead>
-                {headers.map((header, index) => (
-                  <TableHead key={index} className={cn(selectedColumns.includes(header) && "bg-primary/10 font-bold")}>
-                    {header}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.map((row, rowIndex) => (
-                <TableRow
-                  key={rowIndex}
-                  className={cn(selectedRows.includes(rowIndex) && "bg-primary/20 font-bold")}
-                >
+      <div className="overflow-auto max-h-[600px]">
+      <Table>
+        <TableHeader className="sticky top-0 bg-background z-10">
+          <TableRow>
+            <TableHead className="w-12 text-center">#</TableHead>
+            {headers.map((header, index) => (
+              <TableHead key={index} className={cn(selectedColumns.includes(header) && "bg-primary/10 font-bold")}>
+                {header}
+              </TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.map((row, rowIndex) => (
+            <TableRow key={rowIndex} className={cn(selectedRows.includes(rowIndex) && "bg-secondary/20")}>
+              <TableCell
+                className={cn(
+                  "text-center font-medium text-muted-foreground cursor-pointer hover:bg-secondary/10",
+                  selectedRows.includes(rowIndex) && "bg-secondary/30",
+                )}
+                onClick={(e) => handleRowClick(rowIndex, e)}
+              >
+                {rowIndex + 1}
+              </TableCell>
+              {row.map((cell, colIndex) => {
+                return (
                   <TableCell
-                    className={
-                      cn("text-center font-medium text-muted-foreground cursor-pointer hover:bg-secondary/10",
-                        selectedRows.includes(rowIndex) && "bg-secondary/30"
-                      )
-                    }
-                    onClick={(e) => handleRowClick(rowIndex, e)}
+                    key={colIndex}
+                    className={cn(
+                      "max-w-[300px] truncate",
+                      selectedColumns.includes(headers[colIndex]) && "bg-primary/5",
+                      isEditable && 
+                      selectedColumns.includes(headers[colIndex]) && 
+                      selectedRows.includes(rowIndex) &&
+                      "cursor-pointer hover:bg-primary/10",
+                      selectedRows.includes(rowIndex) && selectedColumns.includes(headers[colIndex]) && "bg-primary/20",
+                    )}
+                    onClick={() => handleCellEditClick(rowIndex, colIndex, cell)}
                   >
-                    {rowIndex + 1}
+                    <div className="flex items-center gap-1">
+                      {cell}
+                    </div>
                   </TableCell>
-                  {row.map((cell, colIndex) => (
-                    <TableCell
-                      key={colIndex}
-                      className={cn(
-                        "max-w-[300px] truncate",
-                        selectedColumns.includes(headers[colIndex]) && "bg-primary/5",
-                        isEditable && selectedColumns.includes(headers[colIndex]) && "cursor-pointer hover:bg-primary/10",
-                        selectedRows.includes(rowIndex) && selectedColumns.includes(headers[colIndex]) && "bg-primary/20",
-                      )}
-                      onClick={() => handleCellEditClick(rowIndex, colIndex, cell)}
-                    >
-                      {editingCell?.row === rowIndex && editingCell?.col === colIndex ? (
-                        <Input
-                          value={editValue}
-                          onChange={handleInputChange}
-                          onBlur={handleInputBlur}
-                          onKeyDown={handleKeyDown}
-                          autoFocus
-                          className="p-0 h-auto"
-                        />
-                      ) : (
-                        cell
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+                )
+              })}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      {selectedCell && (
+        <CellTranslationDialog
+          open={showTranslationDialog}
+          onOpenChange={setShowTranslationDialog}
+          rowIdx={selectedCell.row}
+          colIdx={selectedCell.col}
+          columnName={headers[selectedCell.col]}
+          originalValue={originalData ? originalData[selectedCell.row][selectedCell.col] : ""}
+          translatedValue={selectedCell.value}
+          sourceLanguage={sourceLanguage}
+          targetLanguage={targetLanguage}
+          onApprove={handleApproveTranslation}
+          onRevert={handleRevertTranslation}
+        />
+      )}
+    </div>
     )
 }
 
