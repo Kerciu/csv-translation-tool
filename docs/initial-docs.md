@@ -12,64 +12,92 @@ Rozwiązanie zaimplementowane jest jako **full-stack'owa aplikacja webowa** z **
 
   **Obsługa plików:**
 - Wczytywanie plików CSV (z możliwością rozbudowy do innych formatów)
+- Parsowanie plików i wizualizacja danych
 - Wybór kolumn do tłumaczenia
 - Wybór zakresu rzędów do przetłumaczenia
 
 **Tłumaczenie:**
-- Obsługa wielu języków wejściowych i jednego języka docelowego
+- Wybór języka naturalnego początkowego oraz docelowego
 - Automatyczna propozycja tłumaczenia
 - Wyświetlone widocznie błędy wykryte podczas tłumaczenia
-- Edytowalne pole do korekty tłumaczenia przez użytkownika
+- Dialog pozwalający na przeprowadzenie korekt tłumaczenia przez użytkownika
 
 **Interakcja użytkownika:**
 - Uwierzytelnianie poprzez tokeny JWT oraz OAuth2
 - Obsługa skrótów klawiszowych
-- Możliwość wznawiania procesu tłumaczenia po ponownym uruchomieniu aplikacji
+- Możliwość wznawiania procesu tłumaczenia po ponownym uruchomieniu aplikacji (zapisywanie progresu w bazie danych)
 
 **Eksport wyników:**
 - Pobieranie pliku z przetłumaczonym tekstem
 
 ## Założenia technologiczne
 
-Frontend zostanie napisany przy pomocy framework'a **React (Typescript) & Next.js** a do tego, aby zapewnić nowoczesny wygląd aplikacji użyjemy **Tailwind CSS** oraz biblioteki **shadcn/ui**.
-Backend natomiast będzie stworzony w języku **Python** przy pomocy framework'a **Django**. Backend będzie zapewniał odpowiednie walidacje, endpointy do komunikacji REST z frontendem oraz uwierzytelnianie użytkowników poprzez JWT oraz OAuth2.
-Komponent tłumaczeniowy będzie zrealizowany przy pomocy **transformera z Hugging Face (MarianMT)**. Będzie on napisany w języku **Rust**, aby zapewnić niesamowitą szybkość tłumaczeń, nieporównywalną z Python'owym odpowiednikiem.
-**PyO3** zostanie użyte aby zagnieździć moduł tłumaczeniowy w tym pythonowym backendzie.
-Baza danych w której będziemy przechowywać dane użytkownika oraz informacje
-potrzebne do wznowienia tłumaczenia to **MongoDB**. Zdecydowaliśmy się na nią ze względu na brak ściśle zdefiniowanej struktury.
-Aby zapewnić optymalizację tłumaczeń zdecydowaliśmy się również używać **Redis** jako narzędzie do cache'owania tłumaczeń (i być może modeli).
-Całość projektu, jeśli wystarczy czasu będzie skonteneryzowana w **Dockerze**, oraz planujemy stworzyć **pipeline'y CD/CI**.
+Frontend został zaimplementowany przy użyciu frameworka **React (TypeScript)** wraz z **Next.js**. Do zapewnienia nowoczesnego wyglądu aplikacji użyto **Tailwind CSS** oraz biblioteki komponentów **shadcn/ui**.
+
+Backend został zrealizowany w języku **Python** z wykorzystaniem frameworka **Django**. Odpowiada on za walidację danych, **REST API** oraz uwierzytelnianie użytkowników za pomocą **JWT i OAuth2**.
+
+Moduł tłumaczeniowy bazuje na **transformerze MarianMT z biblioteki Hugging Face** i został zaimplementowany w języku **Rust**, aby zapewnić wysoką wydajność tłumaczeń, znacząco przewyższającą odpowiedniki w Pythonie. Do integracji tego modułu z backendem użyto **PyO3**.
+
+Dane użytkowników oraz informacje niezbędne do wznowienia tłumaczeń przechowywane są w bazie **MongoDB**, wybranej ze względu na elastyczną strukturę danych.
+
+Do cache’owania tłumaczeń (i potencjalnie modeli) wykorzystano **Redis**, co pozwala znacząco skrócić czas oczekiwania na wyniki.
+
+W miarę dostępnego czasu planowane jest również:
+
+- konteneryzowanie aplikacji z użyciem **Dockera**
+
+- przygotowanie **pipeline’ów CI/CD**
 
 ## Kosztorys czasu i podproblemów
 
-| **Zadanie** | **Czas** |
-| --- | --- |
-| **Analiza, przygotowanie środowiska, dokumentacja wstępna** | ~6h |
-| Napisanie dokumentacji wstępnej | 2h |
-| Stworzenie wstępnych struktur projektu (repozytorium, struktura projektu) | 1h |
-| Rozważania na temat stosowanych technologii oraz stylu pracy | 3h |
-| **Backend** | ~50h |
-| Autoryzacja tokenem JWT | 10h |
-| Parsowanie plików CSV (z walidacją) | 4h |
-| Przygotowanie endpointów do komunikacji z frontendem (REST API) | 12h |
-| Integracja Rust <-> Python (PyO3) | 8h |
-| Połączenie z PostgreSQL (przechowywanie progresu, użytkowników, stworzenie modelu bazy danych) | 8h |
-| Optymalizacja przetwarzania danych | 8h |
-| **Moduł tłumaczeniowy w Pythonie** | 12h |
-| Rozpoznawanie języka wejściowego (langdetect) | 3h |
-| Integracja modelu MarianMT (ładowanie modelu, tłumaczenie) | 4h |
-| Obsługa kontekstu tłumaczenia i testy | 5h |
-| **Frontend** | ~44h |
-| Podstawowa struktura aplikacji i UI | 6h |
-| Obsługa plików CSV (prezentacja, parsowanie, wybór kolumn/rzędów) | 8h |
-| Integracja z backendem (fetch API, obsługa tłumaczeń) | 8h |
-| Implementacja skrótów klawiszowych umożliwiających wygodniejsze korzystanie z aplikacji | 6h |
-| Edycja tłumaczenia przez użytkownika | 8h |
-| Eksport wyników w formacie CSV | 6h |
+Dzięki, że dajesz znać! Skoro frontend zajął Ci około **80 godzin**, to zróbmy realistyczny kosztorys – taki, który:
 
-**Razem**: 44 + 12 + 50 + 6 == 112h
+- Odzwierciedla realny wkład czasowy,
+- Uwzględnia złożoność poszczególnych komponentów,
+- Jest spójny z tym, co faktycznie zostało zrobione.
+
+Oto poprawiona wersja kosztorysu:
+
+---
+
+## 🔧 Kosztorys czasu i podproblemów
+
+| **Zadanie** | **Czas (szac.)** |
+|---|---|
+| **Analiza i przygotowanie projektu** | **10h** |
+| Wybór stosu technologicznego, plan funkcjonalności | 3h |
+| Dokumentacja, podział ról, repozytorium, plan pracy | 7h |
+| Wstępne zamodelowanie wyglądu dokumentowej bazy danych | 6h |
+| **Backend (Django + PyO3)** | **50h** |
+| Autoryzacja (JWT + OAuth2), obsługa sesji | 6h |
+| Obsługa plików CSV i walidacja | 6h |
+| API REST: uploady, sesje, interfejs do edycji | 12h |
+| Integracja z Rust (PyO3) i komunikacja z modułem ML | 10h |
+| Integracja z MongoDB, zamodelowanie bazy | 6h |
+| Integracja z Redis, cache'owanie tłumaczeń (i być może modeli) | 6h |
+| Testy jednostkowe zaimplementowanie przy pomocy Django test cases | 10h |
+| **Moduł tłumaczący (Rust + MarianMT)** | **30h** |
+| Wczytywanie i optymalizacja modelu MarianMT | 6h |
+| Mechanizm cache'owania + optymalizacje | 8h |
+| Testowanie i integracja z backendem (PyO3) | 10h |
+| **Frontend (React + Next.js + Tailwind)** | **80h** |
+| Strona główna oraz okna do uwierzytelniania użytkownika | 10h |
+| System uploadu i parser CSV (z wyborem kolumn/wierszy) | 16h |
+| Interfejs do edycji tłumaczeń (z shortcutami, walidacją) | 24h |
+| Widok sesji, tłumaczeń, edycja w oknie dialogowym | 10h |
+| Eksport wyników, statusy tłumaczeń, widok postępu | 10h |
+| Autoryzacja, routing, dostęp do API | 16h |
+| Stylowanie i UX (Tailwind + shadcn/ui), responsywność | 10h |
+| **DevOPS (opcjonalnie jeśli starczy czasu)** | **18h** |
+| Skonteneryzowanie aplikacji za pomocą dockera | 6h |
+| Ustawienie pipeline'ów CI/CD na Gitlabie | 6h |
+| Przepisanie Gitlabowego CI/CD na Github Actions | 6h |
+
+**Łączny czas projektu (bez DevOps): 170h**
+**Łączny czas projektu (z DevOps): 188h**
 
 ## Podsumowanie
 
-Projekt pozwala na **efektywne zarządzanie procesem tłumaczenia zbiorów tekstu**, łącząc **wydajny backend w Rust** z **modułami ML w Pythonie**.
-Implementacja zapewnia użytkownikowi **pełną kontrolę nad procesem tłumaczenia** oraz **możliwość edycji wyników**, co poprawia jakość translacji.
+Stworzone narzędzie umożliwia szybkie i półautomatyczne tłumaczenie zbiorów tekstów dzięki połączeniu nowoczesnych technologii: frontend w React/Next.js, wydajny backend w Django, oraz moduł ML w Rust z wykorzystaniem MarianMT.
+Dzięki elastycznemu podejściu do danych (MongoDB + Redis), użytkownik może swobodnie pracować z dużymi plikami, edytować tłumaczenia i wznawiać sesję.
+Projekt kładzie nacisk na ergonomię użytkownika, wydajność, oraz modularność, co czyni go solidnym rozwiązaniem do automatyzacji tłumaczeń w środowiskach produkcyjnych i badawczych.
