@@ -220,8 +220,21 @@ const Dashboard = () => {
         /* download */
     }
 
-    const handleCellRevert = () => {
+    const handleCellRevert = (rowIndex: number, colIndex: number) => {
+        if (csvData.length > 0) {
+            // BACKEND: Revert a cell to its original value
+            // API Call: PUT /api/translations/revert-cell
+            // Request body: { rowIndex, colIndex, translationId? }
+      
+            const newData = [...translatedData]
+            newData[rowIndex][colIndex] = csvData[rowIndex][colIndex]
+            setTranslatedData(newData)
 
+            toast({
+              title: "Cell reverted",
+              description: "The cell has been reverted to its original value",
+            })
+        }
     }
 
     useEffect(() => {
