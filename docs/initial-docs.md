@@ -50,18 +50,6 @@ W miarę dostępnego czasu planowane jest również:
 
 ## Kosztorys czasu i podproblemów
 
-Dzięki, że dajesz znać! Skoro frontend zajął Ci około **80 godzin**, to zróbmy realistyczny kosztorys – taki, który:
-
-- Odzwierciedla realny wkład czasowy,
-- Uwzględnia złożoność poszczególnych komponentów,
-- Jest spójny z tym, co faktycznie zostało zrobione.
-
-Oto poprawiona wersja kosztorysu:
-
----
-
-## 🔧 Kosztorys czasu i podproblemów
-
 | **Zadanie** | **Czas (szac.)** |
 |---|---|
 | **Analiza i przygotowanie projektu** | **10h** |
