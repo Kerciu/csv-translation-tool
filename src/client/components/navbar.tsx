@@ -56,11 +56,19 @@ const Navbar = () => {
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <div className="flex items-center justify-start gap-2 p-2">
-                  <div className="flex flex-col space-y-1 leading-none">
-                    <p className="font-medium">{user.name}</p>
-                    <p className="text-sm text-muted-foreground">{user.email}</p>
+              <DropdownMenuContent
+                align="end"
+                className="z-50 min-w-[220px] rounded-md border bg-popover p-2 shadow-md"
+              >
+                <div className="flex items-center gap-3 px-2 py-2 border-b">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="bg-primary/10 text-primary text-sm">
+                      {user.name.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col space-y-0.5">
+                    <p className="text-sm font-medium leading-none">{user.name}</p>
+                    <p className="text-xs text-muted-foreground">{user.email}</p>
                     {user.provider && (
                       <p className="text-xs text-muted-foreground">
                         via {user.provider.charAt(0).toUpperCase() + user.provider.slice(1)}
@@ -68,12 +76,17 @@ const Navbar = () => {
                     )}
                   </div>
                 </div>
+
                 {!isDashboard && (
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard">Dashboard</Link>
+                  <DropdownMenuItem asChild className="cursor-pointer px-2 py-2 text-sm rounded-md hover:bg-muted">
+                    <Link href="/dashboard" className="w-full">Dashboard</Link>
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem onClick={logout} className="cursor-pointer">
+
+                <DropdownMenuItem
+                  onClick={logout}
+                  className="cursor-pointer px-2 py-2 text-sm rounded-md hover:bg-muted flex items-center"
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>
