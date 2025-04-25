@@ -48,19 +48,27 @@ const Navbar = () => {
           ) : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                  <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-primary/10 text-primary">
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
+                <Avatar className="h-10 w-10">
+                  <AvatarFallback className="flex h-full w-full items-center justify-center rounded-full bg-primary/10 text-primary text-sm font-medium">
+                    {user.name.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="z-50 min-w-[220px] rounded-md border bg-popover p-2 shadow-md"
+              >
+                <div className="flex items-center gap-3 px-2 py-2 border-b mb-2">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="flex h-full w-full items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-medium">
                       {user.name.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <div className="flex items-center justify-start gap-2 p-2">
-                  <div className="flex flex-col space-y-1 leading-none">
-                    <p className="font-medium">{user.name}</p>
-                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                  <div className="flex flex-col space-y-0.5">
+                    <p className="text-sm font-medium leading-none">{user.name}</p>
+                    <p className="text-xs text-muted-foreground">{user.email}</p>
                     {user.provider && (
                       <p className="text-xs text-muted-foreground">
                         via {user.provider.charAt(0).toUpperCase() + user.provider.slice(1)}
@@ -68,12 +76,17 @@ const Navbar = () => {
                     )}
                   </div>
                 </div>
+
                 {!isDashboard && (
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard">Dashboard</Link>
+                  <DropdownMenuItem asChild className="cursor-pointer px-2 py-2 text-sm rounded-md hover:bg-muted flex items-center">
+                    <Link href="/dashboard" className="w-full">Dashboard</Link>
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem onClick={logout} className="cursor-pointer">
+
+                <DropdownMenuItem
+                  onClick={logout}
+                  className="cursor-pointer px-2 py-2 text-sm rounded-md hover:bg-muted flex items-center"
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>
