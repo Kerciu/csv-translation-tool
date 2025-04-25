@@ -1,5 +1,5 @@
 /src/client/node_modules
-/src/server/core/target
+/src/server/translation_module/target
 node_modules/
 package-lock.json
 .next/
