@@ -218,6 +218,40 @@ const Dashboard = () => {
 
     const downloadCSV = () => {
         /* download */
+        if (!translatedData.length && !csvData.length) {
+            toast({
+              title: "No data to download",
+              description: "There is no data available to download",
+              variant: "destructive",
+            })
+            return
+          }
+      
+        // BACKEND: Generate downloadable CSV file
+        // API Call: POST /api/csv/export
+        // Request body: { data: translatedData.length ? translatedData : csvData, headers }
+        // Response: Blob or download URL
+    
+        const dataToDownload = translatedData.length ? translatedData : csvData
+        const csvContent = [headers.join(","), ...dataToDownload.map((row) => row.join(","))].join("\n")
+    
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement("a")
+        link.setAttribute("href", url)
+        link.setAttribute("download", "translated_data.csv")
+        document.body.appendChild(link)
+        link.click()
+    
+        setTimeout(() => {
+            URL.revokeObjectURL(url)
+            document.body.removeChild(link)
+        }, 100)
+    
+        toast({
+            title: "File downloaded",
+            description: "Your CSV file has been downloaded successfully",
+        })
     }
 
     const handleCellRevert = (rowIndex: number, colIndex: number) => {
