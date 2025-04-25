@@ -14,6 +14,7 @@ import UploadConfirmationDialog from '@/components/upload-confirmation-dialog';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { LanguageType } from '@/lib/types';
+import { getLanguageName } from '@/utils/getLanguageName';
 import { FileSpreadsheet, HelpCircle, Loader2, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 
@@ -139,6 +140,80 @@ const Dashboard = () => {
 
     const translateCSV = async () => {
         /* translate */
+        if (selectedColumns.length === 0) {
+            toast({
+              title: "No columns selected",
+              description: "Please select at least one column to translate",
+              variant: "destructive",
+            })
+            return
+        }
+    
+        if (selectedRows.length === 0) {
+            toast({
+                title: "No rows selected",
+                description: "Please select at least one row to translate",
+                variant: "destructive",
+            })
+            return
+        }
+    
+        if (sourceLanguage === targetLanguage) {
+            toast({
+                title: "Same languages selected",
+                description: "Source and target languages must be different",
+                variant: "destructive",
+            })
+            return
+        }
+    
+        setTranslating(true)
+    
+        try {
+            // BACKEND: Translate selected columns and rows
+            // API Call: POST /api/translate
+            // Request body: {
+            //   data: csvData,
+            //   selectedColumns,
+            //   selectedRows,
+            //   sourceLanguage,
+            //   targetLanguage
+            // }
+            // Response: {
+            //   translatedData: string[][],
+            //   errors: { row: number, col: number }[]
+            // }
+        
+            // simulate API delay
+            await new Promise((resolve) => setTimeout(resolve, 1500))
+
+            const newData = translatedData.length ? [...translatedData] : [...csvData]
+        
+            selectedRows.forEach((rowIndex) => {
+                if (rowIndex >= 0 && rowIndex < newData.length) {
+                const newRow = [...newData[rowIndex]]
+                newData[rowIndex] = newRow
+                }
+            })
+        
+            setTranslatedData(newData)
+            setTranslated(true)
+
+        
+            toast({
+                title: "Translation completed",
+                description: `Translated ${selectedColumns.length} columns in ${selectedRows.length} rows from ${getLanguageName(sourceLanguage)} to ${getLanguageName(targetLanguage)}${errorMessage}`,
+                variant: "default",
+            })
+        } catch (error) {
+            toast({
+                title: "Translation failed",
+                description: "There was an error during translation",
+                variant: "destructive",
+            })
+        } finally {
+            setTranslating(false)
+        }
     }
 
     const downloadCSV = () => {
@@ -146,7 +221,7 @@ const Dashboard = () => {
     }
 
     const handleCellRevert = () => {
-        
+
     }
 
     useEffect(() => {
