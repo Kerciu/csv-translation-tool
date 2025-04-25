@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog'
 import { Button } from './ui/button'
 import { Check, RotateCcw, X } from 'lucide-react'
@@ -8,14 +8,35 @@ interface CellTranslationDialogProps {
     onOpenChange: (open: boolean) => void
     rowIdx: number
     columnName: string
+    originalValue: string
+    translatedValue: string
+    onRevert: () => void
+    onApprove: (value: string) => void
 }
 
 const CellTranslationDialog = ({
     open,
     onOpenChange,
     rowIdx,
-    columnName
+    columnName,
+    originalValue,
+    translatedValue,
+    onRevert,
+    onApprove
     }: CellTranslationDialogProps) => {
+
+    const [editedValue, setEditedValue] = useState(translatedValue);
+
+    const handleRevert = () => {
+        onRevert();
+        onOpenChange(false);
+    }
+
+    const handleApprove = () => {
+        onApprove(editedValue);
+        onOpenChange(false);
+    }
+
 
     return (
         <Dialog>
@@ -30,18 +51,18 @@ const CellTranslationDialog = ({
                 </DialogHeader>
 
                 <DialogFooter>
-                    <Button>
+                    <Button onClick={handleRevert}>
                         <RotateCcw />
                         Revert to Original
                     </Button>
 
                     <div>
-                        <Button>
+                        <Button onClick={() => onOpenChange(false)}>
                             <X />
                             Cancel
                         </Button>
 
-                        <Button>
+                        <Button onClick={handleApprove}>
                             <Check />
                             Approve & Save
                         </Button>
