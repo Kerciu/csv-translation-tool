@@ -18,10 +18,6 @@
    git clone https://gitlab-stud.elka.pw.edu.pl/kgorski1/zpr_25l
    cd zpr_25l
 
-2. **Make the script executable**
+2. **Run the application**
    ```bash
-    chmod +x run.sh
-
-3. **Run the application**
-   ```bash
-    ./run.sh
+    run.bat
