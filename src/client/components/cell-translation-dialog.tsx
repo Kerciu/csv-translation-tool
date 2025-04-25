@@ -49,8 +49,8 @@ const CellTranslationDialog = ({
 
 
     return (
-        <Dialog>
-            <DialogContent>
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>
                         Cell Translation - Row {rowIdx + 1}, {columnName}
@@ -60,23 +60,29 @@ const CellTranslationDialog = ({
                     </DialogDescription>
                 </DialogHeader>
 
-                <div>
-                    <div>
-                        <div>
-                            <Label>Original Text</Label>
-                            <div>
-                                <Badge>{getLanguageName(sourceLanguage)}</Badge>
-                            </div>
+                <div className="grid gap-4 py-4">
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                        <Label>Original Text ({getLanguageName(sourceLanguage)})</Label>
+                        <Badge variant="outline">Source</Badge>
                         </div>
-                        <Textarea />
+                        <Textarea
+                        value={originalValue}
+                        readOnly
+                        className="resize-none bg-muted/50"
+                        />
                     </div>
 
-                    <div>
-                        <div>
-                            <Label>Translation</Label>
-                            <Badge>{getLanguageName(targetLanguage)}</Badge>
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                        <Label>Translation ({getLanguageName(targetLanguage)})</Label>
+                        <Badge variant="outline">Target</Badge>
                         </div>
-                        <Textarea />
+                        <Textarea
+                        value={editedValue}
+                        onChange={(e) => setEditedValue(e.target.value)}
+                        className="min-h-[100px]"
+                        />
                     </div>
                 </div>
 
