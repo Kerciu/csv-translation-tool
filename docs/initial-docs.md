@@ -6,7 +6,7 @@
 ## Opis projektu
 
 Projekt polega na opracowaniu narzędzia wspomagającego **półautomatyczne tłumaczenie zbiorów tekstu** w formacie **.csv**.
-Rozwiązanie zaimplementowane jest jako **aplikacja webowa** z **niskopoziomowym backendem** i **modułem ML** do tłumaczenia tekstu.
+Rozwiązanie zaimplementowane jest jako **full-stack'owa aplikacja webowa** z **niskopoziomowym modułem ML** do tłumaczenia tekstu.
 
 ## Funkcjonalności
 
@@ -17,11 +17,12 @@ Rozwiązanie zaimplementowane jest jako **aplikacja webowa** z **niskopoziomowym
 
 **Tłumaczenie:**
 - Obsługa wielu języków wejściowych i jednego języka docelowego
-- Rozpoznawanie języka tekstu
 - Automatyczna propozycja tłumaczenia
+- Wyświetlone widocznie błędy wykryte podczas tłumaczenia
 - Edytowalne pole do korekty tłumaczenia przez użytkownika
 
 **Interakcja użytkownika:**
+- Uwierzytelnianie poprzez tokeny JWT oraz OAuth2
 - Obsługa skrótów klawiszowych
 - Możliwość wznawiania procesu tłumaczenia po ponownym uruchomieniu aplikacji
 
@@ -30,14 +31,14 @@ Rozwiązanie zaimplementowane jest jako **aplikacja webowa** z **niskopoziomowym
 
 ## Założenia technologiczne
 
-Frontend zostanie napisany przy pomocy framework'a **React (Typescript)**.
-Backend natomiast będzie stworzony w języku **Rust** przy pomocy biblioteki **Actix-Web** oraz **PyO3**,
-aby zagnieździć Pythona w tym właśnie języku. Jeżeli chodzi o **Pythona**,
-to właśnie komponent tłumaczeniowy będzie zrealizowany przy pomocy
-**transformers z Hugging Face (MarianMT) oraz langdetect**.
+Frontend zostanie napisany przy pomocy framework'a **React (Typescript) & Next.js** a do tego, aby zapewnić nowoczesny wygląd aplikacji użyjemy **Tailwind CSS** oraz biblioteki **shadcn/ui**.
+Backend natomiast będzie stworzony w języku **Python** przy pomocy framework'a **Django**. Backend będzie zapewniał odpowiednie walidacje, endpointy do komunikacji REST z frontendem oraz uwierzytelnianie użytkowników poprzez JWT oraz OAuth2.
+Komponent tłumaczeniowy będzie zrealizowany przy pomocy **transformera z Hugging Face (MarianMT)**. Będzie on napisany w języku **Rust**, aby zapewnić niesamowitą szybkość tłumaczeń, nieporównywalną z Python'owym odpowiednikiem.
+**PyO3** zostanie użyte aby zagnieździć moduł tłumaczeniowy w tym pythonowym backendzie.
 Baza danych w której będziemy przechowywać dane użytkownika oraz informacje
-potrzebne do wznowienia tłumaczenia przechowywać będziemy w
-systemie zarządzania bazami danych **PostgreSQL**.
+potrzebne do wznowienia tłumaczenia to **MongoDB**. Zdecydowaliśmy się na nią ze względu na brak ściśle zdefiniowanej struktury.
+Aby zapewnić optymalizację tłumaczeń zdecydowaliśmy się również używać **Redis** jako narzędzie do cache'owania tłumaczeń (i być może modeli).
+Całość projektu, jeśli wystarczy czasu będzie skonteneryzowana w **Dockerze**, oraz planujemy stworzyć **pipeline'y CD/CI**.
 
 ## Kosztorys czasu i podproblemów
 
