@@ -60,7 +60,7 @@ const Navbar = () => {
                 align="end"
                 className="z-50 min-w-[220px] rounded-md border bg-popover p-2 shadow-md"
               >
-                <div className="flex items-center gap-3 px-2 py-2 border-b">
+                <div className="flex items-center gap-3 px-2 py-2 border-b mb-2">
                   <Avatar className="h-8 w-8">
                     <AvatarFallback className="bg-primary/10 text-primary text-sm">
                       {user.name.charAt(0).toUpperCase()}
@@ -78,7 +78,7 @@ const Navbar = () => {
                 </div>
 
                 {!isDashboard && (
-                  <DropdownMenuItem asChild className="cursor-pointer px-2 py-2 text-sm rounded-md hover:bg-muted">
+                  <DropdownMenuItem asChild className="cursor-pointer px-2 py-2 text-sm rounded-md hover:bg-muted flex items-center">
                     <Link href="/dashboard" className="w-full">Dashboard</Link>
                   </DropdownMenuItem>
                 )}
