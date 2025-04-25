@@ -4,11 +4,11 @@
 
 ## Prerequisites
 
-- [Python](https://www.python.org/downloads/) (latest stable version)
+- [Python](https://www.python.org/downloads/) ( < 13, v12 Recommended)
 - [Rust](https://www.rust-lang.org/tools/install) (latest stable version)
 - [Node.js](https://nodejs.org/) (v16+ recommended)
 - [npm](https://www.npmjs.com/) (comes with Node.js)
-- [cURL](https://curl.se/) (usually pre-installed on Linux/macOS)
+- [cURL](https://curl.se/)
 
 
 ## Quick Start
@@ -18,10 +18,6 @@
    git clone https://gitlab-stud.elka.pw.edu.pl/kgorski1/zpr_25l
    cd zpr_25l
 
-2. **Make the script executable**
+2. **Run the application**
    ```bash
-    chmod +x run.sh
-
-3. **Run the application**
-   ```bash
-    ./run.sh
+    run.bat
