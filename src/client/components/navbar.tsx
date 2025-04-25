@@ -48,13 +48,13 @@ const Navbar = () => {
           ) : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                  <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-primary/10 text-primary">
-                      {user.name.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
+                <Avatar className="h-10 w-10">
+                  <AvatarFallback className="flex h-full w-full items-center justify-center rounded-full bg-primary/10 text-primary text-sm font-medium">
+                    {user.name.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
