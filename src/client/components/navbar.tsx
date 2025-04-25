@@ -62,7 +62,7 @@ const Navbar = () => {
               >
                 <div className="flex items-center gap-3 px-2 py-2 border-b mb-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-primary/10 text-primary text-sm">
+                    <AvatarFallback className="flex h-full w-full items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-medium">
                       {user.name.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
