@@ -1,0 +1,11 @@
+[package]
+name = "translation_module"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "translation_module"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.20", features = ["extension-module"] }
