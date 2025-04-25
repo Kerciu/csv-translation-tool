@@ -2,6 +2,10 @@ import React, { useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog'
 import { Button } from './ui/button'
 import { Check, RotateCcw, X } from 'lucide-react'
+import { Label } from './ui/label'
+import { Badge } from './ui/badge'
+import { getLanguageName } from '@/utils/getLanguageName'
+import { Textarea } from './ui/textarea'
 
 interface CellTranslationDialogProps {
     open: boolean
@@ -55,6 +59,26 @@ const CellTranslationDialog = ({
                         Review and edit the translation for this cell.
                     </DialogDescription>
                 </DialogHeader>
+
+                <div>
+                    <div>
+                        <div>
+                            <Label>Original Text</Label>
+                            <div>
+                                <Badge>{getLanguageName(sourceLanguage)}</Badge>
+                            </div>
+                        </div>
+                        <Textarea />
+                    </div>
+
+                    <div>
+                        <div>
+                            <Label>Translation</Label>
+                            <Badge>{getLanguageName(targetLanguage)}</Badge>
+                        </div>
+                        <Textarea />
+                    </div>
+                </div>
 
                 <DialogFooter>
                     <Button onClick={handleRevert}>
