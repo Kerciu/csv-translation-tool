@@ -181,7 +181,7 @@ const Dashboard = () => {
                 const currentValue = newData[rowIndex][colIndex];
                 const newTranslation = currentValue.includes("[TRANSLATED TO") 
                     ? currentValue
-                    : `${csvData[rowIndex][colIndex]} [TRANSLATED TO ${targetLanguage.toUpperCase()}]`;
+                    : `${csvData[rowIndex][colIndex]} (${sourceLanguage} → ${targetLanguage}?)`;
                     
                 newData[rowIndex][colIndex] = newTranslation;
                 }
