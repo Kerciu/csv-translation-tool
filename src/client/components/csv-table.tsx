@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
 import { cn } from '@/lib/utils'
 import { Input } from './ui/input'
@@ -42,6 +42,7 @@ const CSVTable = ({
         /* edit */
         if (isEditable && selectedColumns.includes(headers[colIdx]))
         {
+            setShowTranslationDialog(true);
             setSelectedCell({
               row: rowIdx,
               col: colIdx,
@@ -93,6 +94,12 @@ const CSVTable = ({
       }
     }
 
+    useEffect(() => {
+      if (!showTranslationDialog) {
+        setSelectedCell(null);
+      }
+    }, [showTranslationDialog]);
+
     return (
       <div className="overflow-auto max-h-[600px]">
       <Table>
@@ -125,22 +132,16 @@ const CSVTable = ({
                     className={cn(
                       "max-w-[300px] truncate",
                       selectedColumns.includes(headers[colIndex]) && "bg-primary/5",
-                      isEditable && selectedColumns.includes(headers[colIndex]) && "cursor-pointer hover:bg-primary/10",
+                      isEditable && 
+                      selectedColumns.includes(headers[colIndex]) && 
+                      selectedRows.includes(rowIndex) &&
+                      "cursor-pointer hover:bg-primary/10",
                       selectedRows.includes(rowIndex) && selectedColumns.includes(headers[colIndex]) && "bg-primary/20",
                     )}
                     onClick={() => handleCellEditClick(rowIndex, colIndex, cell)}
                   >
                     <div className="flex items-center gap-1">
-                      {editingCell?.row === rowIndex && editingCell?.col === colIndex ? (
-                        <Input
-                          value={editValue}
-                          onChange={handleInputChange}
-                          onBlur={handleInputBlur}
-                          onKeyDown={handleKeyDown}
-                          autoFocus
-                          className="p-0 h-auto"
-                        />
-                      ) : cell}
+                      {cell}
                     </div>
                   </TableCell>
                 )

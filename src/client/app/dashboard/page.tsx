@@ -139,7 +139,6 @@ const Dashboard = () => {
     }
 
     const translateCSV = async () => {
-        /* translate */
         if (selectedColumns.length === 0) {
             toast({
               title: "No columns selected",
@@ -166,53 +165,46 @@ const Dashboard = () => {
             })
             return
         }
-    
-        setTranslating(true)
+        
+        setTranslating(true);
     
         try {
-            // BACKEND: Translate selected columns and rows
-            // API Call: POST /api/translate
-            // Request body: {
-            //   data: csvData,
-            //   selectedColumns,
-            //   selectedRows,
-            //   sourceLanguage,
-            //   targetLanguage
-            // }
-            // Response: {
-            //   translatedData: string[][],
-            //   errors: { row: number, col: number }[]
-            // }
-        
-            // simulate API delay
-            await new Promise((resolve) => setTimeout(resolve, 1500))
+            const baseData = translatedData.length > 0 ? translatedData : csvData;
+            const newData = baseData.map(row => [...row]);
 
-            const newData = translatedData.length ? [...translatedData] : [...csvData]
-        
-            selectedRows.forEach((rowIndex) => {
-                if (rowIndex >= 0 && rowIndex < newData.length) {
-                const newRow = [...newData[rowIndex]]
-                newData[rowIndex] = newRow
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            selectedRows.forEach(rowIndex => {
+            selectedColumns.forEach(column => {
+                const colIndex = headers.indexOf(column);
+                if (colIndex >= 0 && rowIndex < newData.length) {
+                const currentValue = newData[rowIndex][colIndex];
+                const newTranslation = currentValue.includes("[TRANSLATED TO") 
+                    ? currentValue
+                    : `${csvData[rowIndex][colIndex]} [TRANSLATED TO ${targetLanguage.toUpperCase()}]`;
+                    
+                newData[rowIndex][colIndex] = newTranslation;
                 }
-            })
-        
-            setTranslatedData(newData)
-            setTranslated(true)
+            });
+            });
 
-        
+            setTranslatedData(newData);
+            setTranslated(true);
+            
             toast({
                 title: "Translation completed",
-                description: `Translated ${selectedColumns.length} columns in ${selectedRows.length} rows from ${getLanguageName(sourceLanguage)} to ${getLanguageName(targetLanguage)}${errorMessage}`,
-                variant: "default",
-            })
+                description: `Translated ${selectedColumns.length} columns in ${selectedRows.length} rows ` +
+                           `from ${getLanguageName(sourceLanguage)} to ${getLanguageName(targetLanguage)}`,
+            });
         } catch (error) {
+            console.error("Translation error:", error);
             toast({
                 title: "Translation failed",
-                description: "There was an error during translation",
+                description: error instanceof Error ? error.message : "There was an error during translation",
                 variant: "destructive",
-            })
+            });
         } finally {
-            setTranslating(false)
+            setTranslating(false);
         }
     }
 
@@ -349,8 +341,9 @@ const Dashboard = () => {
 
                         <div className='border rounded-lg overflow-hidden'>
                             <CSVTable
+                                key={translatedData.length}
                                 headers={headers}
-                                data={csvData}
+                                data={translatedData.length > 0 ? translatedData : csvData}
                                 selectedColumns={selectedColumns}
                                 selectedRows={selectedRows}
                                 isEditable={isTranslated}
