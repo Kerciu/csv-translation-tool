@@ -7,9 +7,12 @@ interface CellTranslationDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     rowIdx: number
+    colIdx: number
     columnName: string
     originalValue: string
     translatedValue: string
+    sourceLanguage: string
+    targetLanguage: string
     onRevert: () => void
     onApprove: (value: string) => void
 }
@@ -18,9 +21,12 @@ const CellTranslationDialog = ({
     open,
     onOpenChange,
     rowIdx,
+    colIdx,
     columnName,
     originalValue,
     translatedValue,
+    sourceLanguage,
+    targetLanguage,
     onRevert,
     onApprove
     }: CellTranslationDialogProps) => {

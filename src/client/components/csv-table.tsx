@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
 import { cn } from '@/lib/utils'
 import { Input } from './ui/input'
+import CellTranslationDialog from './cell-translation-dialog'
 
 interface CSVTableProps {
     headers: string[]
@@ -11,12 +12,31 @@ interface CSVTableProps {
     isEditable?: boolean
     onCellEdit?: (rowIndex: number, colIndex: number, value: string) => void
     onRowSelect?: (rowIndex: number, isShiftKey: boolean, isCtrlKey: boolean) => void
+    originalData?: string[][]
+    sourceLanguage?: string
+    targetLanguage?: string
+    onCellRevert?: (rowIndex: number, colIndex: number) => void
 }
 
-const CSVTable = ({ headers, data, selectedColumns, selectedRows, isEditable = false, onCellEdit, onRowSelect }: CSVTableProps) => {
+const CSVTable = ({
+      headers,
+      data,
+      selectedColumns,
+      selectedRows,
+      isEditable = false,
+      onCellEdit,
+      onRowSelect,
+      originalData,
+      sourceLanguage = "en",
+      targetLanguage = "en",
+      onCellRevert,
+    }: CSVTableProps) => {
 
     const [editingCell, setEditingCell] = useState<{ row: number, col: number} | null>(null);
     const [editValue, setEditValue] = useState("");
+
+    const [showTranslationDialog, setShowTranslationDialog] = useState(false);
+    const [selectedCell, setSelectedCell] = useState<{ row: number; col: number; value: string } | null>(null)
 
     const handleCellEditClick = (rowIdx: number, colIdx: number, value: string) => {
         /* edit */
@@ -55,6 +75,18 @@ const CSVTable = ({ headers, data, selectedColumns, selectedRows, isEditable = f
         {
             setEditingCell(null);
         }
+    }
+
+    const handleApproveTranslation = (value: string) => {
+      if (selectedCell && onCellEdit) {
+        onCellEdit(selectedCell.row, selectedCell.col, value)
+      }
+    }
+  
+    const handleRevertTranslation = () => {
+      if (selectedCell && onCellRevert) {
+        onCellRevert(selectedCell.row, selectedCell.col)
+      }
     }
 
     return (
@@ -115,6 +147,22 @@ const CSVTable = ({ headers, data, selectedColumns, selectedRows, isEditable = f
               ))}
             </TableBody>
           </Table>
+
+          {selectedCell && (
+          <CellTranslationDialog
+              open={showTranslationDialog}
+              onOpenChange={setShowTranslationDialog}
+              rowIdx={selectedCell.row}
+              colIdx={selectedCell.col}
+              columnName={headers[selectedCell.col]}
+              originalValue={originalData ? originalData[selectedCell.row][selectedCell.col] : ""}
+              translatedValue={selectedCell.value}
+              sourceLanguage={sourceLanguage}
+              targetLanguage={targetLanguage}
+              onApprove={handleApproveTranslation}
+              onRevert={handleRevertTranslation}
+            />
+          )}
         </div>
     )
 }

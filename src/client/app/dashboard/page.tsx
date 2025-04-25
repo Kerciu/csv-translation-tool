@@ -145,6 +145,10 @@ const Dashboard = () => {
         /* download */
     }
 
+    const handleCellRevert = () => {
+        
+    }
+
     useEffect(() => {
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
@@ -230,6 +234,10 @@ const Dashboard = () => {
                                 isEditable={isTranslated}
                                 onCellEdit={handleCellEdit}
                                 onRowSelect={handleRowSelect}
+                                originalData={csvData}
+                                sourceLanguage={sourceLanguage}
+                                targetLanguage={targetLanguage}
+                                onCellRevert={handleCellRevert}
                             />
                         </div>
                     </div>
