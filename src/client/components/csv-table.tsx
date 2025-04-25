@@ -40,7 +40,9 @@ const CSVTable = ({
 
     const handleCellEditClick = (rowIdx: number, colIdx: number, value: string) => {
         /* edit */
-        if (isEditable && selectedColumns.includes(headers[colIdx]))
+        if (isEditable &&
+          selectedColumns.includes(headers[colIdx]) &&
+          selectedRows.includes(rowIdx))
         {
             setShowTranslationDialog(true);
             setSelectedCell({
