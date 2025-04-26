@@ -10,7 +10,7 @@ import SelectedColumnBadges from './selected-column-badges'
 interface ColumnSelectorProps {
     headers: string[]
     selectedColumns: string[]
-    onColumnToggle: (column: string) => void
+    onColumnToggle: (column: string, isShiftKey?: boolean, isCtrlKey?: boolean) => void
     onSelectAll: () => void
     onDeselectAll: () => void
 }
@@ -24,6 +24,10 @@ const ColumnSelector = ({
     }: ColumnSelectorProps) => {
 
     const [open, setOpen] = useState(false);
+
+    const handleSelect = (column: string, e?: React.MouseEvent) => {
+        onColumnToggle(column, e?.shiftKey, e?.ctrlKey || e?.metaKey);
+    }
 
     return (
     // <div className='grid grid-cols-2 gap-4'>
@@ -82,7 +86,11 @@ const ColumnSelector = ({
                     <CommandList>
                         <CommandEmpty>No columns found.</CommandEmpty>
                         <CommandGroup>
-                            <ColumnList />
+                            <ColumnList
+                                headers={headers}
+                                selectedColumns={selectedColumns}
+                                onSelect={handleSelect}
+                            />
                         </CommandGroup>
                     </CommandList>
 

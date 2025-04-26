@@ -5,7 +5,7 @@ import ColumnSelector from './column-selector'
 interface DataTranslationOptionProps {
     headers: string[]
     selectedColumns: string[]
-    onColumnToggle: (column: string) => void
+    onColumnToggle: (column: string, isShiftKey?: boolean, isCtrlKey?: boolean) => void
     onSelectAllColumns: () => void
     onDeselectAllColumns: () => void
 }

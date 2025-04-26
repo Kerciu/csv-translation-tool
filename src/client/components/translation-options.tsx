@@ -8,7 +8,7 @@ interface TranslationOptionsProps {
     selectedColumns: string[]
     sourceLanguage: string
     targetLanguage: string
-    onColumnToggle: (column: string) => void
+    onColumnToggle: (column: string, isShiftKey?: boolean, isCtrlKey?: boolean) => void
     onLanguageChange: (type: LanguageType, language: string) => void
     onSelectAllColumns: () => void
     onDeselectAllColumns: () => void
