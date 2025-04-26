@@ -13,13 +13,15 @@ const SelectedColumnBadges = ({ selectedColumns, onRemove }: SelectedColumnBadge
   if (selectedColumns.length === 0) return null;
 
   return (
-    <ScrollArea>
-      {selectedColumns.map((column) => (
-        <Badge>
-          <span>{column}</span>
-          <X />
-        </Badge>
-      ))}
+    <ScrollArea className='max-h-[120px]'>
+      <div className='flex flex-wrap gap-2 p-1'>
+        {selectedColumns.map((column) => (
+          <Badge>
+            <span>{column}</span>
+            <X />
+          </Badge>
+        ))}
+      </div>
     </ScrollArea>
   )
 }
