@@ -3,13 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Checkbox } from './ui/checkbox'
 import { Label } from './ui/label'
 
-interface DataTranslationOptionProps {
+interface ColumnSelectorProps {
     headers: string[]
     selectedColumns: string[]
     onColumnToggle: (column: string) => void
 }
 
-const ColumnSelector = ({ headers, selectedColumns, onColumnToggle }: DataTranslationOptionProps) => {
+const ColumnSelector = ({ headers, selectedColumns, onColumnToggle }: ColumnSelectorProps) => {
   return (
     <Card>
       <CardHeader>
