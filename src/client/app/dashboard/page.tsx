@@ -196,6 +196,7 @@ const Dashboard = () => {
                             <div className='space-y-4'>
                                 <RowRangeSelector
                                     totalRows={csvData.length}
+                                    selectedRowsNum={selectedRows.length}
                                     selectedRange={rowRange}
                                     onRangeChange={handleRowRangeChange}
                                 />

@@ -9,11 +9,12 @@ import { HelpCircle } from 'lucide-react'
 
 interface RowRangeSelectorProps {
     totalRows: number
+    selectedRowsNum: number
     selectedRange: [number, number]
     onRangeChange: (range: [number, number]) => void
 }
 
-const RowRangeSelector = ({ totalRows, selectedRange, onRangeChange }: RowRangeSelectorProps) => {
+const RowRangeSelector = ({ totalRows, selectedRowsNum, selectedRange, onRangeChange }: RowRangeSelectorProps) => {
 
     const [startRow, setStartRow] = useState<number>(selectedRange[0]);
     const [endRow, setEndRow] = useState<number>(selectedRange[1]);
@@ -115,7 +116,7 @@ const RowRangeSelector = ({ totalRows, selectedRange, onRangeChange }: RowRangeS
 
                     <div className='flex justify-between items-center'>
                         <div className='text-sm text-muted-foreground'>
-                            Selected {endRow - startRow + 1} of {totalRows} rows
+                            Selected {selectedRowsNum} out of {totalRows} rows
                         </div>
 
                         <Button variant='outline' size='sm' onClick={handleSelectAll}>
