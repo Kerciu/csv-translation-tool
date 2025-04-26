@@ -137,6 +137,14 @@ const Dashboard = () => {
         })
     }
 
+    const handleSelectAllColumns = () => {
+        setSelectedColumns([...headers])
+    }
+
+    const handleDeselectAllColumns = () => {
+        setSelectedColumns([])
+    }
+
     const translateCSV = async () => {
         /* translate */
     }
@@ -191,6 +199,8 @@ const Dashboard = () => {
                                 targetLanguage={targetLanguage}
                                 onColumnToggle={handleColumnToggle}
                                 onLanguageChange={handleLanguageChange}
+                                onSelectAllColumns={handleSelectAllColumns}
+                                onDeselectAllColumns={handleDeselectAllColumns}
                             />
 
                             <div className='space-y-4'>

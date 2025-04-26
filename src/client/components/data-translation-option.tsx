@@ -6,9 +6,17 @@ interface DataTranslationOptionProps {
     headers: string[]
     selectedColumns: string[]
     onColumnToggle: (column: string) => void
+    onSelectAllColumns: () => void
+    onDeselectAllColumns: () => void
 }
 
-const DataTranslationOption = ({ headers, selectedColumns, onColumnToggle }: DataTranslationOptionProps) => {
+const DataTranslationOption = ({
+    headers,
+    selectedColumns,
+    onColumnToggle,
+    onSelectAllColumns,
+    onDeselectAllColumns
+  }: DataTranslationOptionProps) => {
   return (
     <Card>
       <CardHeader>
@@ -20,6 +28,8 @@ const DataTranslationOption = ({ headers, selectedColumns, onColumnToggle }: Dat
             headers={headers}
             selectedColumns={selectedColumns}
             onColumnToggle={onColumnToggle}
+            onSelectAll={onSelectAllColumns}
+            onDeselectAll={onDeselectAllColumns}
         />
       </CardContent>
     </Card>

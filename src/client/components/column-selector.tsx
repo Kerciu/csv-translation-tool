@@ -11,9 +11,17 @@ interface ColumnSelectorProps {
     headers: string[]
     selectedColumns: string[]
     onColumnToggle: (column: string) => void
+    onSelectAll: () => void
+    onDeselectAll: () => void
 }
 
-const ColumnSelector = ({ headers, selectedColumns, onColumnToggle }: ColumnSelectorProps) => {
+const ColumnSelector = ({
+        headers,
+        selectedColumns,
+        onColumnToggle,
+        onSelectAll,
+        onDeselectAll
+    }: ColumnSelectorProps) => {
 
     const [open, setOpen] = useState(false);
 
@@ -65,6 +73,8 @@ const ColumnSelector = ({ headers, selectedColumns, onColumnToggle }: ColumnSele
                     <SelectedActions
                         selectedCount={selectedColumns.length}
                         totalCount={headers.length}
+                        onSelectAll={onSelectAll}
+                        onDeselectAll={onDeselectAll}
                     />
 
                     <CommandList>
