@@ -1,8 +1,16 @@
 import React from 'react'
 
-const ColumnList = () => {
+interface ColumnListProps {
+  headers: string[]
+  selectedColumns: string[]
+  onSelect: (column: string, e?: React.MouseEvent) => void
+}
+
+const ColumnList = ({ headers, selectedColumns, onSelect }: ColumnListProps) => {
   return (
-    <div>ColumnList</div>
+    <div>
+
+    </div>
   )
 }
 
