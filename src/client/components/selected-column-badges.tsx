@@ -22,7 +22,13 @@ const SelectedColumnBadges = ({ selectedColumns, onRemove }: SelectedColumnBadge
             className='flex items-center gap-1 max-w-full'
           >
             <span className='truncate'>{column}</span>
-            <X />
+            <X
+              className='h-3 w-3 cursor-pointer flex-shrink-0'
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemove(column);
+              }}
+            />
           </Badge>
         ))}
       </div>
