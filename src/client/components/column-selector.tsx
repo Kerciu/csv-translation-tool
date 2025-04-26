@@ -63,11 +63,13 @@ const ColumnSelector = ({
                 </Button>
             </PopoverTrigger>
 
-            <PopoverContent>
+            <PopoverContent className='w-full p-0' align='start' side='bottom'>
                 <Command>
-                    <div>
-                        <Search />
-                        <CommandInput />
+                    <div className='flex items-center border-b px-3'>
+                        <CommandInput
+                            placeholder='Search columns...'
+                            className='border-0 py-3 shadow-none focus-visible:ring-0'
+                        />
                     </div>
 
                     <SelectedActions
