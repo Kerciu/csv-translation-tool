@@ -1,7 +1,11 @@
 import React, { useState } from 'react'
-import { Popover, PopoverTrigger } from './ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { Button } from './ui/button'
-import { ChevronsUpDown, Filter } from 'lucide-react'
+import { ChevronsUpDown, Filter, Search } from 'lucide-react'
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandList } from './ui/command'
+import SelectedActions from './selection-actions'
+import ColumnList from './column-list'
+import SelectedColumnBadges from './selected-column-badges'
 
 interface ColumnSelectorProps {
     headers: string[]
@@ -50,7 +54,29 @@ const ColumnSelector = ({ headers, selectedColumns, onColumnToggle }: ColumnSele
                     <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50'/>
                 </Button>
             </PopoverTrigger>
+
+            <PopoverContent>
+                <Command>
+                    <div>
+                        <Search />
+                        <CommandInput />
+                    </div>
+
+                    <SelectedActions />
+
+                    <CommandList>
+                        <CommandEmpty>No columns found.</CommandEmpty>
+                        <CommandGroup>
+                            <ColumnList />
+                        </CommandGroup>
+                    </CommandList>
+
+
+                </Command>
+            </PopoverContent>
         </Popover>
+
+        <SelectedColumnBadges />
     </div>
   )
 }
