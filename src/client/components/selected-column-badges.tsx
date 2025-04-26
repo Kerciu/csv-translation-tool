@@ -1,4 +1,7 @@
 import React from 'react'
+import { ScrollArea } from './ui/scroll-area';
+import { Badge } from './ui/badge';
+import { X } from 'lucide-react';
 
 interface SelectedColumnBadgesProps {
   selectedColumns: string[]
@@ -10,7 +13,14 @@ const SelectedColumnBadges = ({ selectedColumns, onRemove }: SelectedColumnBadge
   if (selectedColumns.length === 0) return null;
 
   return (
-    <div>SelectedColumnBadges</div>
+    <ScrollArea>
+      {selectedColumns.map((column) => (
+        <Badge>
+          <span>{column}</span>
+          <X />
+        </Badge>
+      ))}
+    </ScrollArea>
   )
 }
 
