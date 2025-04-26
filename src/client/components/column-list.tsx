@@ -29,12 +29,13 @@ const ColumnList = ({ headers, selectedColumns, onSelect }: ColumnListProps) => 
 
           <div
             onClick={(e) => handleHeaderClick(header, e)}
+            className='flex items-center gap-2 w-full'
           >
             <div>
-              <Check />
+              <Check className='h-3 w-3'/>
             </div>
 
-            <span>{header}</span>
+            <span className='truncate'>{header}</span>
           </div>
 
         </CommandItem>
