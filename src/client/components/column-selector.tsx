@@ -84,7 +84,9 @@ const ColumnSelector = ({
                         </CommandGroup>
                     </CommandList>
 
-
+                    <div className="border-t p-2 text-xs text-muted-foreground">
+                        <p>Tip: Use Shift+Click to select a range, Ctrl/Cmd+Click to select multiple</p>
+                    </div>
                 </Command>
             </PopoverContent>
         </Popover>
