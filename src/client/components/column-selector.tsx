@@ -101,7 +101,10 @@ const ColumnSelector = ({
             </PopoverContent>
         </Popover>
 
-        <SelectedColumnBadges />
+        <SelectedColumnBadges
+            selectedColumns={selectedColumns}
+            onRemove={(column) => onColumnToggle(column)}
+        />
     </div>
   )
 }
