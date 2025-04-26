@@ -62,7 +62,10 @@ const ColumnSelector = ({ headers, selectedColumns, onColumnToggle }: ColumnSele
                         <CommandInput />
                     </div>
 
-                    <SelectedActions />
+                    <SelectedActions
+                        selectedCount={selectedColumns.length}
+                        totalCount={headers.length}
+                    />
 
                     <CommandList>
                         <CommandEmpty>No columns found.</CommandEmpty>

@@ -1,8 +1,23 @@
 import React from 'react'
+import { Button } from './ui/button'
 
-const SelectionActions = () => {
+interface SelectedActionsProps {
+    selectedCount: number
+    totalCount: number
+}
+
+const SelectionActions = ({ selectedCount, totalCount }: SelectedActionsProps) => {
   return (
-    <div>SelectionActions</div>
+    <div>
+        <span>
+            {selectedCount} out of {totalCount} selected
+        </span>
+
+        <div>
+            <Button>Deselect All</Button>
+            <Button>Select All</Button>
+        </div>
+    </div>
   )
 }
 
