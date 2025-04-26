@@ -1,5 +1,5 @@
 import React from 'react'
-import ColumnSelector from './column-selector'
+import DataTranslationOption from './data-translation-option'
 import LanguageTranslationOption from './language-translation-option'
 import { LanguageType } from '@/lib/types'
 
@@ -23,7 +23,7 @@ const TranslationOptions = ({
 
   return (
     <div className='grid md:grid-cols-2 gap-4'>
-        <ColumnSelector
+        <DataTranslationOption
             headers={headers}
             selectedColumns={selectedColumns}
             onColumnToggle={onColumnToggle}
