@@ -8,8 +8,10 @@ interface TranslationOptionsProps {
     selectedColumns: string[]
     sourceLanguage: string
     targetLanguage: string
-    onColumnToggle: (column: string) => void
+    onColumnToggle: (column: string, isShiftKey?: boolean, isCtrlKey?: boolean) => void
     onLanguageChange: (type: LanguageType, language: string) => void
+    onSelectAllColumns: () => void
+    onDeselectAllColumns: () => void
 }
 
 const TranslationOptions = ({
@@ -18,7 +20,9 @@ const TranslationOptions = ({
     sourceLanguage,
     targetLanguage,
     onColumnToggle,
-    onLanguageChange
+    onLanguageChange,
+    onSelectAllColumns,
+    onDeselectAllColumns
   }: TranslationOptionsProps) => {
 
   return (
@@ -27,6 +31,8 @@ const TranslationOptions = ({
             headers={headers}
             selectedColumns={selectedColumns}
             onColumnToggle={onColumnToggle}
+            onSelectAllColumns={onSelectAllColumns}
+            onDeselectAllColumns={onDeselectAllColumns}
         />
         <LanguageTranslationOption
             sourceLanguage={sourceLanguage}

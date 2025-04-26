@@ -78,10 +78,31 @@ const Dashboard = () => {
         })
     }
 
-    const handleColumnToggle = (column: string) => {
-        setSelectedColumns((prev) => (
-            prev.includes(column) ? prev.filter(col => col !== column) : [...prev, column]
-        ))
+    const handleColumnToggle = (column: string, isShiftKey = false, isCtrlKey = false) => {
+        if (isShiftKey && selectedColumns.length > 0) {
+          const lastSelected = selectedColumns[selectedColumns.length - 1]
+
+          const lastSelectedIndex = headers.indexOf(lastSelected)
+          const currentIndex = headers.indexOf(column)
+
+          if (lastSelectedIndex !== -1 && currentIndex !== -1) {
+            const start = Math.min(lastSelectedIndex, currentIndex)
+            const end = Math.max(lastSelectedIndex, currentIndex)
+
+            const columnsInRange = headers.slice(start, end + 1)
+
+            const existingOutsideRange = selectedColumns.filter((col) => {
+              const colIndex = headers.indexOf(col)
+              return colIndex < start || colIndex > end
+            })
+
+            setSelectedColumns([...existingOutsideRange, ...columnsInRange])
+          }
+        } else if (isCtrlKey) {
+          setSelectedColumns((prev) => (prev.includes(column) ? prev.filter((col) => col !== column) : [...prev, column]))
+        } else {
+          setSelectedColumns((prev) => (prev.includes(column) ? prev.filter((col) => col !== column) : [column]))
+        }
     }
 
     const handleLanguageChange = (type: LanguageType, language: string) => {
@@ -136,6 +157,14 @@ const Dashboard = () => {
             title: "Dashboard cleared",
             description: "You can now upload a new CSV file",
         })
+    }
+
+    const handleSelectAllColumns = () => {
+        setSelectedColumns([...headers])
+    }
+
+    const handleDeselectAllColumns = () => {
+        setSelectedColumns([])
     }
 
     const translateCSV = async () => {
@@ -309,11 +338,14 @@ const Dashboard = () => {
                                 targetLanguage={targetLanguage}
                                 onColumnToggle={handleColumnToggle}
                                 onLanguageChange={handleLanguageChange}
+                                onSelectAllColumns={handleSelectAllColumns}
+                                onDeselectAllColumns={handleDeselectAllColumns}
                             />
 
                             <div className='space-y-4'>
                                 <RowRangeSelector
                                     totalRows={csvData.length}
+                                    selectedRowsNum={selectedRows.length}
                                     selectedRange={rowRange}
                                     onRangeChange={handleRowRangeChange}
                                 />

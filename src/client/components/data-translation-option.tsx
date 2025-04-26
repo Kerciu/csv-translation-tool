@@ -1,15 +1,22 @@
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
-import { Checkbox } from './ui/checkbox'
-import { Label } from './ui/label'
+import ColumnSelector from './column-selector'
 
 interface DataTranslationOptionProps {
     headers: string[]
     selectedColumns: string[]
-    onColumnToggle: (column: string) => void
+    onColumnToggle: (column: string, isShiftKey?: boolean, isCtrlKey?: boolean) => void
+    onSelectAllColumns: () => void
+    onDeselectAllColumns: () => void
 }
 
-const DataTranslationOption = ({ headers, selectedColumns, onColumnToggle }: DataTranslationOptionProps) => {
+const DataTranslationOption = ({
+    headers,
+    selectedColumns,
+    onColumnToggle,
+    onSelectAllColumns,
+    onDeselectAllColumns
+  }: DataTranslationOptionProps) => {
   return (
     <Card>
       <CardHeader>
@@ -17,20 +24,13 @@ const DataTranslationOption = ({ headers, selectedColumns, onColumnToggle }: Dat
       </CardHeader>
 
       <CardContent>
-        <div className='grid grid-cols-2 gap-4'>
-          {headers.map((header, idx) => (
-              <div key={idx} className='flex items-center space-x-2'>
-                <Checkbox 
-                  id={`column-${header}`}
-                  checked={selectedColumns.includes(header)}
-                  onCheckedChange={() => onColumnToggle(header)}
-                />
-                <Label htmlFor={`column-${header}`} className='text-sm cursor-pointer overflow-hidden text-elipsis'>
-                  {header}
-                </Label>
-              </div>
-            ))}
-        </div>
+        <ColumnSelector
+            headers={headers}
+            selectedColumns={selectedColumns}
+            onColumnToggle={onColumnToggle}
+            onSelectAll={onSelectAllColumns}
+            onDeselectAll={onDeselectAllColumns}
+        />
       </CardContent>
     </Card>
   )
