@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
-import { Checkbox } from './ui/checkbox'
-import { Label } from './ui/label'
 import { Popover, PopoverTrigger } from './ui/popover'
 import { Button } from './ui/button'
-import { Filter } from 'lucide-react'
+import { ChevronsUpDown, Filter } from 'lucide-react'
 
 interface ColumnSelectorProps {
     headers: string[]
@@ -39,9 +37,9 @@ const ColumnSelector = ({ headers, selectedColumns, onColumnToggle }: ColumnSele
                     aria-expanded={open}
                     className='w-full justify-between'
                 >
-                    <div>
-                        <Filter />
-                        <span>
+                    <div className='flex items-center gap-2 truncate'>
+                        <Filter className='h-4 w-4 shrink-0 opacity-50'/>
+                        <span className='truncate'>
                             {selectedColumns.length > 0 ?
                             `${selectedColumns.length} column${selectedColumns.length > 0 ? "s" : ""} selected`
                             : "Select columns to translate..."
@@ -49,6 +47,7 @@ const ColumnSelector = ({ headers, selectedColumns, onColumnToggle }: ColumnSele
                         </span>
                     </div>
 
+                    <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50'/>
                 </Button>
             </PopoverTrigger>
         </Popover>
