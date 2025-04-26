@@ -1,4 +1,7 @@
 import React from 'react'
+import { ScrollArea } from './ui/scroll-area'
+import { CommandItem } from './ui/command'
+import { Check } from 'lucide-react'
 
 interface ColumnListProps {
   headers: string[]
@@ -7,10 +10,36 @@ interface ColumnListProps {
 }
 
 const ColumnList = ({ headers, selectedColumns, onSelect }: ColumnListProps) => {
-  return (
-    <div>
 
-    </div>
+  const handleHeaderClick = (header: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onSelect(header, e);
+  }
+
+  return (
+    <ScrollArea className='h-[200px]'>
+      {headers.map((header) => (
+        <CommandItem
+          key={header}
+          value={header}
+          onSelect={() => onSelect(header)}
+          className='cursor-pointer'
+        >
+
+          <div
+            onClick={(e) => handleHeaderClick(header, e)}
+          >
+            <div>
+              <Check />
+            </div>
+
+            <span>{header}</span>
+          </div>
+
+        </CommandItem>
+      ))}
+    </ScrollArea>
   )
 }
 
