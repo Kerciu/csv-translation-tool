@@ -8,14 +8,27 @@ interface SelectedActionsProps {
 
 const SelectionActions = ({ selectedCount, totalCount }: SelectedActionsProps) => {
   return (
-    <div>
-        <span>
+    <div className='flex items-center justify-between border-b px-3 py-2'>
+        <span className='text-sm text-muted-foreground'>
             {selectedCount} out of {totalCount} selected
         </span>
 
-        <div>
-            <Button>Deselect All</Button>
-            <Button>Select All</Button>
+        <div className='flex gap-2'>
+            <Button
+                variant='ghost'
+                size='sm'
+                className='h-7 text-xs'
+            >
+                Deselect All
+            </Button>
+
+            <Button
+                variant='ghost'
+                size='sm'
+                className='h-7 text-xs'
+            >
+                Select All
+            </Button>
         </div>
     </div>
   )
