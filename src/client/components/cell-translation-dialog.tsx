@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog'
 import { Button } from './ui/button'
-import { Check, RotateCcw, X } from 'lucide-react'
+import { AlertTriangle, Check, RotateCcw, X } from 'lucide-react'
 import { Label } from './ui/label'
 import { Badge } from './ui/badge'
 import { getLanguageName } from '@/utils/getLanguageName'
@@ -19,6 +19,7 @@ interface CellTranslationDialogProps {
     targetLanguage: string
     onRevert: () => void
     onApprove: (value: string) => void
+    hasTranslationError?: boolean
 }
 
 const CellTranslationDialog = ({
@@ -32,7 +33,8 @@ const CellTranslationDialog = ({
     sourceLanguage,
     targetLanguage,
     onRevert,
-    onApprove
+    onApprove,
+    hasTranslationError
     }: CellTranslationDialogProps) => {
 
     const [editedValue, setEditedValue] = useState(translatedValue);
@@ -53,12 +55,19 @@ const CellTranslationDialog = ({
             <DialogContent className="sm:max-w-[550px]">
                 <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
+                    {hasTranslationError && <AlertTriangle className="h-5 w-5 text-destructive" />}
                     <span>
-                    Cell Translation - Row {rowIdx + 1}, {columnName}
+                        Cell Translation - Row {rowIdx + 1}, {columnName}
                     </span>
                 </DialogTitle>
                 <DialogDescription>
                     Review and edit the translation for this cell.
+                    {hasTranslationError && (
+                    <div className="mt-2 flex items-center gap-2 text-destructive">
+                        <AlertTriangle className="h-4 w-4" />
+                        <span>Warning: There may be an issue with this translation. Please review carefully.</span>
+                    </div>
+                    )}
                 </DialogDescription>
                 </DialogHeader>
 
@@ -82,7 +91,7 @@ const CellTranslationDialog = ({
                     id="translated-value"
                     value={editedValue}
                     onChange={(e) => setEditedValue(e.target.value)}
-                    className={`h-28 resize-none`}
+                    className={`h-28 resize-none ${hasTranslationError ? "border-destructive" : ""}`}
                     placeholder="Enter translation..."
                     />
                 </div>
