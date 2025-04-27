@@ -394,6 +394,7 @@ const Dashboard = () => {
                             isTranslated={isTranslated}
                             selectedColumnsCount={selectedColumns.length}
                             translationErrors={translationErrors}
+                            onHighlightErrors={handleHighlightErrors}
                         />
 
                         <div className='border rounded-lg overflow-hidden'>
