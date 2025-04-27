@@ -33,6 +33,7 @@ const Dashboard = () => {
     const [translatedData, setTranslatedData] = useState<string[][]>([]);
 
     const [translationErrors, setTranslationErrors] = useState<{row: number, col: number }[]>([]);
+    const [hightlightErrors, setHighlightErrors] = useState(false);
 
     const [isLoading, setLoading] = useState(false);
     const { user, isLoading: authLoading } = useAuth();
@@ -310,6 +311,11 @@ const Dashboard = () => {
         }
     }
 
+    const handleHighlightErrors = () => {
+        setHighlightErrors(true);
+        setTimeout(() => setHighlightErrors(false), 1500)
+    }
+
     useEffect(() => {
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
@@ -388,6 +394,7 @@ const Dashboard = () => {
                             isTranslated={isTranslated}
                             selectedColumnsCount={selectedColumns.length}
                             translationErrors={translationErrors}
+                            onHighlightErrors={handleHighlightErrors}
                         />
 
                         <div className='border rounded-lg overflow-hidden'>
@@ -404,6 +411,7 @@ const Dashboard = () => {
                                 sourceLanguage={sourceLanguage}
                                 targetLanguage={targetLanguage}
                                 translationErrors={translationErrors}
+                                highlightErrors={hightlightErrors}
                                 onCellRevert={handleCellRevert}
                             />
                         </div>
