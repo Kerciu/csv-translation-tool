@@ -92,3 +92,17 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes pulse-error-cell {
+  0%,
+  100% {
+    background-color: rgba(239, 68, 68, 0.05);
+  }
+  50% {
+    background-color: rgba(239, 68, 68, 0.2);
+  }
+}
+
+.animate-pulse-error-cell {
+  animation: pulse-error-cell 1.5s ease-in-out;
+}
