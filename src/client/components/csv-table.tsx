@@ -18,6 +18,7 @@ interface CSVTableProps {
     sourceLanguage?: string
     targetLanguage?: string
     translationErrors: {row: number, col: number}[]
+    highlightErrors?: boolean
     onCellRevert?: (rowIndex: number, colIndex: number) => void
 }
 
@@ -33,6 +34,7 @@ const CSVTable = ({
       sourceLanguage = "en",
       targetLanguage = "en",
       translationErrors,
+      highlightErrors,
       onCellRevert,
     }: CSVTableProps) => {
 

@@ -411,6 +411,7 @@ const Dashboard = () => {
                                 sourceLanguage={sourceLanguage}
                                 targetLanguage={targetLanguage}
                                 translationErrors={translationErrors}
+                                highlightErrors={hightlightErrors}
                                 onCellRevert={handleCellRevert}
                             />
                         </div>
