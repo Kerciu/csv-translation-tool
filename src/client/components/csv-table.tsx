@@ -3,6 +3,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { cn } from '@/lib/utils'
 import { Input } from './ui/input'
 import CellTranslationDialog from './cell-translation-dialog'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
+import { AlertTriangle } from 'lucide-react'
 
 interface CSVTableProps {
     headers: string[]
@@ -98,6 +100,10 @@ const CSVTable = ({
       }
     }
 
+    const hasCellTranslationError = (rowIndex: number, colIndex: number) => {
+      return translationErrors.some((error) => error.row === rowIndex && error.col === colIndex)
+    }
+
     useEffect(() => {
       if (!showTranslationDialog) {
         setSelectedCell(null);
@@ -130,6 +136,7 @@ const CSVTable = ({
                 {rowIndex + 1}
               </TableCell>
               {row.map((cell, colIndex) => {
+                const hasError = hasCellTranslationError(rowIndex, colIndex);
                 return (
                   <TableCell
                     key={colIndex}
@@ -141,11 +148,35 @@ const CSVTable = ({
                       selectedRows.includes(rowIndex) &&
                       "cursor-pointer hover:bg-primary/10",
                       selectedRows.includes(rowIndex) && selectedColumns.includes(headers[colIndex]) && "bg-primary/20",
+                      hasError && "bg-destructive/5",
                     )}
                     onClick={() => handleCellEditClick(rowIndex, colIndex, cell)}
                   >
                     <div className="flex items-center gap-1">
-                      {cell}
+                    {hasError && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Translation may be inaccurate - language detection issue</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                      {editingCell?.row === rowIndex && editingCell?.col === colIndex ? (
+                        <Input
+                          value={editValue}
+                          onChange={handleInputChange}
+                          onBlur={handleInputBlur}
+                          onKeyDown={handleKeyDown}
+                          autoFocus
+                          className="p-0 h-auto"
+                        />
+                      ) : (
+                        <span className={hasError ? "text-destructive" : ""}>{cell}</span>
+                      )}
                     </div>
                   </TableCell>
                 )
