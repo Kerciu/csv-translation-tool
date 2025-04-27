@@ -32,6 +32,8 @@ const Dashboard = () => {
     const [isTranslated, setTranslated] = useState(false);
     const [translatedData, setTranslatedData] = useState<string[][]>([]);
 
+    const [translationErrors, setTranslationErros] = useState<{row: number, col: number }[]>([]);
+
     const [isLoading, setLoading] = useState(false);
     const { user, isLoading: authLoading } = useAuth();
 
@@ -71,6 +73,7 @@ const Dashboard = () => {
         setSelectedRows([]);
         setRowRange([1, uploadedData.length])
         setTranslated(false);
+        setTranslationErros([]);
 
         toast({
             title: "CSV File uploaded successfully!",
@@ -152,6 +155,7 @@ const Dashboard = () => {
         setTranslatedData([]);
         setTranslated(false);
         setShowUploadConfirmation(false);
+        setTranslationErros([]);
 
         toast({
             title: "Dashboard cleared",
@@ -176,7 +180,7 @@ const Dashboard = () => {
             })
             return
         }
-    
+
         if (selectedRows.length === 0) {
             toast({
                 title: "No rows selected",
@@ -185,7 +189,7 @@ const Dashboard = () => {
             })
             return
         }
-    
+
         if (sourceLanguage === targetLanguage) {
             toast({
                 title: "Same languages selected",
@@ -194,24 +198,25 @@ const Dashboard = () => {
             })
             return
         }
-        
+
         setTranslating(true);
-    
+        setTranslationErros([]);
+
         try {
             const baseData = translatedData.length > 0 ? translatedData : csvData;
             const newData = baseData.map(row => [...row]);
 
             await new Promise(resolve => setTimeout(resolve, 1500));
-            
+
             selectedRows.forEach(rowIndex => {
             selectedColumns.forEach(column => {
                 const colIndex = headers.indexOf(column);
                 if (colIndex >= 0 && rowIndex < newData.length) {
                 const currentValue = newData[rowIndex][colIndex];
-                const newTranslation = currentValue.includes("[TRANSLATED TO") 
+                const newTranslation = currentValue.includes("[TRANSLATED TO")
                     ? currentValue
                     : `${csvData[rowIndex][colIndex]} (${sourceLanguage} → ${targetLanguage}?)`;
-                    
+
                 newData[rowIndex][colIndex] = newTranslation;
                 }
             });
@@ -219,7 +224,7 @@ const Dashboard = () => {
 
             setTranslatedData(newData);
             setTranslated(true);
-            
+
             toast({
                 title: "Translation completed",
                 description: `Translated ${selectedColumns.length} columns in ${selectedRows.length} rows ` +
@@ -247,15 +252,15 @@ const Dashboard = () => {
             })
             return
           }
-      
+
         // BACKEND: Generate downloadable CSV file
         // API Call: POST /api/csv/export
         // Request body: { data: translatedData.length ? translatedData : csvData, headers }
         // Response: Blob or download URL
-    
+
         const dataToDownload = translatedData.length ? translatedData : csvData
         const csvContent = [headers.join(","), ...dataToDownload.map((row) => row.join(","))].join("\n")
-    
+
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
         const url = URL.createObjectURL(blob)
         const link = document.createElement("a")
@@ -263,12 +268,12 @@ const Dashboard = () => {
         link.setAttribute("download", "translated_data.csv")
         document.body.appendChild(link)
         link.click()
-    
+
         setTimeout(() => {
             URL.revokeObjectURL(url)
             document.body.removeChild(link)
         }, 100)
-    
+
         toast({
             title: "File downloaded",
             description: "Your CSV file has been downloaded successfully",
@@ -280,7 +285,7 @@ const Dashboard = () => {
             // BACKEND: Revert a cell to its original value
             // API Call: PUT /api/translations/revert-cell
             // Request body: { rowIndex, colIndex, translationId? }
-      
+
             const newData = [...translatedData]
             newData[rowIndex][colIndex] = csvData[rowIndex][colIndex]
             setTranslatedData(newData)
