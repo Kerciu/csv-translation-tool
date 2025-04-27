@@ -1,6 +1,6 @@
 /src/client/node_modules
 /src/server/translation_module/target
-/src/server/core/creditenstials.env
+/src/server/core/.env
 node_modules/
 package-lock.json
 .next/
