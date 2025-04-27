@@ -15,6 +15,7 @@ interface CSVTableProps {
     originalData?: string[][]
     sourceLanguage?: string
     targetLanguage?: string
+    translationErrors: {row: number, col: number}[]
     onCellRevert?: (rowIndex: number, colIndex: number) => void
 }
 
@@ -29,6 +30,7 @@ const CSVTable = ({
       originalData,
       sourceLanguage = "en",
       targetLanguage = "en",
+      translationErrors,
       onCellRevert,
     }: CSVTableProps) => {
 
@@ -89,7 +91,7 @@ const CSVTable = ({
         onCellEdit(selectedCell.row, selectedCell.col, value)
       }
     }
-  
+
     const handleRevertTranslation = () => {
       if (selectedCell && onCellRevert) {
         onCellRevert(selectedCell.row, selectedCell.col)
@@ -134,8 +136,8 @@ const CSVTable = ({
                     className={cn(
                       "max-w-[300px] truncate",
                       selectedColumns.includes(headers[colIndex]) && "bg-primary/5",
-                      isEditable && 
-                      selectedColumns.includes(headers[colIndex]) && 
+                      isEditable &&
+                      selectedColumns.includes(headers[colIndex]) &&
                       selectedRows.includes(rowIndex) &&
                       "cursor-pointer hover:bg-primary/10",
                       selectedRows.includes(rowIndex) && selectedColumns.includes(headers[colIndex]) && "bg-primary/20",
