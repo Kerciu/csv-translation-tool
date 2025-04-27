@@ -10,9 +10,10 @@ interface TranslationButtonsProps {
     translationErrors: {row: number, col: number}[]
     translateCSV: () => void
     downloadCSV: () => void
+    onHighlightErrors: () => void
 }
 
-const TranslationButtons = ({ translateCSV, downloadCSV, isTranslating, isTranslated, selectedColumnsCount, translationErrors }: TranslationButtonsProps) => {
+const TranslationButtons = ({ translateCSV, downloadCSV, isTranslating, isTranslated, selectedColumnsCount, translationErrors, onHighlightErrors }: TranslationButtonsProps) => {
   return (
     <div className='flex flex-wrap justify-center gap-4 my-4'>
         <Button
@@ -42,6 +43,7 @@ const TranslationButtons = ({ translateCSV, downloadCSV, isTranslating, isTransl
                     <Button
                     variant="outline"
                     className="gap-2 text-amber-500 border-amber-500"
+                    onClick={onHighlightErrors}
                     >
                     <AlertTriangle className="h-4 w-4" />
                     {translationErrors.length} Translation Issues
