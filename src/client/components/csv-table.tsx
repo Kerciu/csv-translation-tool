@@ -199,6 +199,7 @@ const CSVTable = ({
           targetLanguage={targetLanguage}
           onApprove={handleApproveTranslation}
           onRevert={handleRevertTranslation}
+          hasTranslationError={hasCellTranslationError(selectedCell.row, selectedCell.col)}
         />
       )}
     </div>
