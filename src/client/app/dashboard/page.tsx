@@ -33,6 +33,7 @@ const Dashboard = () => {
     const [translatedData, setTranslatedData] = useState<string[][]>([]);
 
     const [translationErrors, setTranslationErrors] = useState<{row: number, col: number }[]>([]);
+    const [hightlightErrors, setHighlightErrors] = useState(false);
 
     const [isLoading, setLoading] = useState(false);
     const { user, isLoading: authLoading } = useAuth();
@@ -308,6 +309,11 @@ const Dashboard = () => {
               description: "The cell has been reverted to its original value",
             })
         }
+    }
+
+    const handleHighlightErrors = () => {
+        setHighlightErrors(true);
+        setTimeout(() => setHighlightErrors(false), 1500)
     }
 
     useEffect(() => {
