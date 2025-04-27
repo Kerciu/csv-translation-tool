@@ -32,7 +32,7 @@ const Dashboard = () => {
     const [isTranslated, setTranslated] = useState(false);
     const [translatedData, setTranslatedData] = useState<string[][]>([]);
 
-    const [translationErrors, setTranslationErros] = useState<{row: number, col: number }[]>([]);
+    const [translationErrors, setTranslationErrors] = useState<{row: number, col: number }[]>([]);
 
     const [isLoading, setLoading] = useState(false);
     const { user, isLoading: authLoading } = useAuth();
@@ -73,7 +73,7 @@ const Dashboard = () => {
         setSelectedRows([]);
         setRowRange([1, uploadedData.length])
         setTranslated(false);
-        setTranslationErros([]);
+        setTranslationErrors([]);
 
         toast({
             title: "CSV File uploaded successfully!",
@@ -155,7 +155,7 @@ const Dashboard = () => {
         setTranslatedData([]);
         setTranslated(false);
         setShowUploadConfirmation(false);
-        setTranslationErros([]);
+        setTranslationErrors([]);
 
         toast({
             title: "Dashboard cleared",
@@ -200,29 +200,42 @@ const Dashboard = () => {
         }
 
         setTranslating(true);
-        setTranslationErros([]);
+        setTranslationErrors([]);
 
         try {
             const baseData = translatedData.length > 0 ? translatedData : csvData;
             const newData = baseData.map(row => [...row]);
+            const newErrors: { row: number; col: number }[] = []
 
             await new Promise(resolve => setTimeout(resolve, 1500));
 
             selectedRows.forEach(rowIndex => {
-            selectedColumns.forEach(column => {
-                const colIndex = headers.indexOf(column);
-                if (colIndex >= 0 && rowIndex < newData.length) {
-                const currentValue = newData[rowIndex][colIndex];
-                const newTranslation = currentValue.includes("[TRANSLATED TO")
-                    ? currentValue
-                    : `${csvData[rowIndex][colIndex]} (${sourceLanguage} → ${targetLanguage}?)`;
+                selectedColumns.forEach(column => {
+                    const colIndex = headers.indexOf(column);
+                    if (colIndex >= 0 && rowIndex < newData.length) {
+                        const currentValue = newData[rowIndex][colIndex];
+                        const hasError = Math.random() < 0.2; // 20% chance of error
 
-                newData[rowIndex][colIndex] = newTranslation;
-                }
-            });
+                        let newValue;
+                        if (currentValue.includes("[TRANSLATED TO")) {
+                            newValue = currentValue;
+                        } else {
+                            newValue = hasError
+                                ? `${csvData[rowIndex][colIndex]} (${sourceLanguage} → ${targetLanguage}?)`
+                                : `${csvData[rowIndex][colIndex]} (${sourceLanguage} → ${targetLanguage})`;
+                        }
+
+                        newData[rowIndex][colIndex] = newValue;
+
+                        if (hasError) {
+                            newErrors.push({ row: rowIndex, col: colIndex });
+                        }
+                    }
+                });
             });
 
             setTranslatedData(newData);
+            setTranslationErrors(newErrors);
             setTranslated(true);
 
             toast({
@@ -374,7 +387,7 @@ const Dashboard = () => {
                             isTranslating={isTranslating}
                             isTranslated={isTranslated}
                             selectedColumnsCount={selectedColumns.length}
-                            translationErros={translationErrors}
+                            translationErrors={translationErrors}
                         />
 
                         <div className='border rounded-lg overflow-hidden'>
@@ -390,6 +403,7 @@ const Dashboard = () => {
                                 originalData={csvData}
                                 sourceLanguage={sourceLanguage}
                                 targetLanguage={targetLanguage}
+                                translationErrors={translationErrors}
                                 onCellRevert={handleCellRevert}
                             />
                         </div>

@@ -7,12 +7,12 @@ interface TranslationButtonsProps {
     isTranslating: boolean
     isTranslated: boolean
     selectedColumnsCount: number
-    translationErros: {row: number, col: number}[]
+    translationErrors: {row: number, col: number}[]
     translateCSV: () => void
     downloadCSV: () => void
 }
 
-const TranslationButtons = ({ translateCSV, downloadCSV, isTranslating, isTranslated, selectedColumnsCount, translationErros }: TranslationButtonsProps) => {
+const TranslationButtons = ({ translateCSV, downloadCSV, isTranslating, isTranslated, selectedColumnsCount, translationErrors }: TranslationButtonsProps) => {
   return (
     <div className='flex flex-wrap justify-center gap-4 my-4'>
         <Button
@@ -35,7 +35,7 @@ const TranslationButtons = ({ translateCSV, downloadCSV, isTranslating, isTransl
             </Button>
         }
 
-        {translationErrors.length > 0 && (
+        {Array.isArray(translationErrors) && translationErrors.length > 0 && (
             <TooltipProvider>
                 <Tooltip>
                 <TooltipTrigger asChild>
