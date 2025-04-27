@@ -151,6 +151,7 @@ const CSVTable = ({
                       "cursor-pointer hover:bg-primary/10",
                       selectedRows.includes(rowIndex) && selectedColumns.includes(headers[colIndex]) && "bg-primary/20",
                       hasError && "bg-destructive/5",
+                      highlightErrors && hasError && "animate-pulse-error-cell",
                     )}
                     onClick={() => handleCellEditClick(rowIndex, colIndex, cell)}
                   >
