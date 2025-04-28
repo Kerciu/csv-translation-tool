@@ -1,5 +1,6 @@
 use anyhow::{Result, Error}
 use candle_transformers::models::marian::Config;
+use hf_hub::{api::sync::Api, Repo};
 
 #derive[(Debug, Clone)]
 pub struct ModelConfig {
@@ -15,4 +16,9 @@ pub fn validate_language(lang: &str) -> Result<()> {
         return Err(Error::msg(format!("Unsupported language: {}", lang)));
     }
     Ok(());
+}
+
+pub fn get_model_config(src_lang: &str, tgt_lang: &str) -> Result<ModelConfig> {
+    validate_language(&src_lang)?;
+    validate_language(&tgt_lang)?;
 }
