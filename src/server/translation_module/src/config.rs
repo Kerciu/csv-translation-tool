@@ -15,7 +15,7 @@ pub fn validate_language(lang: &str) -> Result<()> {
     if !SUPPORTED_LANGUAGES.contains(&lang) {
         return Err(Error::msg(format!("Unsupported language: {}", lang)));
     }
-    Ok(());
+    Ok(())
 }
 
 pub fn get_model_config(src_lang: &str, tgt_lang: &str) -> Result<ModelConfig> {
@@ -32,6 +32,6 @@ pub fn get_model_config(src_lang: &str, tgt_lang: &str) -> Result<ModelConfig> {
     Ok(ModelConfig {
         model_repo,
         src_token: format!(">>{}<<", src_lang),
-        src_token: format!(">>{}<<", src_lang)
+        tgt_token: format!(">>{}<<", tgt_lang)
     })
 }
