@@ -1,5 +1,5 @@
-# Dockerfile w głównym katalogu
 FROM node:20-alpine AS builder
+
 WORKDIR /translator-frontend
 
 RUN corepack enable && corepack prepare pnpm@9.5.0 --activate
@@ -11,12 +11,12 @@ RUN pnpm install --frozen-lockfile
 
 COPY . ./
 
-# RUN chmod -R 755 /src /public
-
 RUN pnpm run build
 
 FROM node:20-alpine AS runner
+
 WORKDIR /translator-frontend
+
 RUN addgroup -g 1001 -S nodejs && adduser -u 1001 -S nextjs -G nodejs
 
 RUN npm install -g pnpm@9.5.0
