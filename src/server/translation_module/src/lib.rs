@@ -1,3 +1,5 @@
+pub mod config;
+
 use pyo3::prelude::*;
 
 #[pyfunction]
