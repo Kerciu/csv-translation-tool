@@ -18,7 +18,7 @@ pub fn validate_language(lang: &str) -> Result<()> {
 }
 
 pub fn build_model_id(src_lang: &str, tgt_lang: &str) -> String {
-    format!("Helsinki-NLP/opus-mt-{}-{}", src_lang, tgt_lang)
+    format!("Helsinki-NLP/opus-mt-tc-big-{}-{}", src_lang, tgt_lang)
 }
 pub fn check_model_exists(model_id: &str) -> Result<()> {
     let api = Api::new()?;

@@ -11,14 +11,14 @@ fn test_validate_language() {
 fn test_build_model_id() {
     assert_eq!(
         build_model_id("en", "es"),
-        "Helsinki-NLP/opus-mt-en-es"
+        "Helsinki-NLP/opus-mt-tc-big-en-es"
     );
 }
 
 #[test]
 fn test_model_config_creation() -> Result<()> {
     let config = get_model_config("en", "es")?;
-    assert_eq!(config.model_id, "Helsinki-NLP/opus-mt-en-es");
+    assert_eq!(config.model_id, "Helsinki-NLP/opus-mt-tc-big-en-es");
     assert_eq!(config.src_token, ">>en<<");
     assert_eq!(config.tgt_token, ">>es<<");
     Ok(())
