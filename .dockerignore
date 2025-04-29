@@ -1,0 +1,11 @@
+node_modules
+.next
+pnpm-store
+*.log
+client/node_modules
+client/.next
+client/pnpm-store
+*.pyc
+*.lock
+*.sock
+.venv
