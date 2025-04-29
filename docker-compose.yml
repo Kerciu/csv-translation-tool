@@ -3,9 +3,11 @@ services:
     build:
       context: .
       dockerfile: client/Dockerfile
+    environment:
+      - NEXT_OUTPUT=production
     ports:
       - "3000:3000"
     container_name: translator-client
+
     volumes:
       - ./client:/client
-      - ./client/node_modules
