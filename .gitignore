@@ -1,13 +1,92 @@
-node_modules/
-target/
-server/core/.env
-node_modules/
-package-lock.json
-.next/
-.pytest_cache/
-__pycache__/
-package-lock.json
-.vscode/
-candle/
-db.sqlite3
+# General
+*.log
+*.sqlite3
+*.pyc
+*.pyo
+*.pyd
 .env
+.env.local
+.env.development
+.env.test
+.env.production
+.DS_Store
+Thumbs.db
+
+# Python specific
+__pycache__/
+venv/
+env/
+.venv/
+.python-version
+
+# Django
+/media/
+/static/
+/staticfiles/
+
+# Rust/Cargo (if using PyO3 modules)
+**/target/
+Cargo.lock
+
+# Node.js (if any frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.next/
+package-lock.json
+
+# IDE specific
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test artifacts
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Local development files
+*.local.*
+/db.sqlite3
+/server/model/translator/__pycache__/
+/server/model/__pycache__/
+/server/__pycache__/
+
+# Migration files (keep only the initial ones if needed)
+# */migrations/*.py
+!*/migrations/__init__.py
+
+# Hugging Face models cache (if downloading models)
+.cache/
+models/
+
+# Python packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Virtual environment (specific to Python)
+venv/
+ENV/
+
+# PyInstaller
+*.spec
+
+# PyCharm
+.idea/
+*.iml
+
+# VS Code
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/extensions.json
+
+# Other repositories
+candle/
