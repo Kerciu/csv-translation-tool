@@ -5,7 +5,16 @@ edition = "2024"
 
 [lib]
 name = "translation_module"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+anyhow = "1.0"
+hf-hub = "0.3"
+candle-core = { git = "https://github.com/huggingface/candle.git", version = "0.9.0", default-features = false }
 pyo3 = { version = "0.20", features = ["extension-module"] }
+reqwest = { version = "0.11", features = ["json", "stream", "blocking", "gzip"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+
+[dev-dependencies]
+anyhow = "1.0"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
