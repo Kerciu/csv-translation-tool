@@ -1,29 +1,27 @@
-# ----------BUILD------------
+# Dockerfile w głównym katalogu
+FROM node:20-alpine AS builder
+WORKDIR /translator-frontend
 
-FROM node:18-alpine AS builder
+RUN corepack enable && corepack prepare pnpm@9.5.0 --activate
+RUN apk add --no-cache python3 make g++
 
-WORKDIR /client
+COPY package.json pnpm-lock.yaml ./
 
-COPY client/package*.json ./
-RUN npm i --legacy-peer-deps
+RUN pnpm install --frozen-lockfile
 
-COPY ./client .
-RUN npm run build
+COPY . ./
 
+# RUN chmod -R 755 /src /public
+
+RUN pnpm run build
+
+FROM node:20-alpine AS runner
+WORKDIR /translator-frontend
+RUN addgroup -g 1001 -S nodejs && adduser -u 1001 -S nextjs -G nodejs
+
+RUN npm install -g pnpm@9.5.0
+
+COPY --from=builder /translator-frontend ./
+USER nextjs
 EXPOSE 3000
-CMD ["npm", "start"]
-
-# -------PRODUCTION---------
-
-FROM node:18-alpine
-WORKDIR /client
-
-ENV NODE_ENV production
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/next.config.mjs ./
-
-EXPOSE 3000
-
-CMD ["npm", "start"]
+CMD ["pnpm", "start"]
