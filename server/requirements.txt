@@ -1,0 +1,9 @@
+auto_mix_prep==0.2.0
+Django==5.1.0
+django_mongodb_backend==5.1.0b2
+langdetect==1.0.9
+pytest==7.4.3
+python-dotenv==1.1.0
+transformers==4.51.3
+django-redis==5.2.0
+redis==4.5.4

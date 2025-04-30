@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      - NEXT_OUTPUT=production
+    ports:
+      - "3000:3000"
+    container_name: translator-client
+    # volumes:
+    #   - ./client:/client
+    depends_on:
+      - db
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    container_name: translator-server
+    depends_on:
+      - db
+      - redis
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG}
+      - MONGO_URI=${MONGO_URI}
+      - REDIS_URL=${REDIS_URL}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+    env_file:
+      - .env
+
+  db:
+    image: mongo:6.0
+    container_name: translator-db
+    command: ["mongod", "--bind_ip_all", "--auth", "--quiet", "--logpath", "/dev/stdout", "--logappend"]
+    ports:
+      - "27017:27017"
+    # volumes:
+    #   - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+      - MONGO_INITDB_DATABASE=translator
+    healthcheck:
+      test: ["CMD", "mongosh", "--username", "root", "--password", "example", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  redis:
+    image: redis:alpine
+    container_name: translator-redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  mongodb_data:
