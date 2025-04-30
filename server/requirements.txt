@@ -5,3 +5,5 @@ langdetect==1.0.9
 pytest==7.4.3
 python-dotenv==1.1.0
 transformers==4.51.3
+django-redis==5.2.0
+redis==4.5.4
