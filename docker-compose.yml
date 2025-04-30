@@ -33,5 +33,11 @@ services:
       timeout: 10s
       retries: 5
 
+  redis:
+    image: redis:alpine
+    container_name: translator-redis
+    ports:
+      - "6379:6379"
+
 volumes:
   mongodb_data:
