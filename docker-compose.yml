@@ -15,6 +15,25 @@ services:
     depends_on:
       - db
 
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    container_name: translator-server
+    depends_on:
+      - db
+      - redis
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG}
+      - MONGO_URI=${MONGO_URI}
+      - REDIS_URL=${REDIS_URL}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+    env_file:
+      - .env
+
   db:
     image: mongo:6.0
     container_name: translator-db
