@@ -1,8 +1,8 @@
 services:
   client:
     build:
-      context: .
-      dockerfile: client/Dockerfile
+      context: ./client
+      dockerfile: Dockerfile
     environment:
       - NEXT_OUTPUT=production
     ports:
@@ -11,3 +11,21 @@ services:
 
     volumes:
       - ./client:/client
+
+    depends_on:
+      - db
+
+  db:
+    image: mongo
+    container_name: translator-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+      - MONGO_INITDB_DATABASE=translator
+
+volumes:
+  mongodb_data:
