@@ -27,7 +27,6 @@ const nextConfig = {
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
-  output: process.env.NEXT_OUTPUT === 'production' ? 'standalone' : undefined,
 }
 
 if (userConfig) {

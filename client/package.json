@@ -1,5 +1,5 @@
 {
-  "name": "my-v0-project",
+  "name": "csv-translator",
   "version": "0.1.0",
   "private": true,
   "proxy": "http://localhost:8000",
