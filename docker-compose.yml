@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   client:
     build:
@@ -8,25 +10,23 @@ services:
     ports:
       - "3000:3000"
     container_name: translator-client
-
-    volumes:
-      - ./client:/client
-
+    # volumes:
+    #   - ./client:/client
     depends_on:
       - db
 
   db:
     image: mongo:6.0
     container_name: translator-db
+    command: ["mongod", "--bind_ip_all", "--auth", "--quiet", "--logpath", "/dev/stdout", "--logappend"]
     ports:
       - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
+    # volumes:
+    #   - mongodb_data:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=example
       - MONGO_INITDB_DATABASE=translator
-    command: ["mongod", "--bind_ip_all"]
     healthcheck:
       test: ["CMD", "mongosh", "--username", "root", "--password", "example", "--eval", "db.adminCommand('ping')"]
       interval: 30s
