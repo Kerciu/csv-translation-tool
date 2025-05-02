@@ -2,12 +2,27 @@ use anyhow::{Result, Error};
 use hf_hub::api::sync::Api;
 use std::path::PathBuf;
 use std::process::Command;
+use candle_transformers::models::marian;
 
 #[derive(Debug, Clone)]
 pub struct ModelConfig {
     pub model_id: String,
     pub src_token: String,
     pub tgt_token: String,
+}
+
+impl ModelConfig {
+    pub fn to_marian_config(&self) -> candle_transformers::models::marian::Config {
+        match self.model_id.as_str() {
+            "Helsinki-NLP/opus-mt-fr-en" => marian::Config::opus_mt_fr_en(),
+            "Helsinki-NLP/opus-mt-tc-big-fr-en" => marian::Config::opus_mt_tc_big_fr_en(),
+            "Helsinki-NLP/opus-mt-en-zh" => marian::Config::opus_mt_en_zh(),
+            "Helsinki-NLP/opus-mt-en-hi" => marian::Config::opus_mt_en_hi(),
+            "Helsinki-NLP/opus-mt-en-es" => marian::Config::opus_mt_en_es(),
+            "Helsinki-NLP/opus-mt-en-ru" => marian::Config::opus_mt_en_ru(),
+            _ => panic!("Unsupported model ID: {}", self.model_id),
+        }
+    }
 }
 
 const SUPPORTED_LANGUAGES: &[&str] = &["en", "es", "fr", "de", "it", "pt", "ru", "zh", "ja", "ko", "ar"];
