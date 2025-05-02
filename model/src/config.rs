@@ -16,6 +16,7 @@ pub struct ModelConfig {
 
 impl ModelConfig {
     pub fn to_marian_config(&self) -> candle_transformers::models::marian::Config {
+        println!("Converting to Marian config for model ID: {}", self.model_id);
         match self.model_id.as_str() {
             "Helsinki-NLP/opus-mt-fr-en" => marian::Config::opus_mt_fr_en(),
             "Helsinki-NLP/opus-mt-tc-big-fr-en" => marian::Config::opus_mt_tc_big_fr_en(),
@@ -38,13 +39,27 @@ pub fn validate_language(lang: &str) -> Result<()> {
 }
 
 pub fn build_model_id(src_lang: &str, tgt_lang: &str) -> String {
-    format!("Helsinki-NLP/opus-mt-tc-big-{}-{}", src_lang, tgt_lang)
+    format!("Helsinki-NLP/opus-mt-{}-{}", src_lang, tgt_lang)
 }
+
 pub fn check_model_exists(model_id: &str) -> Result<()> {
     let api = Api::new()?;
 
-    if api.model(model_id.to_string()).get("model.safetensors").is_ok() {
-        return Ok(());
+    // let files = api.model(model_id.to_string()).list_files()?;
+    // for file in files {
+    //     println!("Available file: {}", file);
+    // }
+
+    let model = api.model(model_id.to_string());
+
+    match model.get("model.safetensors") {
+        Ok(path) => {
+            println!("Found safetensors at: {:?}", path);
+            return Ok(());
+        },
+        Err(err) => {
+            println!("model.safetensors not found: {}", err);
+        }
     }
 
     let bin_path = match api.model(model_id.to_string()).get("pytorch_model.bin") {
@@ -52,12 +67,12 @@ pub fn check_model_exists(model_id: &str) -> Result<()> {
         Err(_) => return Err(Error::msg("Neither safetensors nor pytorch model found")),
     };
 
-    let script_path = "scripts/convert-to-safetensors/convert_to_safetensors.py";
+    let script_path = "scripts/convert-to-safetensors/convert_to_safetensor.py";
     let output = Command::new("python")
         .arg(script_path)
-        .arg("--src-directory")
+        .arg("--src_directory")
         .arg(bin_path.parent().unwrap())
-        .arg("--dest-directory")
+        .arg("--dest_directory")
         .arg(bin_path.parent().unwrap())
         .output()?;
 
@@ -76,11 +91,16 @@ pub fn get_model_config(src_lang: &str, tgt_lang: &str) -> Result<ModelConfig> {
     validate_language(tgt_lang)?;
 
     let model_id = build_model_id(src_lang, tgt_lang);
-    check_model_exists(&model_id)?;
+    // check_model_exists(&model_id)?;
 
     let marian_config = match model_id.as_str() {
+        "Helsinki-NLP/opus-mt-fr-en" => marian::Config::opus_mt_fr_en(),
         "Helsinki-NLP/opus-mt-tc-big-fr-en" => marian::Config::opus_mt_tc_big_fr_en(),
-        // Add other model configs here
+        "Helsinki-NLP/opus-mt-en-zh" => marian::Config::opus_mt_en_zh(),
+        "Helsinki-NLP/opus-mt-en-hi" => marian::Config::opus_mt_en_hi(),
+        "Helsinki-NLP/opus-mt-en-es" => marian::Config::opus_mt_en_es(),
+        "Helsinki-NLP/opus-mt-en-fr" => marian::Config::opus_mt_en_fr(),
+        "Helsinki-NLP/opus-mt-en-ru" => marian::Config::opus_mt_en_ru(),
         _ => return Err(Error::msg("Unsupported model")),
     };
 
