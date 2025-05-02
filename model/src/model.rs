@@ -51,7 +51,31 @@ impl TranslationModel {
         })
     }
 
-    pub fn translate(&self, text: &str) -> String {
-        format!("Translated: {}", text)
+    fn tokenize_input(&self, text: &str) -> Result<Vec<u32>> {
+        let input_text = format!("{} {} {}",
+            self.config.src_token,
+            text,
+            self.config.tgt_token
+        );
+
+        let mut tokens = self.tokenizer.encode(input_text, true)
+            .map_err(|e| Error::msg(format!("Encoding error: {}", e)))?
+            .get_ids()
+            .to_vec();
+        tokens.push(self.config.eos_token_id);
+        Ok(tokens)
+    }
+
+    pub fn translate(&self, text: &str) -> Result<String> {
+
+        let tokens = self.tokenize_input(text);
+        // let tokens_tensor = Tensor::new(tokens.as_slice(), &self.device)?.unsqueeze(0)?;
+
+        // let encoder_output = self.model.encoder().forward(&tokens_tensor, 0)?;
+
+        // let mut decoded_ids = vec![self.config.eos_token_id];
+        // let mut logits = None;
+        Ok("");
+
     }
 }
