@@ -66,6 +66,10 @@ impl TranslationModel {
         Ok(tokens)
     }
 
+    fn create_input_tensor(&self, tokens: &[u32]) -> Result<Tensor> {
+        Tensor::new(tokens, &self.device)?.unsqueeze(0)
+    }
+
     pub fn translate(&self, text: &str) -> Result<String> {
 
         let tokens = self.tokenize_input(text);
