@@ -11,10 +11,11 @@ fn translate(text: &str, src_lang: &str, tgt_lang: &str) -> PyResult<String> {
     let config = get_model_config(&src_lang, &tgt_lang)
         .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
 
-    let model = TranslationModel::new(config)
+    let mut model = TranslationModel::new(config)
         .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
 
-    Ok(format!("Translated: {}", text))
+    model.translate(text)
+        .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))
 }
 
 #[pymodule]
