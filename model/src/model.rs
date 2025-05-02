@@ -70,6 +70,10 @@ impl TranslationModel {
         Tensor::new(tokens, &self.device)?.unsqueeze(0)
     }
 
+    fn run_encoder(&self, tokens_tensor: &Tensor) -> Result<Tensor> {
+        self.model.encoder().forward(tokens_tensor, 0)
+    }
+
     pub fn translate(&self, text: &str) -> Result<String> {
 
         let tokens = self.tokenize_input(text);
