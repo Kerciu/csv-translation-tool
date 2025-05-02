@@ -1,5 +1,7 @@
 use anyhow::{Result, Error};
 use hf_hub::api::sync::Api;
+use std::path::PathBuf;
+use std::process::Command;
 
 #[derive(Debug, Clone)]
 pub struct ModelConfig {
@@ -22,7 +24,32 @@ pub fn build_model_id(src_lang: &str, tgt_lang: &str) -> String {
 }
 pub fn check_model_exists(model_id: &str) -> Result<()> {
     let api = Api::new()?;
-    api.model(model_id.to_string()).get("model.safetensors")?;
+
+    if api.model(model_id.to_string()).get("model.safetensors").is_ok() {
+        return Ok(());
+    }
+
+    let bin_path = match api.model(model_id.to_string()).get("pytorch_model.bin") {
+        Ok(path) => path,
+        Err(_) => return Err(Error::msg("Neither safetensors nor pytorch model found")),
+    };
+
+    let script_path = "scripts/convert-to-safetensors/convert_to_safetensors.py";
+    let output = Command::new("python")
+        .arg(script_path)
+        .arg("--src-directory")
+        .arg(bin_path.parent().unwrap())
+        .arg("--dest-directory")
+        .arg(bin_path.parent().unwrap())
+        .output()?;
+
+    if !output.status.success() {
+        return Err(Error::msg(format!(
+            "Conversion failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        )));
+    }
+
     Ok(())
 }
 
