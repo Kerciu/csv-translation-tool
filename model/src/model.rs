@@ -1,12 +1,19 @@
 use anyhow::{Result, Error};
 use candle::{Device, Tensor, DType};
+use clap::ValueEnum;
 use candle_nn::VarBuilder;
 use candle_transformers::models::marian::MTModel;
 use tokenizers::Tokenizer;
 use candle_transformers::generation::LogitsProcessor;
-use hf_hub::api::sync::Api;
+use hf_hub::{api::sync::Api, Repo, RepoType};
 
 use crate::config::ModelConfig;
+
+#[derive(Clone, Debug, Copy, ValueEnum)]
+enum Which {
+    Base,
+    Big,
+}
 
 pub struct TranslationModel {
     model: MTModel,
@@ -20,21 +27,66 @@ impl TranslationModel {
     pub fn new(model_config: ModelConfig) -> Result<Self> {
         let device = Device::cuda_if_available(0)?;
         let api = Api::new()?;
+        let (src_lang, tgt_lang) = (
+            model_config.src_token.trim_matches(|c| c == '<' || c == '>'),
+            model_config.tgt_token.trim_matches(|c| c == '<' || c == '>'),
+        );
 
+        // Load model with specific revisions
+        let model_repo = api.repo(Repo::with_revision(
+            model_config.model_id.clone(),
+            RepoType::Model,
+            match (src_lang, tgt_lang) {
+                ("fr", "en") => "refs/pr/4",
+                ("en", "zh") => "refs/pr/13",
+                ("en", "hi") => "refs/pr/3",
+                ("en", "es") => "refs/pr/4",
+                ("en", "fr") => "refs/pr/9",
+                ("en", "ru") => "refs/pr/7",
+                _ => "main",
+            }.to_string(),
+        ));
+
+        // Load tokenizers from custom repos
         let tokenizer = {
-            let repo = api.model(model_config.model_id.clone());
-            let path = repo.get("tokenizer.json")?;
+            let repo = match (src_lang, tgt_lang) {
+                ("fr", "en") => "lmz/candle-marian",
+                _ => "KeighBee/candle-marian",
+            };
+            let filename = match (src_lang, tgt_lang) {
+                ("fr", "en") => "tokenizer-marian-base-fr.json",
+                ("en", "fr") => "tokenizer-marian-base-en-fr-en.json",
+                ("en", "zh") => "tokenizer-marian-base-en-zh-en.json",
+                ("en", "hi") => "tokenizer-marian-base-en-hi-en.json",
+                ("en", "es") => "tokenizer-marian-base-en-es-en.json",
+                ("en", "ru") => "tokenizer-marian-base-en-ru-en.json",
+                _ => return Err(Error::msg("Unsupported language pair")),
+            };
+            let path = Api::new()?.model(repo.to_string()).get(filename)?;
             Tokenizer::from_file(path).map_err(|e| Error::msg(format!("Failed to load tokenizer: {}", e)))?
         };
 
         let tokenizer_dec = {
-            let repo = api.model(model_config.model_id.clone());
-            let path = repo.get("tokenizer_dec.json")?;
+            let repo = match (src_lang, tgt_lang) {
+                ("fr", "en") => "lmz/candle-marian",
+                _ => "KeighBee/candle-marian",
+            };
+            let filename = match (src_lang, tgt_lang) {
+                ("fr", "en") => "tokenizer-marian-base-en.json",
+                ("en", "fr") => "tokenizer-marian-base-en-fr-fr.json",
+                ("en", "zh") => "tokenizer-marian-base-en-zh-zh.json",
+                ("en", "hi") => "tokenizer-marian-base-en-hi-hi.json",
+                ("en", "es") => "tokenizer-marian-base-en-es-es.json",
+                ("en", "ru") => "tokenizer-marian-base-en-ru-ru.json",
+                _ => return Err(Error::msg("Unsupported language pair")),
+            };
+            let path = Api::new()?.model(repo.to_string()).get(filename)?;
             Tokenizer::from_file(path).map_err(|e| Error::msg(format!("Failed to load decoder tokenizer: {}", e)))?
         };
 
         let vb = {
-            let model_file = api.model(model_config.model_id.clone()).get("model.safetensors")?;
+            let model_file = model_repo.get("model.safetensors")
+                .or_else(|_| model_repo.get("pytorch_model.bin"))?;
             unsafe {
                 VarBuilder::from_mmaped_safetensors(&[model_file], DType::F32, &device)?
             }
@@ -68,19 +120,9 @@ impl TranslationModel {
     }
 
     fn prepare_input(&mut self, text: &str) -> Result<Tensor> {
-        let input_text = format!("{} {} {}",
-            self.config.src_token,
-            text,
-            self.config.tgt_token
-        );
-
-        let mut tokens = self.tokenizer.encode(input_text, true)
-            .map_err(|e| Error::msg(format!("Encoding error: {}", e)))?
-            .get_ids()
-            .to_vec();
-        tokens.push(self.config.eos_token_id);
-
+        let tokens = self.tokenize_input(text)?;
         Tensor::new(tokens.as_slice(), &self.device)?
+            .to_dtype(DType::I64)?
             .unsqueeze(0)
             .map_err(Into::into)
     }
@@ -93,19 +135,16 @@ impl TranslationModel {
         let mut logits_processor = LogitsProcessor::new(299792458, None, None);
 
         let seq_len = tokens_tensor.dim(1)?;
-        let attn_mask = Tensor::ones((1, seq_len), DType::U8, &self.device)?;
+        let attn_mask = Tensor::ones((1, seq_len), DType::F32, &self.device)?;
 
         for _ in 0..self.config.max_position_embeddings {
+
             let context_size = if token_ids.len() <= 1 { token_ids.len() } else { 1 };
             let start_pos = token_ids.len().saturating_sub(context_size);
 
             let input_ids = Tensor::new(&token_ids[start_pos..], &self.device)?.unsqueeze(0)?;
-            let logits = self.model.decoder().forward(
-                &input_ids,
-                Some(&encoder_output),
-                0,
-                &attn_mask
-            )?;
+
+            let logits = self.model.decode(&input_ids, &encoder_output, start_pos)?;
 
             let logits = logits.squeeze(0)?.get(logits.dim(0)? - 1)?;
             let next_token = logits_processor.sample(&logits)?;
