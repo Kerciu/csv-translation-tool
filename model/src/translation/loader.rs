@@ -85,9 +85,13 @@ pub fn load_from_candle(api: &Api, model_config: ModelConfig, device: Device) ->
 pub fn convert_and_load(model_config: ModelConfig, device: Device) -> Result<TranslationModel> {
     let src_lang = model_config.src_token.trim_start_matches(">>").trim_end_matches("<<");
     let tgt_lang = model_config.tgt_token.trim_start_matches(">>").trim_end_matches("<<");
+
     if src_lang.is_empty() || tgt_lang.is_empty() {
         return Err(Error::msg("Invalid language codes"));
     }
+
+    print!("Converting model from Hugging Face to Candle format...");
+    let config = model_config.to_marian_config();
 
     let models_dir = Path::new("scripts").join("converted_models");
 
@@ -115,8 +119,9 @@ pub fn convert_and_load(model_config: ModelConfig, device: Device) -> Result<Tra
         }
     };
 
-    let config = model_config.to_marian_config();
     let model = MTModel::new(&config, vb)?;
+
+    println!("Successfully converted model from Hugging Face to safetensors Candle format.");
 
     Ok(TranslationModel {
         model,
