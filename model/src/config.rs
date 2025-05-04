@@ -6,6 +6,7 @@ use serde_json;
 use serde::Deserialize;
 use candle_nn::Activation;
 use std::path::Path;
+use tokenizers::Tokenizer;
 
 #[derive(Debug, Clone)]
 pub struct ModelConfig {
@@ -21,7 +22,8 @@ pub struct ModelConfig {
 #[derive(Debug, Deserialize)]
 struct HuggingFaceConfig {
     vocab_size: usize,
-    decoder_vocab_size: usize,
+    #[serde(default)]
+    decoder_vocab_size: Option<usize>,
     max_position_embeddings: usize,
     encoder_layers: usize,
     encoder_ffn_dim: usize,
@@ -34,20 +36,30 @@ struct HuggingFaceConfig {
     activation_function: String,
     d_model: usize,
     decoder_start_token_id: u32,
+    #[serde(default = "default_scale_embedding")]
     scale_embedding: bool,
     pad_token_id: u32,
     eos_token_id: u32,
     forced_eos_token_id: u32,
+    #[serde(default = "default_share_embeddings")]
     share_encoder_decoder_embeddings: bool,
 }
+
+fn default_share_embeddings() -> bool { true }
+fn default_scale_embedding() -> bool { true }
 
 impl TryFrom<HuggingFaceConfig> for marian::Config {
     type Error = Error;
 
     fn try_from(hf: HuggingFaceConfig) -> Result<marian::Config, Error> {
+        let decoder_vocab = hf.decoder_vocab_size.unwrap_or_else(|| {
+            println!("Using vocab_size as fallback for decoder_vocab_size");
+            hf.vocab_size
+        });
+
         Ok(marian::Config {
             vocab_size: hf.vocab_size,
-            decoder_vocab_size: Some(hf.decoder_vocab_size),
+            decoder_vocab_size: Some(decoder_vocab),
             max_position_embeddings: hf.max_position_embeddings,
             encoder_layers: hf.encoder_layers,
             encoder_ffn_dim: hf.encoder_ffn_dim,
@@ -82,6 +94,9 @@ fn activation_from_str(s: &str) -> Result<Activation> {
 
 impl ModelConfig {
     pub fn to_marian_config(&self) -> candle_transformers::models::marian::Config {
+        let src_lang = self.src_token.trim_start_matches(">>").trim_end_matches("<<");
+        let tgt_lang = self.tgt_token.trim_start_matches(">>").trim_end_matches("<<");
+
         println!("Converting to Marian config for model ID: {}", self.model_id);
         match self.model_id.as_str() {
             "Helsinki-NLP/opus-mt-fr-en" => marian::Config::opus_mt_fr_en(),
@@ -90,7 +105,8 @@ impl ModelConfig {
             "Helsinki-NLP/opus-mt-en-hi" => marian::Config::opus_mt_en_hi(),
             "Helsinki-NLP/opus-mt-en-es" => marian::Config::opus_mt_en_es(),
             "Helsinki-NLP/opus-mt-en-ru" => marian::Config::opus_mt_en_ru(),
-            _ => panic!("Unsupported model ID: {}", self.model_id),
+            _ => construct_model_config_from_json(&src_lang, &tgt_lang)
+                .expect("Failed to construct Marian config from json"),
         }
     }
 }
@@ -148,20 +164,21 @@ pub fn check_model_exists(model_id: &str) -> Result<()> {
 }
 
 fn construct_model_config_from_json(src_lang: &str, tgt_lang: &str) -> Result<marian::Config> {
+    print!("Generating preparation files for model conversion... ");
     generate_preparation_files(src_lang, tgt_lang)?;
+    println!("Done.");
 
-    let config_path = {
-        let models_dir = Path::new("scripts").join("converted_models");
-        models_dir.join(format!("tokenizer-marian-base-{}.json", src_lang))
-    };
+    let config_path = Path::new("scripts")
+        .join("converted_models")
+        .join("config.json");
 
-    let file = std::fs::File::open(config_path)?;
+    let file = std::fs::File::open(&config_path)?;
     let reader = std::io::BufReader::new(file);
     let hf_config: HuggingFaceConfig = serde_json::from_reader(reader)?;
 
     Ok(marian::Config {
         vocab_size: hf_config.vocab_size,
-        decoder_vocab_size: Some(hf_config.decoder_vocab_size),
+        decoder_vocab_size: hf_config.decoder_vocab_size.or(Some(hf_config.vocab_size)),
         max_position_embeddings: hf_config.max_position_embeddings,
         encoder_layers: hf_config.encoder_layers,
         encoder_ffn_dim: hf_config.encoder_ffn_dim,
@@ -173,10 +190,10 @@ fn construct_model_config_from_json(src_lang: &str, tgt_lang: &str) -> Result<ma
         is_encoder_decoder: hf_config.is_encoder_decoder,
         activation_function: activation_from_str(&hf_config.activation_function)?,
         d_model: hf_config.d_model,
-        decoder_start_token_id: hf_config.decoder_start_token_id,
+        decoder_start_token_id: hf_config.decoder_start_token_id, // Direct from config
         scale_embedding: hf_config.scale_embedding,
-        pad_token_id: hf_config.pad_token_id,
-        eos_token_id: hf_config.eos_token_id,
+        pad_token_id: hf_config.pad_token_id,          // Direct from config
+        eos_token_id: hf_config.eos_token_id,          // Direct from config
         forced_eos_token_id: hf_config.forced_eos_token_id,
         share_encoder_decoder_embeddings: hf_config.share_encoder_decoder_embeddings,
     })
