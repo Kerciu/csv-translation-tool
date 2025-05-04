@@ -1,8 +1,8 @@
+pub mod translation;
 pub mod config;
-pub mod model;
 
 use config::get_model_config;
-use model::TranslationModel;
+use translation::model::TranslationModel;
 use pyo3::prelude::*;
 
 #[pyfunction]
