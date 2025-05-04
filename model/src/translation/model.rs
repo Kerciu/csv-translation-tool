@@ -4,8 +4,7 @@ use clap::ValueEnum;
 use candle_transformers::models::marian::MTModel;
 use tokenizers::Tokenizer;
 use candle_transformers::generation::LogitsProcessor;
-use hf_hub::{api::sync::Api, Repo, RepoType};
-use candle_nn::Activation;
+use hf_hub::api::sync::Api;
 
 use crate::{config::ModelConfig, translation::loader::load_from_candle, translation::loader::convert_and_load};
 
@@ -30,11 +29,6 @@ enum LanguagePair {
     #[value(name = "en-ru")]
     EnRu,
 }
-
-const SUPPORTED_LANGUAGES: &[LanguagePair] = {
-    use LanguagePair::*;
-    &[FrEn, EnZh, EnHi, EnEs, EnFr, EnRu]
-};
 
 pub struct TranslationModel {
     pub model: MTModel,
@@ -98,9 +92,6 @@ impl TranslationModel {
 
         let mut token_ids = vec![self.config.decoder_start_token_id];
         let mut logits_processor = LogitsProcessor::new(299792458, None, None);
-
-        let seq_len = tokens_tensor.dim(1)?;
-        let attn_mask = Tensor::ones((1, seq_len), DType::F32, &self.device)?;
 
         for _ in 0..self.config.max_position_embeddings {
 

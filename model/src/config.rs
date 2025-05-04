@@ -150,8 +150,6 @@ pub fn check_model_exists(model_id: &str) -> Result<()> {
 fn construct_model_config_from_json(src_lang: &str, tgt_lang: &str) -> Result<marian::Config> {
     generate_preparation_files(src_lang, tgt_lang)?;
 
-    let model_id = format!("Helsinki-NLP/opus-mt-{}-{}", src_lang, tgt_lang);
-    let api = Api::new()?;
     let config_path = {
         let models_dir = Path::new("scripts").join("converted_models");
         models_dir.join(format!("tokenizer-marian-base-{}.json", src_lang))

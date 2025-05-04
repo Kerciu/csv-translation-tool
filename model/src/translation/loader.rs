@@ -1,11 +1,10 @@
 use crate::config::ModelConfig;
 use crate::translation::model::TranslationModel;
 use hf_hub::{api::sync::Api, Repo, RepoType};
-use candle::{Device, DType, Tensor};
+use candle::{Device, DType};
 use candle_nn::VarBuilder;
 use candle_transformers::models::marian::MTModel;
 use anyhow::{Result, Error};
-use std::process::Command;
 use std::path::Path;
 use tokenizers::Tokenizer;
 
