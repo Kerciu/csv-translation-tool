@@ -5,6 +5,7 @@ use candle_transformers::models::marian;
 use serde_json;
 use serde::Deserialize;
 use candle_nn::Activation;
+use std::path::Path;
 
 #[derive(Debug, Clone)]
 pub struct ModelConfig {
@@ -40,9 +41,11 @@ struct HuggingFaceConfig {
     share_encoder_decoder_embeddings: bool,
 }
 
-impl From<HuggingFaceConfig> for marian::Config {
-    fn from(hf: HuggingFaceConfig) -> Self {
-        marian::Config {
+impl TryFrom<HuggingFaceConfig> for marian::Config {
+    type Error = Error;
+
+    fn try_from(hf: HuggingFaceConfig) -> Result<marian::Config, Error> {
+        Ok(marian::Config {
             vocab_size: hf.vocab_size,
             decoder_vocab_size: Some(hf.decoder_vocab_size),
             max_position_embeddings: hf.max_position_embeddings,
@@ -63,7 +66,7 @@ impl From<HuggingFaceConfig> for marian::Config {
             eos_token_id: hf.eos_token_id,
             forced_eos_token_id: hf.forced_eos_token_id,
             share_encoder_decoder_embeddings: hf.share_encoder_decoder_embeddings,
-        }
+        })
     }
 }
 
@@ -144,18 +147,15 @@ pub fn check_model_exists(model_id: &str) -> Result<()> {
     Ok(())
 }
 
-fn create_config_from_json(config_json_path: &str) -> Result<marian::Config> {
-    let file = std::fs::File::open(config_json_path)?;
-    let reader = std::io::BufReader::new(file);
-    let hf_config: HuggingFaceConfig = serde_json::from_reader(reader)?;
-    Ok(hf_config.into())
-}
-
 fn construct_model_config_from_json(src_lang: &str, tgt_lang: &str) -> Result<marian::Config> {
+    generate_preparation_files(src_lang, tgt_lang)?;
+
     let model_id = format!("Helsinki-NLP/opus-mt-{}-{}", src_lang, tgt_lang);
     let api = Api::new()?;
-    let repo = api.model(model_id);
-    let config_path = repo.get("config.json")?;
+    let config_path = {
+        let models_dir = Path::new("scripts").join("converted_models");
+        models_dir.join(format!("tokenizer-marian-base-{}.json", src_lang))
+    };
 
     let file = std::fs::File::open(config_path)?;
     let reader = std::io::BufReader::new(file);
