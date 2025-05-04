@@ -14,11 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
       - name: Set up Rust
-        uses: actions/setup-rust@v1
+        uses: actions/setup-rust@v2
         with:
-          rust-version: stable
+          rust-version: 1.85.0
       - name: Install Clippy
         run: rustup component add clippy
       - name: Run Clippy (Rust Linter)
