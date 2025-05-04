@@ -19,13 +19,19 @@ if __name__ == "__main__":
 
     download_model(
         model_name=f"{src_lang}-{tgt_lang}",
-        save_path=os.path.join(models_dir, "pytorch_model.bin")
+        save_dir=models_dir
     )
+    print("Pytorch model & config.json downloaded successfully.")
     convert_slow_tokenizer(src_lang=src_lang, tgt_lang=tgt_lang, dest_folder=models_dir)
+
+    print("Slow tokenizer converted to fast tokenizer successfully.")
     convert_pt_to_safetensors(
         source_folder=models_dir,
         dest_folder=models_dir,
-        delete_old=False
+        delete_old=True
     )
 
-    print("Conversion completed successfully.")
+    print("Conversion completed successfully. Saved in models directory.")
+
+    print("All files are in the models directory.")
+    print("You can now use the models for inference.")
