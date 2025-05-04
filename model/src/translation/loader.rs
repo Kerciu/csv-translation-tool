@@ -1,14 +1,18 @@
 use crate::config::ModelConfig;
 use super::{tokenizer::*, model::TranslationModel};
-use hf_hub::api::sync::Api;
+use hf_hub::{api::sync::Api, Repo, RepoType};
 use candle::{Device, DType, Tensor};
 use candle_nn::VarBuilder;
 use candle_transformers::models::marian::MTModel;
 use anyhow::{Result, Error};
 use std::process::Command;
 use std::path::Path;
+use tokenizers::Tokenizer;
 
-pub fn load_from_candle(api: &Api, model_config: ModelConfig, device: Device, src_lang: &str, tgt_lang: &str) -> Result<TranslationModel> {
+pub fn load_from_candle(api: &Api, model_config: ModelConfig, device: Device) -> Result<TranslationModel> {
+    let src_lang = model_config.src_token.trim_start_matches(">>").trim_end_matches("<<");
+    let tgt_lang = model_config.tgt_token.trim_start_matches(">>").trim_end_matches("<<");
+
     let model_repo = api.repo(Repo::with_revision(
         model_config.model_id.clone(),
         RepoType::Model,
