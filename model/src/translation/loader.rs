@@ -5,10 +5,10 @@ use candle::{Device, DType, Tensor};
 use candle_nn::VarBuilder;
 use candle_transformers::models::marian::MTModel;
 use anyhow::{Result, Error};
-use tempfile::TempDir;
 use std::process::Command;
+use std::path::Path;
 
-fn load_from_candle(api: &Api, model_config: ModelConfig, device: Device, src_lang: &str, tgt_lang: &str) -> Result<TranslationModel> {
+pub fn load_from_candle(api: &Api, model_config: ModelConfig, device: Device, src_lang: &str, tgt_lang: &str) -> Result<TranslationModel> {
     let model_repo = api.repo(Repo::with_revision(
         model_config.model_id.clone(),
         RepoType::Model,
@@ -79,43 +79,47 @@ fn load_from_candle(api: &Api, model_config: ModelConfig, device: Device, src_la
     })
 }
 
-fn convert_and_load(api: &Api, config: ModelConfig, device: Device) -> Result<Self> {
-    let temp_dir = TempDir::new()?;
-    let output_dir = temp_dir.path();
-
-    let repo = api.repo(Repo::model(config.model_id.clone()));
-    repo.get("config.json")?;
-    repo.get("pytorch_model.bin")?;
-
-    print!("Config model id: {}", config.model_id);
-
-    let status = Command::new("python")
-        .arg("scripts/convert_to_safetensors.py")
-        .arg(&config.model_id)
-        .arg(output_dir)
-        .status()?;
-
-    if !status.success() {
-        return Err(Error::msg("Model conversion failed"));
+pub fn convert_and_load(model_config: ModelConfig, device: Device) -> Result<TranslationModel> {
+    let src_lang = model_config.src_token.trim_start_matches(">>").trim_end_matches("<<");
+    let tgt_lang = model_config.tgt_token.trim_start_matches(">>").trim_end_matches("<<");
+    if src_lang.is_empty() || tgt_lang.is_empty() {
+        return Err(Error::msg("Invalid language codes"));
     }
 
-    let vb =  unsafe {
-        VarBuilder::from_mmaped_safetensors(
-        &[output_dir.join("model.safetensors")],
-        DType::F32,
-        &device
-    )}?;
+    let models_dir = Path::new("scripts").join("converted_models");
 
-    let tokenizer = Tokenizer::from_file(output_dir.join("tokenizer.json"))
-        .map_err(|e| Error::msg(format!("Tokenizer error: {}", e)))?;
+    let tokenizer = {
+        let path = models_dir.join(format!("tokenizer-marian-base-{}.json", src_lang));
+        Tokenizer::from_file(&path)
+            .map_err(|e| Error::msg(format!("Failed to load ENCODER tokenizer: {} [{}]", e, path.display())))?
+    };
 
-    let model = MTModel::new(&config.to_marian_config(), vb)?;
+    let tokenizer_dec = {
+        let path = models_dir.join(format!("tokenizer-marian-base-{}.json", tgt_lang));
+        Tokenizer::from_file(&path)
+            .map_err(|e| Error::msg(format!("Failed to load DECODER tokenizer: {} [{}]", e, path.display())))?
+    };
 
-    Ok(Self {
+    let vb = {
+        let model_file = models_dir.join("model.safetensors");
+        if !model_file.exists() {
+            return Err(Error::msg(format!("Model file not found: {}", model_file.display())));
+        }
+        let model_path_str = model_file.to_str()
+            .ok_or_else(|| Error::msg("Invalid UTF-8 in model path"))?;
+        unsafe {
+            VarBuilder::from_mmaped_safetensors(&[model_path_str], DType::F32, &device)?
+        }
+    };
+
+    let config = model_config.to_marian_config();
+    let model = MTModel::new(&config, vb)?;
+
+    Ok(TranslationModel {
         model,
         tokenizer,
-        tokenizer_dec: tokenizer.clone(),
-        config,
+        tokenizer_dec,
+        config: model_config,
         device,
     })
 }
