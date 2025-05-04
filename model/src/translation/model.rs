@@ -1,13 +1,10 @@
 use anyhow::{Result, Error};
 use candle::{Device, Tensor, DType};
 use clap::ValueEnum;
-use candle_nn::VarBuilder;
 use candle_transformers::models::marian::MTModel;
 use tokenizers::Tokenizer;
 use candle_transformers::generation::LogitsProcessor;
 use hf_hub::{api::sync::Api, Repo, RepoType};
-use std::{process::Command, path::PathBuf};
-
 
 use crate::{config::ModelConfig, translation::loader::load_from_candle, translation::loader::load_with_convertion};
 
@@ -66,7 +63,7 @@ impl TranslationModel {
             load_from_candle(&api, model_config, device)
         }
         else {
-            load_with_convertion(&api, model_config, device)
+            load_with_convertion(model_config, device)
         }
 
     }
