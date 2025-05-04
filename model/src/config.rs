@@ -6,7 +6,6 @@ use serde_json;
 use serde::Deserialize;
 use candle_nn::Activation;
 use std::path::Path;
-use tokenizers::Tokenizer;
 
 #[derive(Debug, Clone)]
 pub struct ModelConfig {
@@ -163,14 +162,31 @@ pub fn check_model_exists(model_id: &str) -> Result<()> {
     Ok(())
 }
 
+fn conversion_files_exist(src_lang: &str, tgt_lang: &str) -> Result<bool> {
+    let models_dir = Path::new("scripts/converted_models");
+
+    let config_path = models_dir.join(format!("config-{}-{}.json", src_lang, tgt_lang));
+    let model_path = models_dir.join(format!("model-{}-{}.safetensors", src_lang, tgt_lang));
+    let src_tokenizer = models_dir.join(format!("tokenizer-marian-base-{}-{}.json", src_lang, tgt_lang));
+    let tgt_tokenizer = models_dir.join(format!("tokenizer-marian-base-{}-{}.json", tgt_lang, src_lang));
+
+    Ok(config_path.exists()
+        && model_path.exists()
+        && src_tokenizer.exists()
+        && tgt_tokenizer.exists()
+    )
+}
+
 fn construct_model_config_from_json(src_lang: &str, tgt_lang: &str) -> Result<marian::Config> {
-    print!("Generating preparation files for model conversion... ");
-    generate_preparation_files(src_lang, tgt_lang)?;
-    println!("Done.");
+    if !conversion_files_exist(src_lang, tgt_lang)? {
+        print!("Generating preparation files for {}->{} conversion... ", src_lang, tgt_lang);
+        generate_preparation_files(src_lang, tgt_lang)?;
+        println!("Done.");
+    }
 
     let config_path = Path::new("scripts")
         .join("converted_models")
-        .join("config.json");
+        .join(format!("config-{}-{}.json", src_lang, tgt_lang));
 
     let file = std::fs::File::open(&config_path)?;
     let reader = std::io::BufReader::new(file);

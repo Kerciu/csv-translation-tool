@@ -18,6 +18,7 @@ fn translate(text: &str, src_lang: &str, tgt_lang: &str) -> PyResult<String> {
         .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))
 }
 
+
 #[pymodule]
 fn translation_module(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(translate, m)?)?;

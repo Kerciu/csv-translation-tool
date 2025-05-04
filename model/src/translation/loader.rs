@@ -96,19 +96,19 @@ pub fn convert_and_load(model_config: ModelConfig, device: Device) -> Result<Tra
     let models_dir = Path::new("scripts").join("converted_models");
 
     let tokenizer = {
-        let path = models_dir.join(format!("tokenizer-marian-base-{}.json", src_lang));
+        let path = models_dir.join(format!("tokenizer-marian-base-{}-{}.json", src_lang, tgt_lang));
         Tokenizer::from_file(&path)
             .map_err(|e| Error::msg(format!("Failed to load ENCODER tokenizer: {} [{}]", e, path.display())))?
     };
 
     let tokenizer_dec = {
-        let path = models_dir.join(format!("tokenizer-marian-base-{}.json", tgt_lang));
+        let path = models_dir.join(format!("tokenizer-marian-base-{}-{}.json", tgt_lang, src_lang));
         Tokenizer::from_file(&path)
             .map_err(|e| Error::msg(format!("Failed to load DECODER tokenizer: {} [{}]", e, path.display())))?
     };
 
     let vb = {
-        let model_file = models_dir.join("model.safetensors");
+        let model_file = models_dir.join(format!("model-{}-{}.safetensors", src_lang, tgt_lang));
         if !model_file.exists() {
             return Err(Error::msg(format!("Model file not found: {}", model_file.display())));
         }
