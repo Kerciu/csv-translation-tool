@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: change directory to rust project
+        run: cd model
       - uses: actions-rust-lang/setup-rust-toolchain@v1
       - run: cargo clippy -- -D warnings
 
@@ -18,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: change directory to rust project
+        run: cd model
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: rustfmt
