@@ -64,6 +64,7 @@ impl TranslationModel {
     }
 
     fn tokenize_input(&self, text: &str) -> Result<Vec<u32>> {
+        println!("Tokenizing input: {}", text);
         let input_text = format!("{} {} {}",
             self.config.src_token,
             text,
@@ -79,6 +80,7 @@ impl TranslationModel {
     }
 
     fn prepare_input(&mut self, text: &str) -> Result<Tensor> {
+        println!("Preparing input: {}", text);
         let tokens = self.tokenize_input(text)?;
         Tensor::new(tokens.as_slice(), &self.device)?
             .to_dtype(DType::I64)?
@@ -87,12 +89,15 @@ impl TranslationModel {
     }
 
     pub fn translate(&mut self, text: &str) -> Result<String> {
+        println!("Translating: {}", text);
+
         let tokens_tensor = self.prepare_input(text)?;
         let encoder_output = self.model.encoder().forward(&tokens_tensor, 0)?;
 
         let mut token_ids = vec![self.config.decoder_start_token_id];
         let mut logits_processor = LogitsProcessor::new(299792458, None, None);
 
+        println!("Max position embeddings: {}", self.config.max_position_embeddings);
         for _ in 0..self.config.max_position_embeddings {
 
             let context_size = if token_ids.len() <= 1 { token_ids.len() } else { 1 };
