@@ -4,9 +4,13 @@
 from pathlib import Path
 import warnings
 import os
+import sys
 
 from transformers import AutoTokenizer
 from transformers.convert_slow_tokenizer import SpmConverter, requires_backends, import_protobuf
+
+sys.stdout.reconfigure(encoding='utf-8')
+
 
 class MarianConverter(SpmConverter):
     def __init__(self, *args, index: int = 0):
@@ -39,8 +43,8 @@ class MarianConverter(SpmConverter):
                 )
 
     def vocab(self, proto):
-        vocab_size = max(self._vocab.values()) + 1
-        vocab = [("<NIL>", -100) for _ in range(vocab_size)]
+        self._vocab_size = max(self._vocab.values()) + 1
+        vocab = [("<NIL>", -100) for _ in range(self._vocab_size)]
         for piece in proto.pieces:
             try:
                 index = self._vocab[piece.piece]

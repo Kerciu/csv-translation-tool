@@ -50,12 +50,36 @@ def rename(pt_filename):
 
 def copy_additional_files(source_folder, dest_folder):
     if os.path.abspath(source_folder) == os.path.abspath(dest_folder):
+        print(f"Skipping copy - source and destination are the same: {source_folder}")
         return
+
+    config_src = os.path.join(source_folder, "config.json")
+    config_dst = os.path.join(dest_folder, "config.json")
+    if os.path.exists(config_src) and not os.path.samefile(config_src, config_dst):
+        shutil.copy(config_src, dest_folder)
 
     for file in os.listdir(source_folder):
         file_path = os.path.join(source_folder, file)
+        dest_path = os.path.join(dest_folder, file)
         if os.path.isfile(file_path) and not (file.endswith('.bin') or file.endswith('.py')):
-            shutil.copy(file_path, dest_folder)
+            if not os.path.exists(dest_path) or not os.path.samefile(file_path, dest_path):
+                shutil.copy(file_path, dest_folder)
+
+    config_path = os.path.join(source_folder, "config.json")
+    if os.path.exists(config_path):
+        with open(config_path, "r") as f:
+            config = json.load(f)
+
+        print("Original config keys:", config.keys())
+
+        if "decoder_vocab_size" not in config:
+            print("Adding decoder_vocab_size from vocab_size")
+            config["decoder_vocab_size"] = config.get("vocab_size", 58101)
+
+        new_config_path = os.path.join(dest_folder, "config.json")
+        with open(new_config_path, "w") as f:
+            json.dump(config, f, indent=4)
+            print("Saved modified config with decoder_vocab_size")
 
 def find_index_file(source_folder):
     for file in os.listdir(source_folder):
@@ -90,11 +114,27 @@ def convert_files(source_folder, dest_folder, delete_old):
 def convert_pt_to_safetensors(source_folder, dest_folder=None, delete_old=False):
     if not dest_folder:
         model_name = os.path.basename(os.path.normpath(source_folder))
-        dest_folder = os.path.join(source_folder, model_name + "_safetensors")
+        dest_folder = os.path.join(os.path.dirname(source_folder), f"{model_name}_safetensors")
 
-    if "pytorch_model.bin" in os.listdir(source_folder):
-        convert_file(os.path.join(source_folder, "pytorch_model.bin"), os.path.join(dest_folder, "model.safetensors"), copy_add_data=True)
-        if delete_old:
-            os.remove(os.path.join(source_folder, "pytorch_model.bin"))
-    else:
+    same_dir = os.path.abspath(source_folder) == os.path.abspath(dest_folder)
+
+    if not same_dir and os.path.exists(dest_folder):
+        shutil.rmtree(dest_folder)
+    os.makedirs(dest_folder, exist_ok=True)
+
+    pt_path = os.path.join(source_folder, "pytorch_model.bin")
+    if os.path.exists(pt_path):
+        print(f"Converting single file model: {pt_path}")
+        sf_path = os.path.join(dest_folder, "model.safetensors")
+        convert_file(pt_path, sf_path, copy_add_data=True)
+        if delete_old and not same_dir:
+            os.remove(pt_path)
+        return
+
+    index_file = find_index_file(source_folder)
+    if index_file:
+        print(f"Found index file: {index_file}")
         convert_files(source_folder, dest_folder, delete_old)
+        return
+
+    raise RuntimeError("No compatible model files found")

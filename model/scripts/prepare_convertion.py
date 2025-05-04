@@ -4,8 +4,9 @@ from download_pytorch_model import download_model
 import sys
 import os
 
-if __name__ == "__main__":
+sys.stdout.reconfigure(encoding='utf-8')
 
+if __name__ == "__main__":
     script_dir = os.path.dirname(os.path.realpath(__file__))
 
     if len(sys.argv) != 3:
@@ -15,7 +16,18 @@ if __name__ == "__main__":
     src_lang = sys.argv[1]
     tgt_lang = sys.argv[2]
 
-    models_dir = os.path.join(script_dir, "models")
+    models_dir = os.path.join(script_dir, "converted_models")
+
+    if os.path.exists(models_dir):
+        print("Cleaning existing models directory...")
+        for root, dirs, files in os.walk(models_dir, topdown=False):
+            for name in files:
+                os.remove(os.path.join(root, name))
+            for name in dirs:
+                os.rmdir(os.path.join(root, name))
+        os.rmdir(models_dir)
+
+    os.makedirs(models_dir, exist_ok=True)
 
     download_model(
         model_name=f"{src_lang}-{tgt_lang}",
