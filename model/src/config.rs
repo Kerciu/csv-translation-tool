@@ -45,11 +45,6 @@ pub fn build_model_id(src_lang: &str, tgt_lang: &str) -> String {
 pub fn check_model_exists(model_id: &str) -> Result<()> {
     let api = Api::new()?;
 
-    // let files = api.model(model_id.to_string()).list_files()?;
-    // for file in files {
-    //     println!("Available file: {}", file);
-    // }
-
     let model = api.model(model_id.to_string());
 
     match model.get("model.safetensors") {
@@ -67,12 +62,12 @@ pub fn check_model_exists(model_id: &str) -> Result<()> {
         Err(_) => return Err(Error::msg("Neither safetensors nor pytorch model found")),
     };
 
-    let script_path = "scripts/convert-to-safetensors/convert_to_safetensor.py";
+    let script_path = "scripts/convert-to-safetensors.py";
     let output = Command::new("python")
         .arg(script_path)
-        .arg("--src_directory")
+        .arg("--src_dir")
         .arg(bin_path.parent().unwrap())
-        .arg("--dest_directory")
+        .arg("--dest_dir")
         .arg(bin_path.parent().unwrap())
         .output()?;
 
@@ -84,6 +79,34 @@ pub fn check_model_exists(model_id: &str) -> Result<()> {
     }
 
     Ok(())
+}
+
+fn create_config_from_json(config_json_path: &str) -> Result<marian::Config> {
+    let file = std::fs::File::open(config_json_path)?;
+    let reader = std::io::BufReader::new(file);
+    let config: ModelConfig = serde_json::from_reader(reader)?;
+    Ok(config)
+}
+
+fn generate_preparation_files(src_lang: &str, tgt_lang: &str) -> Result<()> {
+    let script_path = "scripts/prepare_convertion.py";
+    let output = Command::new("python")
+        .arg(script_path)
+        .arg(src_lang)
+        .arg(tgt_lang)
+        .output()?;
+
+    if !output.status.success() {
+        return Err(Error::msg(format!(
+            "Preparation script failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        )));
+    }
+    Ok(())
+}
+
+fn construct_model_config_from_json(src_lang: &str, tgt_lang: &str) -> Result<marian::Config> {
+
 }
 
 pub fn get_model_config(src_lang: &str, tgt_lang: &str) -> Result<ModelConfig> {
@@ -101,7 +124,7 @@ pub fn get_model_config(src_lang: &str, tgt_lang: &str) -> Result<ModelConfig> {
         "Helsinki-NLP/opus-mt-en-es" => marian::Config::opus_mt_en_es(),
         "Helsinki-NLP/opus-mt-en-fr" => marian::Config::opus_mt_en_fr(),
         "Helsinki-NLP/opus-mt-en-ru" => marian::Config::opus_mt_en_ru(),
-        _ => return Err(Error::msg("Unsupported model")),
+        _ => construct_model_config_from_json(src_lang, tgt_lang)?,
     };
 
     Ok(ModelConfig {
