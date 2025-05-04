@@ -49,6 +49,9 @@ def rename(pt_filename):
     return pt_filename.replace("pytorch_model", "model").replace(".bin", ".safetensors")
 
 def copy_additional_files(source_folder, dest_folder):
+    if os.path.abspath(source_folder) == os.path.abspath(dest_folder):
+        return
+
     for file in os.listdir(source_folder):
         file_path = os.path.join(source_folder, file)
         if os.path.isfile(file_path) and not (file.endswith('.bin') or file.endswith('.py')):
