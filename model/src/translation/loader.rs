@@ -1,5 +1,5 @@
 use crate::config::ModelConfig;
-use super::{tokenizer::*, model::TranslationModel};
+use crate::translation::model::TranslationModel;
 use hf_hub::{api::sync::Api, Repo, RepoType};
 use candle::{Device, DType, Tensor};
 use candle_nn::VarBuilder;

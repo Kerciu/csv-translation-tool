@@ -1,5 +1,4 @@
 pub mod model;
-pub mod tokenizer;
 pub mod loader;
 pub mod language;
 

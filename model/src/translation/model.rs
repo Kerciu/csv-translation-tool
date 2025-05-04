@@ -64,7 +64,7 @@ impl TranslationModel {
             load_from_candle(&api, model_config, device)
         }
         else {
-            load_with_convertion(model_config, device)
+            convert_and_load(model_config, device)
         }
 
     }
