@@ -5,8 +5,9 @@ use candle_transformers::models::marian::MTModel;
 use tokenizers::Tokenizer;
 use candle_transformers::generation::LogitsProcessor;
 use hf_hub::{api::sync::Api, Repo, RepoType};
+use candle_nn::Activation;
 
-use crate::{config::ModelConfig, translation::loader::load_from_candle, translation::loader::load_with_convertion};
+use crate::{config::ModelConfig, translation::loader::load_from_candle, translation::loader::convert_and_load};
 
 #[derive(Clone, Debug, Copy, ValueEnum)]
 enum Which {
