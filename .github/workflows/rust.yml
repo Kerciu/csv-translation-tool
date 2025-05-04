@@ -8,15 +8,16 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  ACTIONS_STEP_DEBUG: true
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Rust
-        uses: actions/setup-rust@v2
+        uses: actions/setup-rust@v1
         with:
           rust-version: 1.85.0
       - name: Install Clippy
