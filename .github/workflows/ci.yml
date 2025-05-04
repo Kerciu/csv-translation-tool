@@ -1,11 +1,22 @@
 name: "Rust Test Suite"
 on:
   push:
-    branches: [ main ]
+    # branches: [ main ]
   pull_request:
+    # branches: [ main ]
 
 jobs:
   test:
+    name: cargo test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: change directory to rust project
+        run: cd model
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - run: cargo test --verbose
+
+  lint:
     name: cargo clippy
     runs-on: ubuntu-latest
     steps:
