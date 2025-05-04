@@ -12,6 +12,7 @@ pub struct ModelConfig {
     pub model_id: String,
     pub src_token: String,
     pub tgt_token: String,
+    pub marian_config: marian::Config,
     pub decoder_start_token_id: u32,
     pub max_position_embeddings: usize,
     pub eos_token_id: u32,
@@ -93,20 +94,7 @@ fn activation_from_str(s: &str) -> Result<Activation> {
 
 impl ModelConfig {
     pub fn to_marian_config(&self) -> candle_transformers::models::marian::Config {
-        let src_lang = self.src_token.trim_start_matches(">>").trim_end_matches("<<");
-        let tgt_lang = self.tgt_token.trim_start_matches(">>").trim_end_matches("<<");
-
-        println!("Converting to Marian config for model ID: {}", self.model_id);
-        match self.model_id.as_str() {
-            "Helsinki-NLP/opus-mt-fr-en" => marian::Config::opus_mt_fr_en(),
-            "Helsinki-NLP/opus-mt-tc-big-fr-en" => marian::Config::opus_mt_tc_big_fr_en(),
-            "Helsinki-NLP/opus-mt-en-zh" => marian::Config::opus_mt_en_zh(),
-            "Helsinki-NLP/opus-mt-en-hi" => marian::Config::opus_mt_en_hi(),
-            "Helsinki-NLP/opus-mt-en-es" => marian::Config::opus_mt_en_es(),
-            "Helsinki-NLP/opus-mt-en-ru" => marian::Config::opus_mt_en_ru(),
-            _ => construct_model_config_from_json(&src_lang, &tgt_lang)
-                .expect("Failed to construct Marian config from json"),
-        }
+        self.marian_config.clone()
     }
 }
 
@@ -247,13 +235,19 @@ pub fn get_model_config(src_lang: &str, tgt_lang: &str) -> Result<ModelConfig> {
         "Helsinki-NLP/opus-mt-en-es" => marian::Config::opus_mt_en_es(),
         "Helsinki-NLP/opus-mt-en-fr" => marian::Config::opus_mt_en_fr(),
         "Helsinki-NLP/opus-mt-en-ru" => marian::Config::opus_mt_en_ru(),
-        _ => construct_model_config_from_json(src_lang, tgt_lang)?,
+        _ => {
+            if !conversion_files_exist(src_lang, tgt_lang)? {
+                generate_preparation_files(src_lang, tgt_lang)?;
+            }
+            construct_model_config_from_json(src_lang, tgt_lang)?
+        }
     };
 
     Ok(ModelConfig {
         model_id,
         src_token: format!(">>{}<<", src_lang),
         tgt_token: format!(">>{}<<", tgt_lang),
+        marian_config: marian_config.clone(),
         decoder_start_token_id: marian_config.decoder_start_token_id,
         max_position_embeddings: marian_config.max_position_embeddings,
         eos_token_id: marian_config.eos_token_id,
