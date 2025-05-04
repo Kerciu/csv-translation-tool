@@ -18,11 +18,21 @@ def download_file(url, save_path):
         print(f"Failed to download from {url}. Status code: {response.status_code}")
 
 
-def download_model(model_name, save_dir):
+def download_model(model_name, save_dir, src_lang, tgt_lang,):
     base_url = f"https://huggingface.co/{build_model_name(model_name)}/resolve/main"
 
-    model_path = os.path.join(save_dir, "pytorch_model.bin")
-    download_file(f"{base_url}/pytorch_model.bin", model_path)
+    # Original files from Hugging Face
+    hf_model_file = "pytorch_model.bin"
+    hf_config_file = "config.json"
 
-    config_path = os.path.join(save_dir, "config.json")
-    download_file(f"{base_url}/config.json", config_path)
+    # Local files with language tags
+    local_model_file = f"pytorch_model-{src_lang}-{tgt_lang}.bin"
+    local_config_file = f"config-{src_lang}-{tgt_lang}.json"
+
+    # Download model with language-specific naming
+    model_path = os.path.join(save_dir, local_model_file)
+    download_file(f"{base_url}/{hf_model_file}", model_path)
+
+    # Download config with language-specific naming
+    config_path = os.path.join(save_dir, local_config_file)
+    download_file(f"{base_url}/{hf_config_file}", config_path)

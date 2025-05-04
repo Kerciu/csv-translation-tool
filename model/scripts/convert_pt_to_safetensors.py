@@ -111,30 +111,19 @@ def convert_files(source_folder, dest_folder, delete_old):
         json.dump({**index_data, "weight_map": new_map}, f, indent=4)
 
 
-def convert_pt_to_safetensors(source_folder, dest_folder=None, delete_old=False):
+def convert_pt_to_safetensors(src_lang, tgt_lang, source_folder, dest_folder=None, delete_old=False):
     if not dest_folder:
-        model_name = os.path.basename(os.path.normpath(source_folder))
-        dest_folder = os.path.join(os.path.dirname(source_folder), f"{model_name}_safetensors")
+        dest_folder = source_folder  # Keep same directory for conversion
 
-    same_dir = os.path.abspath(source_folder) == os.path.abspath(dest_folder)
-
-    if not same_dir and os.path.exists(dest_folder):
-        shutil.rmtree(dest_folder)
+    # Remove directory cleanup to preserve tokenizers
     os.makedirs(dest_folder, exist_ok=True)
 
-    pt_path = os.path.join(source_folder, "pytorch_model.bin")
+    pt_path = os.path.join(source_folder, f"pytorch_model-{src_lang}-{tgt_lang}.bin")
     if os.path.exists(pt_path):
         print(f"Converting single file model: {pt_path}")
-        sf_path = os.path.join(dest_folder, "model.safetensors")
+        sf_path = os.path.join(dest_folder, f"model-{src_lang}-{tgt_lang}.safetensors")
         convert_file(pt_path, sf_path, copy_add_data=True)
-        if delete_old and not same_dir:
+        if delete_old:  # Remove directory comparison
+            print(f"Deleting original PyTorch file: {pt_path}")
             os.remove(pt_path)
         return
-
-    index_file = find_index_file(source_folder)
-    if index_file:
-        print(f"Found index file: {index_file}")
-        convert_files(source_folder, dest_folder, delete_old)
-        return
-
-    raise RuntimeError("No compatible model files found")

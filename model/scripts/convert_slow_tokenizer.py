@@ -58,7 +58,7 @@ def convert_slow_tokenizer(src_lang, tgt_lang, dest_folder):
     tokenizer = AutoTokenizer.from_pretrained(f"Helsinki-NLP/opus-mt-{src_lang}-{tgt_lang}", use_fast=False)
 
     fast_tokenizer = MarianConverter(tokenizer, index=0).converted()
-    fast_tokenizer.save(os.path.join(dest_folder, f"tokenizer-marian-base-{src_lang}.json"))
+    fast_tokenizer.save(os.path.join(dest_folder, f"tokenizer-marian-base-{src_lang}-{tgt_lang}.json"))
 
     fast_tokenizer = MarianConverter(tokenizer, index=1).converted()
-    fast_tokenizer.save(os.path.join(dest_folder, f"tokenizer-marian-base-{tgt_lang}.json"))
+    fast_tokenizer.save(os.path.join(dest_folder, f"tokenizer-marian-base-{tgt_lang}-{src_lang}.json"))
