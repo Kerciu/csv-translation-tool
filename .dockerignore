@@ -1,11 +1,37 @@
-node_modules
-.next
-pnpm-store
-*.log
-client/node_modules
-client/.next
-client/pnpm-store
+# global ignores
 *.pyc
+*.pyo
+*.pyd
+*.so
+*.log
 *.lock
 *.sock
-.venv
+*.whl
+*.pt
+*.bin
+*.onnx
+*.ipynb
+*.ipynb_checkpoints
+
+# python & rust cache
+__pycache__/
+target/
+.venv/
+.cache/
+converted_models/
+hf_models/
+
+# node.js & next.js
+node_modules/
+.next/
+pnpm-store/
+client/node_modules/
+client/.next/
+client/pnpm-store/
+
+# IDE & system files
+.vscode/
+.DS_Store
+Thumbs.db
+sqlite3.db
+*.sqlite3
