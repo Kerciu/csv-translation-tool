@@ -55,7 +55,7 @@ services:
     build:
       context: ./model
       dockerfile: Dockerfile
-    image: model:latest
+    image: translator-model:latest
     container_name: translator-model
     volumes:
       - model-cache:/root/.cache/huggingface
