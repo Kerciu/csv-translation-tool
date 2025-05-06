@@ -1,8 +1,8 @@
+pub mod translation;
 pub mod config;
-pub mod model;
 
 use config::get_model_config;
-use model::TranslationModel;
+use translation::model::TranslationModel;
 use pyo3::prelude::*;
 
 #[pyfunction]
@@ -17,6 +17,7 @@ fn translate(text: &str, src_lang: &str, tgt_lang: &str) -> PyResult<String> {
     model.translate(text)
         .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))
 }
+
 
 #[pymodule]
 fn translation_module(_py: Python, m: &PyModule) -> PyResult<()> {
