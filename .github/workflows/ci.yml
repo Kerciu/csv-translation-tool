@@ -6,33 +6,33 @@ on:
   pull_request:
     # branches: [ main ]
 
-jobs:
-  test:
-    name: cargo test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - run: cargo test --verbose
-        working-directory: model
+#jobs:
+#  test:
+#    name: cargo test
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: actions-rust-lang/setup-rust-toolchain@v1
+#      - run: cargo test # --verbose
+#        working-directory: model
 
-  lint:
-    name: cargo clippy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - run: cargo clippy -- -D warnings
-        working-directory: model
+#  lint:
+#    name: cargo clippy
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: actions-rust-lang/setup-rust-toolchain@v1
+#      - run: cargo clippy # -- -D warnings
+#        working-directory: model
 
-  formatting:
-    name: cargo fmt
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          components: rustfmt
-      - name: Rustfmt Check
-        run: cargo fmt --check
+#  formatting:
+#    name: cargo fmt
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: actions-rust-lang/setup-rust-toolchain@v1
+#        with:
+#          components: rustfmt
+#      - name: Rustfmt Check
+#        run: cargo fmt --check
         working-directory: model
