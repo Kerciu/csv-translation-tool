@@ -9,10 +9,10 @@ django-redis==5.2.0
 redis==4.5.4
 torch==2.3.1
 maturin==1.4.0
-tokenizers==0.15.2
-huggingface-hub=0.30.2
+tokenizers==0.21.1
+huggingface-hub==0.30.2
 safetensors==0.5.3
-tqdm==0.0.1
+tqdm==4.67.1
 numpy==1.26.4
-sentencepiece==0.2.0
-optree==1.15.0
+sentencepiece>=0.2.0
+# optree==1.15.0
