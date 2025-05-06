@@ -20,10 +20,6 @@ services:
     ports:
       - "8000:8000"
     container_name: translator-server
-    volumes:
-      - ./shared:/shared
-    command: >
-      bash -c "pip install /shared/translation_model*.whl && python manage.py runserver 0.0.0.0:8000"
     depends_on:
       - db
       - redis
@@ -63,11 +59,8 @@ services:
     container_name: translator-model
     volumes:
       - model-cache:/root/.cache/huggingface
-      - ./shared:/shared
     environment:
       - HF_HOME=/root/.cache/huggingface
-    command: >
-      bash -c "cp /model/wheels/*.whl /shared && tail -f /dev/null"
 
   redis:
     image: redis:alpine
