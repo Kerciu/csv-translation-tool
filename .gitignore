@@ -91,3 +91,5 @@ ENV/
 # Other repositories
 candle/
 converted_models/
+model/.dockerignore
+converted_models/

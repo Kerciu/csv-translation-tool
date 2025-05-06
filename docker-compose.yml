@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   client:
     build:
@@ -13,7 +11,7 @@ services:
     # volumes:
     #   - ./client:/client
     depends_on:
-      - db
+      - server
 
   server:
     build:
@@ -25,6 +23,7 @@ services:
     depends_on:
       - db
       - redis
+      - model
     environment:
       - SECRET_KEY=${SECRET_KEY}
       - DEBUG=${DEBUG}
@@ -52,6 +51,17 @@ services:
       timeout: 10s
       retries: 5
 
+  model:
+    build:
+      context: ./model
+      dockerfile: Dockerfile
+    image: translator-model:latest
+    container_name: translator-model
+    volumes:
+      - model-cache:/root/.cache/huggingface
+    environment:
+      - HF_HOME=/root/.cache/huggingface
+
   redis:
     image: redis:alpine
     container_name: translator-redis
@@ -60,3 +70,4 @@ services:
 
 volumes:
   mongodb_data:
+  model-cache:
