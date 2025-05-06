@@ -1,3 +1,5 @@
+# TODO - implement those and docker setup test
+
 name: "Rust Test Suite"
 on:
   push:
