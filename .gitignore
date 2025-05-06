@@ -92,3 +92,4 @@ ENV/
 candle/
 converted_models/
 model/.dockerignore
+converted_models/
