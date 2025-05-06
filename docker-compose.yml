@@ -11,17 +11,19 @@ services:
     # volumes:
     #   - ./client:/client
     depends_on:
-      - db
+      - server
 
   server:
-    volumes:
-      - ./shared:/shared
     build:
       context: ./server
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
     container_name: translator-server
+    volumes:
+      - ./shared:/shared
+    command: >
+      bash -c "pip install /shared/translation_model*.whl && python manage.py runserver 0.0.0.0:8000"
     depends_on:
       - db
       - redis
@@ -65,7 +67,7 @@ services:
     environment:
       - HF_HOME=/root/.cache/huggingface
     command: >
-      bash -c "cp /model/target/wheels/*.whl /shared && tail -f /dev/null"
+      bash -c "cp /model/wheels/*.whl /shared && tail -f /dev/null"
 
   redis:
     image: redis:alpine

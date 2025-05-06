@@ -1,20 +1,17 @@
-FROM python:3.12-slim
+FROM python:3.11-slim
 
 WORKDIR /server
+
+# COPY --from=translator-model:latest /*.whl /tmp/
+
+COPY requirements.txt .
 
 RUN apt-get update && \
     apt-get install -y libssl-dev && \
     rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
-
 RUN pip install --no-cache-dir -r requirements.txt
-
-COPY --from=translator-model /model/*.whl .
-
-RUN pip install --no-cache-dir translation_model-*.whl && \
-    rm translation_model-*.whl
-
+    # pip install /tmp/*.whl
 COPY . .
 
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

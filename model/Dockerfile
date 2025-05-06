@@ -18,12 +18,31 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 RUN pip install maturin
 
-RUN maturin build --release --strip --out /model/target/wheels
+RUN mkdir -p /model/wheels
+
+RUN maturin build --release --strip --out /model/wheels && ls -la /model/wheels
+
+# instead of python-slim
+
+# FROM scratch AS export
+# COPY --from=builder /model/wheels/*.whl /
+
+# but for now
 
 FROM python:3.11-slim
 
 WORKDIR /model
 
-COPY --from=builder /model/target/wheels/*.whl /dist/
+# Copy built wheels
+COPY --from=builder /model/wheels/*.whl /dist/
 
+# Copy necessary files from builder stage
+COPY --from=builder /model/scripts ./scripts/
+COPY --from=builder /model/tests ./tests/
+
+# Install the package
 RUN pip install /dist/*.whl
+
+# Optional: Copy other needed files from host
+COPY . .
+
