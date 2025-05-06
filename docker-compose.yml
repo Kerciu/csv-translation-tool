@@ -14,6 +14,8 @@ services:
       - db
 
   server:
+    volumes:
+      - ./shared:/shared
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -59,8 +61,11 @@ services:
     container_name: translator-model
     volumes:
       - model-cache:/root/.cache/huggingface
+      - ./shared:/shared
     environment:
       - HF_HOME=/root/.cache/huggingface
+    command: >
+      bash -c "cp /model/target/wheels/*.whl /shared && tail -f /dev/null"
 
   redis:
     image: redis:alpine
