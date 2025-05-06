@@ -12,6 +12,7 @@
 *.onnx
 *.ipynb
 *.ipynb_checkpoints
+**/shared/*.whl
 
 # python & rust cache
 __pycache__/
@@ -20,6 +21,7 @@ target/
 .cache/
 converted_models/
 hf_models/
+opt/
 
 # node.js & next.js
 node_modules/
@@ -35,3 +37,11 @@ client/pnpm-store/
 Thumbs.db
 sqlite3.db
 *.sqlite3
+.git/
+.github/
+.gitignore
+
+# other
+candle/
+tokenizer*.json
+*.safetensors
