@@ -1,5 +1,5 @@
-import languages from "@/data/languages"
+import languages from '@/data/languages';
 
 export const getLanguageInfo = (code: string) => {
-    return languages.find((lang) => lang.value === code) || { value: code, label: code, flag: "🌐" }
-}
+  return languages.find((lang) => lang.value === code) || { value: code, label: code, flag: '🌐' };
+};

@@ -1,17 +1,17 @@
-import React from 'react'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
-import faqs from '@/data/faqs'
+import React from 'react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
+import faqs from '@/data/faqs';
 
 const FAQSection = () => {
   return (
-    <section className='py-12 bg-background'>
-      <div className='container px-4 mx-auto'>
-        <div className='text-center mb-8'>
+    <section className='bg-background py-12'>
+      <div className='container mx-auto px-4'>
+        <div className='mb-8 text-center'>
           <h2 className='text-2xl font-bold'>Frequently Asked Questions</h2>
-          <p className='text-muted-foreground mt-2'>Learn more about our CSV translation tool</p>
+          <p className='mt-2 text-muted-foreground'>Learn more about our CSV translation tool</p>
         </div>
 
-        <div className='max-w-3xl mx-auto'>
+        <div className='mx-auto max-w-3xl'>
           <Accordion type='single' collapsible className='w-full'>
             {faqs.map((faq) => (
               <AccordionItem key={faq.id} value={faq.id}>
@@ -23,7 +23,7 @@ const FAQSection = () => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default FAQSection
+export default FAQSection;
