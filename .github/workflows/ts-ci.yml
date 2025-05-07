@@ -24,7 +24,9 @@ jobs:
           cache: 'pnpm'
 
       - name: Install PNPM
-        run: npm install -g pnpm
+        run: |
+          npm install -g pnpm
+          echo "::add-path::$(npm bin -g)"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -66,7 +68,9 @@ jobs:
           cache: 'pnpm'
 
       - name: Install PNPM
-        run: npm install -g pnpm
+        run: |
+          npm install -g pnpm
+          echo "::add-path::$(npm bin -g)"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
