@@ -19,25 +19,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Debug - list current directory
-        run: ls -la
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Cache PNPM modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pnpm-store
+            node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-
-      - name: Enable Corepack and install PNPM
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
 
       - name: Install dependencies
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
-          pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --store-dir=~/.pnpm-store
 
       - name: Run type checking
         run: pnpm run type-check
@@ -51,7 +53,7 @@ jobs:
       - name: Check formatting
         id: check-formatting
         run: |
-          git diff --exit-code || echo "has_changes=true" >> $GITHUB_ENV
+          git diff --exit-code -- ./client || echo "has_changes=true" >> $GITHUB_ENV
 
       - name: Commit formatting changes
         if: env.has_changes == 'true'
@@ -71,19 +73,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Cache PNPM modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pnpm-store
+            client/node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('client/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-
-      - name: Enable Corepack and install PNPM
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --store-dir=~/.pnpm-store
 
       - name: Build application
         run: pnpm run build
