@@ -19,14 +19,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Debug - list current directory
+        run: ls -la
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
-
-      - name: Debug - list current directory
-        run: ls -la
 
       - name: Enable Corepack and install PNPM
         run: |
