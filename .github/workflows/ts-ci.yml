@@ -25,6 +25,9 @@ jobs:
           node-version: 20
           cache: 'npm'
 
+      - name: Debug - list current directory
+        run: ls -la
+
       - name: Enable Corepack and install PNPM
         run: |
           corepack enable
