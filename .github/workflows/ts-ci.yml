@@ -19,11 +19,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js and PNPM
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: 'npm'
+
+      - name: Enable Corepack and install PNPM
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
 
       - name: Install dependencies
         run: |
@@ -63,17 +68,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js and PNPM
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: 'npm'
 
-      - name: Install dependencies
+      - name: Enable Corepack and install PNPM
         run: |
           corepack enable
           corepack prepare pnpm@latest --activate
-          pnpm install --frozen-lockfile
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Build application
         run: pnpm run build
