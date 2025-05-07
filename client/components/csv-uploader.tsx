@@ -49,7 +49,7 @@ const CSVUploader = ({ onFileUpload }: CSVUploaderProps) => {
     /* ... file processing ... */
     setLoading(true);
     Papa.parse(file, {
-      complete: (results) => {
+      complete: (results: Papa.ParseResult<unknown>) => {
         const parsedData = results.data as string[][];
         if (parsedData && parsedData.length > 0) {
           const headers = parsedData[0];
@@ -68,7 +68,7 @@ const CSVUploader = ({ onFileUpload }: CSVUploaderProps) => {
 
   return (
     <div
-      className={`rounded-lg border-2 border-dashed p-10 text-center 
+      className={`rounded-lg border-2 border-dashed p-10 text-center
             ${isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/20'}`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
