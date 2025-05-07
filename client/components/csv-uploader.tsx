@@ -1,109 +1,100 @@
 'use client';
 
-import { FileSpreadsheet, Upload } from 'lucide-react'
-import React, { useRef, useState } from 'react'
-import { Button } from './ui/button'
-import Papa from "papaparse";
+import { FileSpreadsheet, Upload } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { Button } from './ui/button';
+import Papa from 'papaparse';
 
 interface CSVUploaderProps {
-    onFileUpload: (data: string[][], headers: string[]) => void
+  onFileUpload: (data: string[][], headers: string[]) => void;
 }
 
 const CSVUploader = ({ onFileUpload }: CSVUploaderProps) => {
+  const [isDragging, setDragging] = useState<boolean>(false);
+  const [isLoading, setLoading] = useState<boolean>(false);
 
-    const [isDragging, setDragging] = useState<boolean>(false);
-    const [isLoading, setLoading] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const fileInputRef = useRef<HTMLInputElement>(null);
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragging(true);
+  };
 
-    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        setDragging(true);
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragging(false);
+  };
+
+  const handleDragDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+        processFile(file);
+      }
     }
+  };
 
-    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        setDragging(false);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      processFile(files[0]);
     }
+  };
 
-    const handleDragDrop = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        setDragging(false);
-        
-        const files = e.dataTransfer.files
-        if (files && files.length > 0)
-        {
-            const file = files[0]
-            if (file.type === 'text/csv' || file.name.endsWith('.csv'))
-            {
-                processFile(file);
-            }
+  const processFile = (file: File) => {
+    /* ... file processing ... */
+    setLoading(true);
+    Papa.parse(file, {
+      complete: (results: Papa.ParseResult<unknown>) => {
+        const parsedData = results.data as string[][];
+        if (parsedData && parsedData.length > 0) {
+          const headers = parsedData[0];
+          const data = parsedData.slice(1).filter((row) => row.some((cell) => cell.trim() !== ''));
+
+          onFileUpload(data, headers);
         }
-    }
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (files && files.length > 0)
-        {
-            processFile(files[0]);
-        }
-    }
+        setLoading(false);
+      },
+      error: () => {
+        setLoading(false);
+      },
+    });
+  };
 
-    const processFile = (file: File) => {
-        /* ... file processing ... */
-        setLoading(true);
-        Papa.parse(file, {
-            complete: (results) => {
-                const parsedData = results.data as string[][];
-                if (parsedData && parsedData.length > 0)
-                {
-                    const headers = parsedData[0];
-                    const data = parsedData.slice(1).filter(
-                        (row) => row.some((cell) => cell.trim() !== "")
-                    );
-                    
-                    onFileUpload(data, headers);
-                }
+  return (
+    <div
+      className={`rounded-lg border-2 border-dashed p-10 text-center
+            ${isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/20'}`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDragDrop}
+    >
+      <input
+        type='file'
+        accept='.csv'
+        className='hidden'
+        ref={fileInputRef}
+        onChange={handleFileChange}
+      />
 
-                setLoading(false);
-            },
-            error: () => {
-                setLoading(false);
-            }
-        })
-    }
+      <FileSpreadsheet className='mx-auto mb-4 size-12 text-muted-foreground' />
 
-    return (
-        <div className={`border-2 border-dashed rounded-lg p-10 text-center 
-            ${isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/20'
-            }`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDragDrop}    
-        >
-            <input
-                type='file'
-                accept='.csv'
-                className='hidden'
-                ref={fileInputRef}
-                onChange={handleFileChange}
-            />
+      <h3 className='mb-2 text-lg font-medium'>Upload your CSV File</h3>
+      <p className='mb-6 text-muted-foreground'>
+        Drag and drop your file here, or click the button below
+      </p>
 
-            <FileSpreadsheet className='mx-auto h-12 w-12 text-muted-foreground mb-4'/>
+      <Button className='gap-2' disabled={isLoading} onClick={() => fileInputRef.current?.click()}>
+        <Upload className='size-4' />
+        Select your CSV File
+      </Button>
+    </div>
+  );
+};
 
-            <h3 className='text-lg font-medium mb-2'>Upload your CSV File</h3>
-            <p className='text-muted-foreground mb-6'>Drag and drop your file here, or click the button below</p>
-
-            <Button
-                className='gap-2'
-                disabled={isLoading}
-                onClick={() => fileInputRef.current?.click()}
-            >
-                <Upload className='h-4 w-4'/>
-                Select your CSV File
-            </Button>
-        </div>
-    )
-}
-
-export default CSVUploader
+export default CSVUploader;

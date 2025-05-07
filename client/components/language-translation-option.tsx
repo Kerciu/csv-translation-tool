@@ -1,16 +1,19 @@
-import React, { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
-import LanguagePopover from './language-popover'
-import { LanguageType } from '@/lib/types'
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import LanguagePopover from './language-popover';
+import { LanguageType } from '@/lib/types';
 
 interface LanguageTranslationOptionProps {
-    sourceLanguage: string
-    targetLanguage: string
-    onLanguageChange: (type: LanguageType, language: string) => void
+  sourceLanguage: string;
+  targetLanguage: string;
+  onLanguageChange: (type: LanguageType, language: string) => void;
 }
 
-const LanguageTranslationOption = ({ sourceLanguage = "en", targetLanguage = "es", onLanguageChange }: LanguageTranslationOptionProps) => {
-
+const LanguageTranslationOption = ({
+  sourceLanguage = 'en',
+  targetLanguage = 'es',
+  onLanguageChange,
+}: LanguageTranslationOptionProps) => {
   const [targetOpen, setTargetOpen] = useState(false);
   const [sourceOpen, setSourceOpen] = useState(false);
 
@@ -40,7 +43,7 @@ const LanguageTranslationOption = ({ sourceLanguage = "en", targetLanguage = "es
         </div>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default LanguageTranslationOption
+export default LanguageTranslationOption;

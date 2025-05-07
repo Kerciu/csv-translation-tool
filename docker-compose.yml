@@ -4,14 +4,17 @@ services:
       context: ./client
       dockerfile: Dockerfile
     environment:
-      - NEXT_OUTPUT=production
+      - NEXT_OUTPUT=${NEXT_OUTPUT}
     ports:
       - "3000:3000"
     container_name: translator-client
-    # volumes:
-    #   - ./client:/client
     depends_on:
       - server
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   server:
     build:
@@ -27,11 +30,16 @@ services:
     environment:
       - SECRET_KEY=${SECRET_KEY}
       - DEBUG=${DEBUG}
-      - MONGO_URI=${MONGO_URI}
+      - MONGO_URL=${MONGO_URI}
       - REDIS_URL=${REDIS_URL}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/authentication/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   db:
     image: mongo:6.0
@@ -39,12 +47,10 @@ services:
     command: ["mongod", "--bind_ip_all", "--auth", "--quiet", "--logpath", "/dev/stdout", "--logappend"]
     ports:
       - "27017:27017"
-    # volumes:
-    #   - mongodb_data:/data/db
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=example
-      - MONGO_INITDB_DATABASE=translator
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
     healthcheck:
       test: ["CMD", "mongosh", "--username", "root", "--password", "example", "--eval", "db.adminCommand('ping')"]
       interval: 30s
@@ -67,6 +73,11 @@ services:
     container_name: translator-redis
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   mongodb_data:

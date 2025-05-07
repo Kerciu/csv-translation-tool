@@ -1,0 +1,7 @@
+.next
+node_modules
+out
+public
+*.config.js
+*.d.ts
+components/ui

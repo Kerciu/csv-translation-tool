@@ -1,3 +1,3 @@
-export type LanguageType = "source" | "target";
+export type LanguageType = 'source' | 'target';
 
-export type OperationType = `${Capitalize<LanguageType>} Language`
+export type OperationType = `${Capitalize<LanguageType>} Language`;

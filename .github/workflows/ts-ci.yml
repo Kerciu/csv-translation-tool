@@ -1,0 +1,101 @@
+name: Frontend CI Pipeline
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'client/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'client/**'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Cache PNPM modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pnpm-store
+            node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --store-dir=~/.pnpm-store
+
+      - name: Run type checking
+        run: pnpm run type-check
+
+      - name: Run ESLint
+        run: pnpm run lint
+
+      - name: Run Prettier
+        run: pnpm run format
+
+      - name: Check formatting
+        id: check-formatting
+        run: |
+          git diff --exit-code -- ./client || echo "has_changes=true" >> $GITHUB_ENV
+
+      - name: Commit formatting changes
+        if: env.has_changes == 'true'
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add .
+          git commit -m "style: Auto-formatting [skip ci]"
+          git push
+
+  build:
+    needs: lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Cache PNPM modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pnpm-store
+            client/node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('client/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --store-dir=~/.pnpm-store
+
+      - name: Build application
+        run: pnpm run build

@@ -1,12 +1,10 @@
-"use client"
+'use client';
 
-import React from 'react'
-import { Toaster } from './ui/toaster'
+import React from 'react';
+import { Toaster } from './ui/toaster';
 
 const ClientToaster = () => {
-  return (
-    <Toaster />
-  )
-}
+  return <Toaster />;
+};
 
-export default ClientToaster
+export default ClientToaster;
