@@ -27,7 +27,7 @@ services:
     environment:
       - SECRET_KEY=${SECRET_KEY}
       - DEBUG=${DEBUG}
-      - MONGO_URI=${MONGO_URI}
+      - MONGO_URL=${MONGO_URI}
       - REDIS_URL=${REDIS_URL}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
     env_file:
@@ -39,12 +39,10 @@ services:
     command: ["mongod", "--bind_ip_all", "--auth", "--quiet", "--logpath", "/dev/stdout", "--logappend"]
     ports:
       - "27017:27017"
-    # volumes:
-    #   - mongodb_data:/data/db
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=example
-      - MONGO_INITDB_DATABASE=translator
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
     healthcheck:
       test: ["CMD", "mongosh", "--username", "root", "--password", "example", "--eval", "db.adminCommand('ping')"]
       interval: 30s
