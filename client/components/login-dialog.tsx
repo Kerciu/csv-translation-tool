@@ -102,7 +102,7 @@ const LoginDialog = ({ isOpen, onOpenChange }: LoginDialogProps) => {
     >
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
-          <DialogTitle className='text-2x1'>Welcome to the CSV Translator</DialogTitle>
+          <DialogTitle className='text-2xl'>Welcome to the CSV Translator</DialogTitle>
           <DialogDescription>Sign in to access the full translation features</DialogDescription>
         </DialogHeader>
 

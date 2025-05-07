@@ -1,4 +1,4 @@
-import { Code2, Cpu, Database, BrainCircuit, HardDrive, Lock, Container } from 'lucide-react';
+import { Code2, Cpu, Database, BrainCircuit, Lock, Container } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export type Technology = {

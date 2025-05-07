@@ -54,7 +54,9 @@ const TranslationButtons = ({
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Some cells couldn't be translated accurately. Click to highlight all issues.</p>
+              <p>
+                Some cells couldn&apos;t be translated accurately. Click to highlight all issues.
+              </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

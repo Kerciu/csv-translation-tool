@@ -23,7 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 import { LanguageType } from '@/lib/types';
 import { getLanguageName } from '@/utils/getLanguageName';
 import { FileSpreadsheet, HelpCircle, Loader2, Upload } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 const Dashboard = () => {
   const [csvData, setCsvData] = useState<string[][]>([]);
@@ -46,32 +46,6 @@ const Dashboard = () => {
 
   const [showUploadConfirmation, setShowUploadConfirmation] = useState(false);
   const { toast } = useToast();
-
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-      return;
-    }
-
-    if (e.key === 'Escape') {
-      setSelectedRows([]);
-      setRowRange([1, 1]);
-
-      toast({
-        title: 'Selection cleared',
-        description: 'All rows have been deselected',
-      });
-    }
-
-    if (e.key === ' ' && !isTranslating && selectedColumns.length > 0 && selectedRows.length > 0) {
-      e.preventDefault();
-      translateCSV();
-    }
-
-    if ((e.ctrlKey || e.metaKey) && e.key === 's' && (csvData.length || translatedData.length)) {
-      e.preventDefault();
-      downloadCSV();
-    }
-  };
 
   const handleFileUpload = (uploadedData: string[][], uploadedHeaders: string[]) => {
     setCsvData(uploadedData);
@@ -120,7 +94,11 @@ const Dashboard = () => {
   };
 
   const handleLanguageChange = (type: LanguageType, language: string) => {
-    type === 'source' ? setSourceLanguage(language) : setTargetLanguage(language);
+    if (type === 'source') {
+      setSourceLanguage(language);
+    } else {
+      setTargetLanguage(language);
+    }
   };
 
   const handleCellEdit = (rowIndex: number, colIndex: number, value: string) => {
@@ -332,10 +310,52 @@ const Dashboard = () => {
     setTimeout(() => setHighlightErrors(false), 1500);
   };
 
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      if (e.key === 'Escape') {
+        setSelectedRows([]);
+        setRowRange([1, 1]);
+
+        toast({
+          title: 'Selection cleared',
+          description: 'All rows have been deselected',
+        });
+      }
+
+      if (
+        e.key === ' ' &&
+        !isTranslating &&
+        selectedColumns.length > 0 &&
+        selectedRows.length > 0
+      ) {
+        e.preventDefault();
+        translateCSV();
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key === 's' && (csvData.length || translatedData.length)) {
+        e.preventDefault();
+        downloadCSV();
+      }
+    },
+    [
+      isTranslating,
+      selectedColumns,
+      selectedRows,
+      csvData,
+      translatedData,
+      translateCSV,
+      downloadCSV,
+    ],
+  );
+
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedRows, selectedColumns, isTranslating, translatedData, csvData]);
+  }, [handleKeyDown]);
 
   if (isLoading || authLoading) {
     return (
@@ -360,7 +380,7 @@ const Dashboard = () => {
       <main className='container relative mx-auto flex-1 px-4 py-8'>
         <Card className='w-full'>
           <CardHeader className='text-center'>
-            <CardTitle className='text-3x1 flex items-center justify-center gap-4'>
+            <CardTitle className='flex items-center justify-center gap-4 text-3xl'>
               <FileSpreadsheet className='size-8' />
               CSV Translation Tool
             </CardTitle>

@@ -197,7 +197,6 @@ const CSVTable = ({
           open={showTranslationDialog}
           onOpenChange={setShowTranslationDialog}
           rowIdx={selectedCell.row}
-          colIdx={selectedCell.col}
           columnName={headers[selectedCell.col]}
           originalValue={originalData ? originalData[selectedCell.row][selectedCell.col] : ''}
           translatedValue={selectedCell.value}

@@ -18,7 +18,6 @@ interface CellTranslationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   rowIdx: number;
-  colIdx: number;
   columnName: string;
   originalValue: string;
   translatedValue: string;
@@ -33,7 +32,6 @@ const CellTranslationDialog = ({
   open,
   onOpenChange,
   rowIdx,
-  colIdx,
   columnName,
   originalValue,
   translatedValue,

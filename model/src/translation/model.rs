@@ -74,7 +74,6 @@ impl TranslationModel {
         let encoding = self.tokenizer.encode(input_text, true)
         .map_err(|e| Error::msg(format!("Encoding error: {}", e)))?;
 
-        println!("Tokenized input text: {}", input_text);
         println!("Token IDs: {:?}", encoding.get_ids());
         println!("Tokens: {:?}", encoding.get_tokens());
 

@@ -30,7 +30,13 @@
     "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
     "tailwindcss/classnames-order": "warn",
     "tailwindcss/no-custom-classname": "warn",
-    "tailwindcss/no-contradicting-classname": "error"
+    "tailwindcss/no-contradicting-classname": "error",
+    "react/no-unknown-property": [
+      "error",
+      {
+        "ignore": ["cmdk-input-wrapper"]
+      }
+    ]
   },
   "settings": {
     "react": {

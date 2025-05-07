@@ -26,7 +26,7 @@ const CreatorInfo = ({ fullName, githubLink, linkedinLink }: CreatorInfoProps) =
           href={linkedinLink}
           target='_blank'
           rel='noopener noreferrer'
-          className='m1-1 text-muted-foreground hover:text-foreground'
+          className='ml-1 text-muted-foreground hover:text-foreground'
         >
           <Linkedin className='size-4' />
           <span className='sr-only'>LinkedIn</span>

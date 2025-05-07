@@ -5,22 +5,27 @@ import type React from 'react';
 import { useState, createContext, useContext, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  provider?: string;
+}
+
 interface AuthContextProps {
-  user: any | null;
+  user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   loginWithProvider: (provider: string) => Promise<void>;
   logout: () => void;
-  getSavedTranslations: () => Promise<any[]>;
-  saveTranslation: (translationData: any) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -123,31 +128,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, 300);
   };
 
-  const getSavedTranslations = async () => {
-    return new Promise<any[]>((resolve) => {
-      const savedTranslations = localStorage.getItem('savedTranslations');
-      resolve(savedTranslations ? JSON.parse(savedTranslations) : []);
-    });
-  };
-
-  const saveTranslation = async (translationData: any) => {
-    return new Promise<void>((resolve) => {
-      const savedTranslations = localStorage.getItem('savedTranslations');
-      const existingTranslations = savedTranslations ? JSON.parse(savedTranslations) : [];
-      const newTranslation = {
-        id: Math.random().toString(36).substring(2, 9),
-        userId: user?.id,
-        timestamp: new Date().toISOString(),
-        data: translationData,
-      };
-      localStorage.setItem(
-        'savedTranslations',
-        JSON.stringify([...existingTranslations, newTranslation]),
-      );
-      resolve();
-    });
-  };
-
   const value: AuthContextProps = {
     user,
     isLoading,
@@ -155,8 +135,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     register,
     loginWithProvider,
     logout,
-    getSavedTranslations,
-    saveTranslation,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

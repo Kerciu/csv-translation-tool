@@ -40,8 +40,8 @@ const UploadConfirmationDialog = ({
           <div className='my-2 border-t border-muted' />
 
           <p className='mt-2 break-words text-sm text-muted-foreground'>
-            Uploading a new file will clear all your current data, including any translations you've
-            made.
+            Uploading a new file will clear all your current data, including any translations
+            you&apos;ve made.
           </p>
         </DialogHeader>
 

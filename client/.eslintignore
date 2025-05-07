@@ -4,3 +4,4 @@ out
 public
 *.config.js
 *.d.ts
+components/ui
