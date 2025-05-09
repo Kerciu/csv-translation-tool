@@ -6,6 +6,7 @@ pytest==7.4.3
 python-dotenv==1.1.0
 transformers==4.51.3
 django-redis==5.2.0
+djangorestframework==3.16.0
 redis==4.5.4
 # torch==2.3.1
 # tokenizers==0.21.1
