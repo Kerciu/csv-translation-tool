@@ -6,7 +6,8 @@ from django_mongodb_backend.models import EmbeddedModel
 from django.contrib.auth.models import AbstractUser
 
 
-class Cell(models.Model):
+class Cell(EmbeddedModel):
+    id = ObjectIdAutoField(primary_key=True)
     text = models.CharField(max_length=100)
     row_number = models.IntegerField(default=0)
     is_translated = models.BooleanField(default=False)
@@ -22,7 +23,8 @@ class Cell(models.Model):
     def __str__(self):
         return self.text
 
-class Column(models.Model):
+class Column(EmbeddedModel):
+    id = ObjectIdAutoField(primary_key=True)
     name = models.CharField(max_length=100)
     rows_number = models.IntegerField(default=0)
     column_number = models.IntegerField(default=0)
@@ -35,7 +37,7 @@ class Column(models.Model):
     def __str__(self):
         return self.name
 
-class File(models.Model):
+class File(EmbeddedModel):
     id = ObjectIdAutoField(primary_key=True)
     title = models.CharField(max_length=200)
     upload_time = models.DateTimeField("upload_time")
