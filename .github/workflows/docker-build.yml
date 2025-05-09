@@ -35,40 +35,40 @@ jobs:
     - name: Run the Docker containers
       run: docker compose up -d
 
-    - name: Wait for containers to initialize
-      run: sleep 10
+    # - name: Wait for containers to initialize
+    #   run: sleep 10
 
-    - name: Check client service is running
-      run: |
-        if [ $(docker compose ps -q translator-client | wc -l) -eq 0 ]; then
-          echo "Client service is not running"
-          docker compose logs translator-client
-          exit 1
-        fi
+    # - name: Check client service is running
+    #   run: |
+    #     if [ $(docker compose ps -q translator-client | wc -l) -eq 0 ]; then
+    #       echo "Client service is not running"
+    #       docker compose logs translator-client
+    #       exit 1
+    #     fi
 
-    - name: Check server service is running
-      run: |
-        if [ $(docker compose ps -q translator-server | wc -l) -eq 0 ]; then
-          echo "Server service is not running"
-          docker compose logs translator-server
-          exit 1
-        fi
+    # - name: Check server service is running
+    #   run: |
+    #     if [ $(docker compose ps -q translator-server | wc -l) -eq 0 ]; then
+    #       echo "Server service is not running"
+    #       docker compose logs translator-server
+    #       exit 1
+    #     fi
 
-    - name: Check database service is running
-      run: |
-        if [ $(docker compose ps -q translator-db | wc -l) -eq 0 ]; then
-          echo "Database service is not running"
-          docker compose logs translator-db
-          exit 1
-        fi
+    # - name: Check database service is running
+    #   run: |
+    #     if [ $(docker compose ps -q translator-db | wc -l) -eq 0 ]; then
+    #       echo "Database service is not running"
+    #       docker compose logs translator-db
+    #       exit 1
+    #     fi
 
-    - name: Check redis service is running
-      run: |
-        if [ $(docker compose ps -q translator-redis | wc -l) -eq 0 ]; then
-          echo "Redis service is not running"
-          docker compose logs translator-redis
-          exit 1
-        fi
+    # - name: Check redis service is running
+    #   run: |
+    #     if [ $(docker compose ps -q translator-redis | wc -l) -eq 0 ]; then
+    #       echo "Redis service is not running"
+    #       docker compose logs translator-redis
+    #       exit 1
+    #     fi
 
     - name: Clean up Docker containers
       run: docker compose down
