@@ -30,10 +30,10 @@ jobs:
         EOF
 
     - name: Build the Docker image
-      run: docker-compose build --no-cache
+      run: docker compose build --no-cache
 
     - name: Run the Docker containers
-      run: docker-compose up -d
+      run: docker compose up -d
 
     - name: Wait for containers to initialize
       run: sleep 10
@@ -71,4 +71,4 @@ jobs:
         fi
 
     - name: Clean up Docker containers
-      run: docker-compose down
+      run: docker compose down
