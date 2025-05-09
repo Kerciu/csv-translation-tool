@@ -9,10 +9,9 @@ def health_check(request):
 def log_in(request):
     return HttpResponse("Logged in")
 
+
 def sign_up(request):
     return HttpResponse("Signed up")
 
-def test_db_connection(request):
-    viewers = Viewer.objects.order_by("name").values_list("name", flat=True)[:10]
-    return JsonResponse(list(viewers), safe=False)
+
 
