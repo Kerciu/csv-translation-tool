@@ -30,7 +30,7 @@ services:
     environment:
       - SECRET_KEY=${SECRET_KEY}
       - DEBUG=${DEBUG}
-      - MONGO_URL=${MONGO_URI}
+      - MONGO_URL=${MONGO_URL}
       - REDIS_URL=${REDIS_URL}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
     env_file:
