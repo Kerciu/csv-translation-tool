@@ -25,3 +25,6 @@ base64 = "0.22.1"
 [dev-dependencies]
 anyhow = "1.0"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+
+[package.metadata.maturin]
+rustflags = ["-A", "warnings"]
