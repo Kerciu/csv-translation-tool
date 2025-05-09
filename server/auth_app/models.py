@@ -8,7 +8,7 @@ from translation_app.models import File
 class CustomUser(models.Model):
     id = ObjectIdAutoField(primary_key=True)
 
-    name = models.CharField(max_length=100)
+    username = models.CharField(max_length=100)
     email = models.CharField(max_length=200)
     salt = models.CharField(max_length=100)
     password = models.CharField(max_length=200)
