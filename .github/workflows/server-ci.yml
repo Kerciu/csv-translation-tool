@@ -20,9 +20,9 @@ jobs:
         ports:
           - 27017:27017
         env:
-          MONGO_INITDB_ROOT_USERNAME: root
-          MONGO_INITDB_ROOT_PASSWORD: example
-          MONGO_INITDB_DATABASE: translator
+          MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+          MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+          MONGO_INITDB_DATABASE: ${{ secrets.MONGO_INITDB_DATABASE }}
         options: >-
           --health-cmd "mongosh --username root --password example --eval 'db.adminCommand(\"ping\")'"
           --health-interval 30s
@@ -38,11 +38,11 @@ jobs:
           --health-timeout 10s
           --health-retries 5
     env:
-      MONGO_URL: "mongodb://root:example@db:27017/translator?authSource=admin"
-      REDIS_URL: "redis://redis:6379/1"
-      SECRET_KEY: "Super duper secret key"
-      DEBUG: "True"
-      ALLOWED_HOSTS: "localhost,127.0.0.1"
+      MONGO_URL: ${{ secrets.MONGO_URL }}
+      REDIS_URL: ${{ secrets.REDIS_URL }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DEBUG: ${{ secrets.DEBUG }}
+      ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
       PYTHONPATH: "${{ github.workspace }}/server"
       RUSTFLAGS: "-A warnings"
 
