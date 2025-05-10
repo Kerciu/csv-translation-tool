@@ -1,8 +1,9 @@
+import argparse
+from typing import Set
+
 from langdetect import detect
 from langdetect.lang_detect_exception import LangDetectException
 from transformers import MarianMTModel, MarianTokenizer
-from typing import Set
-import argparse
 
 
 class Translator:
@@ -45,7 +46,9 @@ class Translator:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Translate text using MarianMTModel")
     parser.add_argument("text", type=str, help="Text to translate")
-    parser.add_argument("target_language", type=str, help="Target language code (e.g., 'es', 'fr')")
+    parser.add_argument(
+        "target_language", type=str, help="Target language code (e.g., 'es', 'fr')"
+    )
 
     args = parser.parse_args()
 
