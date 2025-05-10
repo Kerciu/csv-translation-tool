@@ -35,6 +35,7 @@ yarn-debug.log*
 yarn-error.log*
 .next/
 package-lock.json
+*.tsbuildinfo
 
 # IDE specific
 .vscode/
