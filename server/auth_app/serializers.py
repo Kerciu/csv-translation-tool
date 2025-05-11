@@ -12,14 +12,14 @@ class UserSignUpSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['name', 'email', 'password']
 
-    
+
     def validate(self, attrs):
         email = attrs.get('email', '')
         if not "@" in email:
             raise serializers.ValidationError("Invalid email")
         if CustomUser.objects.filter(email=email).exists():
             raise serializers.ValidationError("Email already occupied")
-        
+
         username = attrs.get('name', '')
         if CustomUser.objects.filter(name=username).exists():
             raise serializers.ValidationError("Username occupied")
@@ -42,7 +42,7 @@ class UserSignUpSerializer(serializers.ModelSerializer):
         )
         user.save()
         return user
-    
+
 class UserLogInSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
@@ -61,5 +61,5 @@ class UserLogInSerializer(serializers.ModelSerializer):
 
         if argon2.hash_password(base64.urlsafe_b64decode(user.salt) + password.encode('utf-8')) != user.password:
             raise serializers.ValidationError("Invaid Password", status=400)
-        
+
         return None
