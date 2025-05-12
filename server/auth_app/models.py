@@ -7,10 +7,9 @@ from translation_app.models import File
 class CustomUser(AbstractUser):
     id = ObjectIdAutoField(primary_key=True)
 
-    name = models.CharField(max_length=100)
+    username = models.CharField(max_length=100, unique=True)
     email = models.CharField(max_length=200)
-    salt = models.CharField(max_length=100)
-    password = models.BinaryField()
+    password = models.CharField(max_length=200)
 
     date_joined = models.DateTimeField("join_date")
     files = EmbeddedModelField(File, null=True, blank=True)

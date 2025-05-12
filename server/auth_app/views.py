@@ -5,8 +5,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from .models import CustomUser
-import argon2
+
 
 def health_check(request):
     return JsonResponse({"status": "ok"})
@@ -26,6 +25,9 @@ class LogInView(APIView):
         user_data = request.data
         serializer = UserLogInSerializer(data=user_data)
         if(serializer.is_valid(raise_exception=True)):
-            return Response(serializer.validated_data)
-
+            token = serializer.validated_data['token']
+            response = Response({'jwt': token})
+            response.set_cookie(key='jwt', value=token, httponly=True)
+            return response
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

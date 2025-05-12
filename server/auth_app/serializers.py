@@ -1,65 +1,81 @@
 from rest_framework import serializers
 from .models import CustomUser
-from datetime import datetime
+from datetime import datetime, timedelta
+from rest_framework.response import Response
+import jwt
 import os
-import argon2
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
 import base64
+
+ph = PasswordHasher()
 
 class UserSignUpSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
         model = CustomUser
-        fields = ['name', 'email', 'password']
-
+        fields = ['username', 'email', 'password']
 
     def validate(self, attrs):
         email = attrs.get('email', '')
-        if not "@" in email:
+        if "@" not in email:
             raise serializers.ValidationError("Invalid email")
         if CustomUser.objects.filter(email=email).exists():
             raise serializers.ValidationError("Email already occupied")
 
-        username = attrs.get('name', '')
-        if CustomUser.objects.filter(name=username).exists():
+        username = attrs.get('username', '')
+        if CustomUser.objects.filter(username=username).exists():
             raise serializers.ValidationError("Username occupied")
 
         return attrs
 
     def create(self, validated_data):
-        name = validated_data['name']
+        username = validated_data['username']
         email = validated_data['email']
-        salt = os.urandom(32)
-        password = argon2.hash_password(salt+validated_data['password'].encode('utf-8'))
-        date_joined = datetime.now()
+        raw_password = validated_data['password']
+
+        hashed_password = ph.hash(raw_password)
 
         user = CustomUser.objects.create(
-            name = name,
-            email = email,
-            salt = base64.urlsafe_b64encode(salt).decode('utf-8'),
-            password = password,
-            date_joined = date_joined
+            username=username,
+            email=email,
+            password=hashed_password,
+            date_joined=datetime.now()
         )
-        user.save()
         return user
 
-class UserLogInSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ['email', 'password']
 
-    def valdiate(self, attrs):
+class UserLogInSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
         email = attrs.get("email")
         password = attrs.get("password")
 
         if not email or not password:
-           raise serializers.ValidationError('Email and password are required.', status=400)
+            raise serializers.ValidationError('Email and password are required.')
 
         user = CustomUser.objects.filter(email=email).first()
         if user is None:
-            raise serializers.ValidationError("User not found", status=400)
+            raise serializers.ValidationError("User not found")
 
-        if argon2.hash_password(base64.urlsafe_b64decode(user.salt) + password.encode('utf-8')) != user.password:
-            raise serializers.ValidationError("Invaid Password", status=400)
+        try:
+            ph.verify(user.password, password)
+        except VerifyMismatchError:
+            raise serializers.ValidationError("Invalid password")
 
-        return None
+        if ph.check_needs_rehash(user.password):
+            user.password = ph.hash(password)
+            user.save()
+
+        payload = {
+            'id': str(user.id),
+            'exp': datetime.now() + timedelta(minutes=60),
+            'iat': datetime.now()
+        }
+        token = jwt.encode(payload, 'secret', algorithm='HS256')
+
+        attrs['token'] = token
+        return attrs
