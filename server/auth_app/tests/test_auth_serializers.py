@@ -1,10 +1,11 @@
-from ..serializers import UserSerializer, UserSignUpSerializer, UserLogInSerializer
+from ..serializers import UserSerializer, UserSignUpSerializer, UserLogInSerializer, UserAuthSerializer
 from ..models import CustomUser
 from datetime import datetime
 from django.test import RequestFactory, TestCase
 from datetime import timedelta
 import jwt
 from ..serializers import ph
+from bson import ObjectId
 
 class UserSignUpSerializerTest(TestCase):
 
@@ -69,7 +70,7 @@ class UserLogInSerializerTest(TestCase):
         serializer = UserLogInSerializer(data=data)
         self.assertFalse(serializer.is_valid())
         self.assertEqual(
-            str(serializer.errors['user']), "User not found"
+            str(serializer.errors['user'][0]), "User not found"
         )
 
     def test_invalid_password(self):
@@ -82,6 +83,59 @@ class UserLogInSerializerTest(TestCase):
         self.assertEqual(
             str(serializer.errors['password'][0]), "Invalid password"
         )
+
+class UserAuthSerializerTest(TestCase):
+
+    def setUp(self):
+        self.user = CustomUser.objects.create(
+            username="user",
+            email="user@user.com",
+            password=ph.hash("test"),
+            date_joined=datetime.now()
+        )
+
+    def test_valid_token_authentication(self):
+        payload = {
+            'id': str(self.user.id),
+            'exp': datetime.now() + timedelta(minutes=60),
+            'iat': datetime.now()
+        }
+        token = jwt.encode(payload, 'secret', algorithm='HS256')
+        data = {'token': token}
+        serializer = UserAuthSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.validated_data['email'], "user@user.com")
+        self.assertEqual(serializer.validated_data['username'], "user")
+
+    def test_expired_token(self):
+        payload = {
+            'id': str(self.user.id),
+            'exp': datetime.now() + timedelta(seconds=-1),
+            'iat': datetime.now()
+        }
+        token = jwt.encode(payload, 'secret', algorithm='HS256')
+        data = {'token': token}
+        serializer = UserAuthSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(
+            str(serializer.errors['token'][0]), "Unauthenticated"
+        )
+
+    def test_invalid_user(self):
+        non_existent_id = ObjectId() 
+        payload = {
+            'id': str(non_existent_id),
+            'exp': datetime.now() + timedelta(minutes=60),
+            'iat': datetime.now()
+        }
+        token = jwt.encode(payload, 'secret', algorithm='HS256')
+        data = {'token': token}
+        serializer = UserAuthSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(
+            str(serializer.errors['user'][0]), "User not found"
+        )
+
 
 class UserSerializerTest(TestCase):
     
