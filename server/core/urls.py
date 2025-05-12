@@ -21,4 +21,5 @@ urlpatterns = [
     path('authenticatation/', include("auth_app.urls")),
     path('translation/', include("translation_app.urls")),
     path('admin/', admin.site.urls),
+    
 ]

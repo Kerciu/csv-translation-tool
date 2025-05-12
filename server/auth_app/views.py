@@ -1,12 +1,10 @@
 from django.http import HttpResponse, JsonResponse
-from .serializers import UserSignUpSerializer, UserLogInSerializer, UserAuthSerializer
+from .serializers import UserSignUpSerializer, UserLogInSerializer, UserAuthSerializer, GoogleAuthInitSerializer, GoogleAuthCallbackSerializer
 from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-
+from authlib.integrations.requests_client import OAuth2Session
 
 def health_check(request):
     return JsonResponse({"status": "ok"})
@@ -44,3 +42,27 @@ class LogOutView(APIView):
         response = Response({'message': 'success'})
         response.delete_cookie('jwt')
         return response
+
+class GoogleLoginInitView(APIView):
+    def get(self, request):
+        serializer = GoogleAuthInitSerializer(data={})
+        if serializer.is_valid(raise_exception=True):
+            data = serializer.save()
+            request.session['oauth_state'] = data['state']
+            return Response({'auth_url': data['auth_url']})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GoogleLoginCallbackView(APIView):
+    def get(self, request):
+        code = request.GET.get("code")
+        state = request.GET.get("state") or request.session.get("oauth_state")
+
+        serializer = GoogleAuthCallbackSerializer(data={"code": code, "state": state})
+        if serializer.is_valid(raise_exception=True):
+            user_data = serializer.save()
+            token = user_data['token']
+            response = Response(user_data)
+            response.set_cookie(key='jwt', value=token, httponly=True)
+            return response
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

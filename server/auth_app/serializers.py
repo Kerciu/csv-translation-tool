@@ -7,7 +7,10 @@ import jwt
 import os
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
-import base64
+from dotenv import load_dotenv
+from pathlib import Path
+import os
+from authlib.integrations.requests_client import OAuth2Session
 
 ph = PasswordHasher()
 
@@ -110,3 +113,59 @@ class UserAuthSerializer(serializers.Serializer):
 
         user_data = UserSerializer(user).data
         return user_data
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
+GOOGLE_CLIENT_ID = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+GOOGLE_CLIENT_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+REDIRECT_URI = 'http://localhost:8000/authenticatation/google/callback/'
+class GoogleAuthInitSerializer(serializers.Serializer):
+    def create(self, validated_data):
+        session = OAuth2Session(GOOGLE_CLIENT_ID, scope='openid email profile')
+        uri, state = session.create_authorization_url(
+            'https://accounts.google.com/o/oauth2/auth',
+            redirect_uri=REDIRECT_URI
+        )
+        return {"auth_url": uri, "state": state}
+
+
+class GoogleAuthCallbackSerializer(serializers.Serializer):
+    code = serializers.CharField()
+    state = serializers.CharField()
+
+    def create(self, validated_data):
+        session = OAuth2Session(
+            GOOGLE_CLIENT_ID,
+            state=validated_data['state'],
+            redirect_uri=REDIRECT_URI
+        )
+
+        token = session.fetch_token(
+            'https://oauth2.googleapis.com/token',
+            code=validated_data['code'],
+            client_secret=GOOGLE_CLIENT_SECRET,
+            auth=None,
+        )
+
+        userinfo = session.get('https://www.googleapis.com/oauth2/v1/userinfo').json()
+
+        user, created = CustomUser.objects.get_or_create(
+            username=userinfo["email"],
+            email=userinfo['email'],
+            date_joined=datetime.now()
+        )
+        user.set_unusable_password()
+        payload = {
+            'id': str(user.id),
+            'exp': datetime.now() + timedelta(minutes=60),
+            'iat': datetime.now()
+        }
+        jwttoken = jwt.encode(payload, 'secret', algorithm='HS256')
+        
+        return {
+            "email": user.email,
+            "id": str(user.id),
+            "token": jwttoken,
+            "created": created
+        }
