@@ -1,11 +1,10 @@
 from django.http import HttpResponse, JsonResponse
-from .serializers import UserSignUpSerializer, UserLogInSerializer
+from .serializers import UserSignUpSerializer, UserLogInSerializer, UserAuthSerializer
 from django.http import JsonResponse
-from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-
+import jwt
 
 def health_check(request):
     return JsonResponse({"status": "ok"})
@@ -29,5 +28,11 @@ class LogInView(APIView):
             response = Response({'jwt': token})
             response.set_cookie(key='jwt', value=token, httponly=True)
             return response
-        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class UserView(APIView):
+    def get(self, request):
+        serializer = UserAuthSerializer(data={'token': request.COOKIES.get('jwt')})
+        if serializer.is_valid(raise_exception=True):
+            return Response(serializer.validated_data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
