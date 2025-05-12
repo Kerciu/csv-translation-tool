@@ -55,17 +55,14 @@ class UserLogInSerializer(serializers.Serializer):
         email = attrs.get("email")
         password = attrs.get("password")
 
-        if not email or not password:
-            raise serializers.ValidationError('Email and password are required.')
-
         user = CustomUser.objects.filter(email=email).first()
         if user is None:
-            raise serializers.ValidationError("User not found")
+            raise serializers.ValidationError({'user': "User not found"})
 
         try:
             ph.verify(user.password, password)
         except VerifyMismatchError:
-            raise serializers.ValidationError("Invalid password")
+            raise serializers.ValidationError({'password': "Invalid password"})
 
         if ph.check_needs_rehash(user.password):
             user.password = ph.hash(password)
