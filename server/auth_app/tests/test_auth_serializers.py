@@ -1,13 +1,15 @@
-from ..serializers import UserSerializer, UserSignUpSerializer
+from ..serializers import UserSerializer, UserSignUpSerializer, UserLogInSerializer
 from ..models import CustomUser
 from datetime import datetime
 from django.test import RequestFactory, TestCase
-
+from datetime import timedelta
+import jwt
+from ..serializers import ph
 
 class UserSignUpSerializerTest(TestCase):
 
     def setUp(self):
-        self.user = CustomUser.objects.create_user(
+        self.user = CustomUser.objects.create(
             username="taken",
             email="taken@taken.com",
             password="pass",
@@ -50,8 +52,36 @@ class UserSignUpSerializerTest(TestCase):
             str(serializer.errors['username'][0]), "custom user with this username already exists."
         )
 
+class UserLogInSerializerTest(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create(
+            username="user",
+            email="user@user.com",
+            password=ph.hash("test"),
+            date_joined=datetime.now()
+        )
+    
+    def test_invalid_user(self):
+        data = {
+            "email": "doIexist@gmail.com",
+            "password": "no",
+        }
+        serializer = UserLogInSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(
+            str(serializer.errors['user']), "User not found"
+        )
 
-
+    def test_invalid_password(self):
+        data = {
+            "email": "user@user.com",
+            "password": "no",
+        }
+        serializer = UserLogInSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(
+            str(serializer.errors['password'][0]), "Invalid password"
+        )
 
 class UserSerializerTest(TestCase):
     
