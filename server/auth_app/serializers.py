@@ -6,7 +6,7 @@ from rest_framework.exceptions import AuthenticationFailed
 import jwt
 import os
 from argon2 import PasswordHasher
-from argon2.exceptions import VerifyMismatchError
+from argon2.exceptions import VerifyMismatchError, InvalidHashError
 from dotenv import load_dotenv
 from pathlib import Path
 import os
@@ -63,6 +63,9 @@ class UserLogInSerializer(serializers.Serializer):
             ph.verify(user.password, password)
         except VerifyMismatchError:
             raise serializers.ValidationError({'password': "Invalid password"})
+        except InvalidHashError:
+            raise serializers.ValidationError({'password': "Invalid password"})
+
 
         if ph.check_needs_rehash(user.password):
             user.password = ph.hash(password)
@@ -151,3 +154,4 @@ class GoogleAuthCallbackSerializer(serializers.Serializer):
             "token": jwttoken,
             "created": created
         }
+    
