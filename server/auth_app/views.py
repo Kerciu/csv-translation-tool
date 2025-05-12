@@ -4,7 +4,9 @@ from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-import jwt
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
 
 def health_check(request):
     return JsonResponse({"status": "ok"})
@@ -36,3 +38,9 @@ class UserView(APIView):
         if serializer.is_valid(raise_exception=True):
             return Response(serializer.validated_data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class LogOutView(APIView):
+    def post(self, request):
+        response = Response({'message': 'success'})
+        response.delete_cookie('jwt')
+        return response
