@@ -31,19 +31,6 @@ class UserSignUpSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['username', 'email', 'password']
 
-    def validate(self, attrs):
-        email = attrs.get('email', '')
-        if "@" not in email:
-            raise serializers.ValidationError("Invalid email")
-        if CustomUser.objects.filter(email=email).exists():
-            raise serializers.ValidationError("Email already occupied")
-
-        username = attrs.get('username', '')
-        if CustomUser.objects.filter(username=username).exists():
-            raise serializers.ValidationError("Username occupied")
-
-        return attrs
-
     def create(self, validated_data):
         username = validated_data['username']
         email = validated_data['email']
