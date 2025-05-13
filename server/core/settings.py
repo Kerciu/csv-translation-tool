@@ -32,29 +32,32 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(",")
-
+AUTH_USER_MODEL = "auth_app.CustomUser"
+CORCS_ORIGIN_ALLOW_ALL = True
+CORCS_ALLOW_CREDENTIALS = True
 
 # Application definition
 
 INSTALLED_APPS = [
-    "core.apps.MongoAdminConfig",
-    "core.apps.MongoAuthConfig",
-    "core.apps.MongoContentTypesConfig",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "translation_app.apps.TranslationAppConfig",
-    "auth_app.apps.AuthAppConfig",
-    "rest_framework",
+    'core.apps.MongoAdminConfig',
+    'core.apps.MongoAuthConfig',
+    'core.apps.MongoContentTypesConfig',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'translation_app.apps.TranslationAppConfig',
+    'auth_app.apps.AuthAppConfig',
+    'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -139,8 +142,9 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.BasicAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
 }

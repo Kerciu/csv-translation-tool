@@ -19,6 +19,10 @@ repos:
     rev: '7.2.0'
     hooks:
     -   id: flake8
+        args: [
+          --max-line-length=88,
+          --ignore=E203
+        ]
 -   repo: https://github.com/psf/black
     rev: 25.1.0
     hooks:
@@ -28,3 +32,4 @@ repos:
     hooks:
       - id: isort
         name: isort (python)
+        args: ["--profile", "black"]

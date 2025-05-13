@@ -1,14 +1,14 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django_mongodb_backend.fields import EmbeddedModelField, ObjectIdAutoField
 from translation_app.models import File
 
 
-class CustomUser(models.Model):
+class CustomUser(AbstractUser):
     id = ObjectIdAutoField(primary_key=True)
 
-    username = models.CharField(max_length=100)
-    email = models.CharField(max_length=200)
-    salt = models.CharField(max_length=100)
+    username = models.CharField(max_length=100, unique=True)
+    email = models.CharField(max_length=200, unique=True)
     password = models.CharField(max_length=200)
 
     date_joined = models.DateTimeField("join_date")
