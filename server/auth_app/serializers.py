@@ -31,6 +31,19 @@ class UserSignUpSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['username', 'email', 'password']
 
+    def validate(self, attrs):
+            email = attrs.get('email', '')
+            if "@" not in email:
+                raise serializers.ValidationError({'email':"Invalid email"})
+            if CustomUser.objects.filter(email=email).exists():
+                raise serializers.ValidationError({'emaill':"Email already occupied"})
+
+            username = attrs.get('username', '')
+            if CustomUser.objects.filter(username=username).exists():
+                raise serializers.ValidationError("Username occupied")
+
+            return attrs
+
     def create(self, validated_data):
         username = validated_data['username']
         email = validated_data['email']
@@ -55,6 +68,9 @@ class UserLogInSerializer(serializers.Serializer):
         email = attrs.get("email")
         password = attrs.get("password")
 
+        if not email or not password:
+            raise serializers.ValidationError('Email and password are required.')
+        
         user = CustomUser.objects.filter(email=email).first()
         if user is None:
             raise serializers.ValidationError({'user': "User not found"})
