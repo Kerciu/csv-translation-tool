@@ -1,15 +1,15 @@
-
 # Github: https://github.com/huggingface/candle/blob/main/candle-examples/examples/marian-mt/python/convert_slow_tokenizer.py
 
-from pathlib import Path
-import warnings
 import os
 import sys
+import warnings
+from pathlib import Path
 
 from transformers import AutoTokenizer
-from transformers.convert_slow_tokenizer import SpmConverter, requires_backends, import_protobuf
+from transformers.convert_slow_tokenizer import (SpmConverter, import_protobuf,
+                                                 requires_backends)
 
-sys.stdout.reconfigure(encoding='utf-8')
+sys.stdout.reconfigure(encoding="utf-8")
 
 
 class MarianConverter(SpmConverter):
@@ -27,10 +27,11 @@ class MarianConverter(SpmConverter):
             m.ParseFromString(f.read())
         self.proto = m
         print(self.original_tokenizer)
-        #with open(self.original_tokenizer.vocab_path, "r") as f:
+        # with open(self.original_tokenizer.vocab_path, "r") as f:
         dir_path = Path(self.original_tokenizer.spm_files[0]).parents[0]
         with open(dir_path / "vocab.json", "r") as f:
             import json
+
             self._vocab = json.load(f)
 
         if self.proto.trainer_spec.byte_fallback:
@@ -55,10 +56,16 @@ class MarianConverter(SpmConverter):
 
 
 def convert_slow_tokenizer(src_lang, tgt_lang, dest_folder):
-    tokenizer = AutoTokenizer.from_pretrained(f"Helsinki-NLP/opus-mt-{src_lang}-{tgt_lang}", use_fast=False)
+    tokenizer = AutoTokenizer.from_pretrained(
+        f"Helsinki-NLP/opus-mt-{src_lang}-{tgt_lang}", use_fast=False
+    )
 
     fast_tokenizer = MarianConverter(tokenizer, index=0).converted()
-    fast_tokenizer.save(os.path.join(dest_folder, f"tokenizer-marian-base-{src_lang}-{tgt_lang}.json"))
+    fast_tokenizer.save(
+        os.path.join(dest_folder, f"tokenizer-marian-base-{src_lang}-{tgt_lang}.json")
+    )
 
     fast_tokenizer = MarianConverter(tokenizer, index=1).converted()
-    fast_tokenizer.save(os.path.join(dest_folder, f"tokenizer-marian-base-{tgt_lang}-{src_lang}.json"))
+    fast_tokenizer.save(
+        os.path.join(dest_folder, f"tokenizer-marian-base-{tgt_lang}-{src_lang}.json")
+    )

@@ -1,8 +1,8 @@
-from django.db import models
-from django_mongodb_backend.fields import ObjectIdAutoField
-from django_mongodb_backend.fields import EmbeddedModelField
 from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django_mongodb_backend.fields import EmbeddedModelField, ObjectIdAutoField
 from translation_app.models import File
+
 
 class CustomUser(AbstractUser):
     id = ObjectIdAutoField(primary_key=True)
@@ -13,7 +13,6 @@ class CustomUser(AbstractUser):
 
     date_joined = models.DateTimeField("join_date")
     files = EmbeddedModelField(File, null=True, blank=True)
-
 
     class Meta:
         db_table = "users"

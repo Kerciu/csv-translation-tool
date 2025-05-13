@@ -1,9 +1,6 @@
 from django.db import models
-from django.db import models
-from django_mongodb_backend.fields import ObjectIdAutoField
-from django_mongodb_backend.fields import EmbeddedModelField
+from django_mongodb_backend.fields import EmbeddedModelField, ObjectIdAutoField
 from django_mongodb_backend.models import EmbeddedModel
-from django.contrib.auth.models import AbstractUser
 
 
 class Cell(EmbeddedModel):
@@ -11,10 +8,9 @@ class Cell(EmbeddedModel):
     text = models.CharField(max_length=100)
     row_number = models.IntegerField(default=0)
     is_translated = models.BooleanField(default=False)
-    
+
     text_translated = models.CharField(max_length=100)
     detected_language = models.CharField(max_length=100)
-
 
     class Meta:
         db_table = "cells"
@@ -22,6 +18,7 @@ class Cell(EmbeddedModel):
 
     def __str__(self):
         return self.text
+
 
 class Column(EmbeddedModel):
     id = ObjectIdAutoField(primary_key=True)
@@ -37,6 +34,7 @@ class Column(EmbeddedModel):
     def __str__(self):
         return self.name
 
+
 class File(EmbeddedModel):
     id = ObjectIdAutoField(primary_key=True)
     title = models.CharField(max_length=200)
@@ -45,11 +43,9 @@ class File(EmbeddedModel):
     columns = EmbeddedModelField(Column, null=True, blank=True)
     columns_number = models.IntegerField(default=0)
 
-
     class Meta:
         db_table = "files"
         managed = False
 
     def __str__(self):
         return self.title
-    
