@@ -32,6 +32,18 @@ class UserSignUpSerializerTest(TestCase):
         user = serializer.save()
         self.assertEqual(user.username, "newuser")
         self.assertEqual(user.email, "new@new.com")
+
+    def test_invalid_email(self):
+        data = {
+            "username": "newuser",
+            "email": "new",
+            "password": "pass",
+        }
+        serializer = UserSignUpSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(
+            str(serializer.errors['email'][0]), "Invalid email"
+        )
     
     def test_email_taken(self):
         data = {
