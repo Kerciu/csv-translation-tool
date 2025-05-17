@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from translation_module import translate as r_translate
+from translation_module import translate as translate_text
 
 from .models import Cell, Column, File
 from .serializers import CSVFileSerializer, DowloandCSVFileSerializer
@@ -18,7 +18,7 @@ def find_language(request):
 
 
 def translate(request):
-    return HttpResponse(r_translate("Rust love", "en", "es"))
+    return HttpResponse(translate_text("Rust love", "en", "es"))
 
 
 class CSVUploadView(APIView, JWTUserAuthentication):
@@ -75,7 +75,7 @@ class CSVUploadView(APIView, JWTUserAuthentication):
 
         user.files = user.files or []
         user.files.append(str(file_obj.id))
-        user.save()
+        user.save(update_fields=["files"])
 
         return Response(
             {"status": "success", "file_title": file_obj.title, "id": str(file_obj.id)}

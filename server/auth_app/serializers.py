@@ -83,10 +83,6 @@ class UserLogInSerializer(serializers.Serializer):
         except InvalidHashError:
             raise serializers.ValidationError({"password": "Invalid password"})
 
-        if ph.check_needs_rehash(user.password):
-            user.password = ph.hash(password)
-            user.save()
-
         payload = {
             "id": str(user.id),
             "exp": datetime.now() + timedelta(minutes=60),
