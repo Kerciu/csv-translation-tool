@@ -9,7 +9,11 @@ from rest_framework.views import APIView
 from translation_module import translate as translate_text
 
 from .models import Cell, Column, File
-from .serializers import CSVFileSerializer, DowloandCSVFileSerializer
+from .serializers import (
+    CSVFileSerializer,
+    FileUpdateCellSerializer,
+    FindCSVFileSerializer,
+)
 from .utils import JWTUserAuthentication
 
 
@@ -19,6 +23,32 @@ def find_language(request):
 
 def translate(request):
     return HttpResponse(translate_text("Rust love", "en", "es"))
+
+
+class TranslateCellView(APIView, JWTUserAuthentication):
+
+    def post(self, request):
+        user = self.get_authenticated_user(request=request)
+        serializer = FindCSVFileSerializer(data=request.data, context={"user": user})
+        if not serializer.is_valid(raise_exception=True):
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        file = serializer.validated_data["file"]
+        update_serializer = FileUpdateCellSerializer(
+            data=request.data, context={"file": file}
+        )
+        if not update_serializer.is_valid(raise_exception=True):
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        file.update_cell(
+            update_serializer.validated_data["column_number"],
+            update_serializer.validated_data["row_number"],
+            {
+                "text": update_serializer.validated_data["translated"],
+                "is_translated": True,
+                "detected_language": "es-ops-vhs-test",
+            },
+        )
+
+        return Response(update_serializer.validated_data, status=201)
 
 
 class CSVUploadView(APIView, JWTUserAuthentication):
@@ -99,13 +129,11 @@ class DowloandCSVFile(APIView, JWTUserAuthentication):
     def get(self, request):
         user = self.get_authenticated_user(request=request)
 
-        serializer = DowloandCSVFileSerializer(
-            data=request.data, context={"user": user}
-        )
+        serializer = FindCSVFileSerializer(data=request.data, context={"user": user})
         if not serializer.is_valid(raise_exception=True):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        data = serializer.validated_data["file"]
+        data = serializer.validated_data["file"].to_dict()
         if len(data["columns"]) == 0:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 

@@ -13,7 +13,6 @@ class Cell(EmbeddedModel):
     row_number = models.IntegerField(default=0)
     is_translated = models.BooleanField(default=False)
 
-    text_translated = models.CharField(max_length=100)
     detected_language = models.CharField(max_length=100)
 
     class Meta:
@@ -29,7 +28,6 @@ class Cell(EmbeddedModel):
             "text": self.text,
             "row_number": self.row_number,
             "is_translated": self.is_translated,
-            "text_translated": self.text_translated,
             "detected_language": self.detected_language,
         }
 
@@ -74,9 +72,6 @@ class File(models.Model):
         return self.title
 
     def to_dict(self):
-        test = [column.to_dict() for column in self.columns] if self.columns else []
-        print({"columns": test})
-        print(self.columns)
         return {
             "id": str(self.id),
             "title": self.title,
@@ -86,3 +81,12 @@ class File(models.Model):
                 [column.to_dict() for column in self.columns] if self.columns else []
             ),
         }
+
+    def update_cell(self, col_num, row_num, update_data):
+        columns = list(self.columns)
+        cells = list(columns[col_num].cells)
+        cells[row_num].update(update_data)
+        columns[col_num].cells = cells
+        self.columns = [column.to_dict() for column in columns] if columns else []
+
+        self.save()

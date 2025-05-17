@@ -1,6 +1,32 @@
 from rest_framework import serializers
+from translation_module import translate as translate_text
 
 from .models import File
+
+
+class FileUpdateCellSerializer(serializers.Serializer):
+    column_number = serializers.IntegerField()
+    row_number = serializers.IntegerField()
+
+    class Meta:
+        fields = ["column_number", "row_number"]
+
+    def validate(self, attrs):
+        file = self.context["file"]
+        column_number = attrs.get("column_number")
+        row_number = attrs.get("row_number")
+        if file.columns_number < column_number:
+            raise serializers.ValidationError({"file": "Invalid column number"})
+        if file.columns[column_number].rows_number < row_number:
+            raise serializers.ValidationError({"file": "Invalid row number"})
+        try:
+            # find first language of text
+            # example solution
+            attrs["translated"] = translate_text("Rust love", "en", "es")
+        except Exception:
+            raise serializers.ValidationError({"text": "Can't translate"})
+
+        return attrs
 
 
 class CSVFileSerializer(serializers.Serializer):
@@ -17,7 +43,7 @@ class CSVFileSerializer(serializers.Serializer):
         return value
 
 
-class DowloandCSVFileSerializer(serializers.Serializer):
+class FindCSVFileSerializer(serializers.Serializer):
     file_id = serializers.CharField()
 
     class Meta:
@@ -41,4 +67,4 @@ class DowloandCSVFileSerializer(serializers.Serializer):
         if file is None:
             return serializers.ValidationError({"file": "File doesn't exist."})
 
-        return {"file": file.to_dict()}
+        return {"file": file}
