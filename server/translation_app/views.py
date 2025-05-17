@@ -78,3 +78,16 @@ class CSVUploadView(APIView, JWTUserAuthentication):
         user.save()
 
         return Response({"status": "success", "file_title": file_obj.title})
+
+
+class GetUserCSVFiles(APIView, JWTUserAuthentication):
+    def get(self, request):
+        user = self.get_authenticated_user(request=request)
+
+        files = []
+        for id in user.files:
+            file = File.objects.filter(id=id).first()
+            if file is None:
+                continue
+            files.append(file.to_dict())
+        return Response({"files": files})
