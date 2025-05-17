@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django_mongodb_backend.fields import EmbeddedModelField, ObjectIdAutoField
-from translation_app.models import File
+from django_mongodb_backend.fields import ArrayField, ObjectIdAutoField
 
 
 class CustomUser(AbstractUser):
@@ -12,7 +11,7 @@ class CustomUser(AbstractUser):
     password = models.CharField(max_length=200)
 
     date_joined = models.DateTimeField("join_date")
-    files = EmbeddedModelField(File, null=True, blank=True)
+    files = ArrayField(base_field=models.CharField(max_length=100), default=list)
 
     class Meta:
         db_table = "users"

@@ -83,10 +83,6 @@ class UserLogInSerializer(serializers.Serializer):
         except InvalidHashError:
             raise serializers.ValidationError({"password": "Invalid password"})
 
-        if ph.check_needs_rehash(user.password):
-            user.password = ph.hash(password)
-            user.save()
-
         payload = {
             "id": str(user.id),
             "exp": datetime.now() + timedelta(minutes=60),
@@ -112,9 +108,7 @@ class UserAuthSerializer(serializers.Serializer):
         user = CustomUser.objects.filter(id=payload["id"]).first()
         if not user:
             raise serializers.ValidationError({"user": "User not found"})
-
-        user_data = UserSerializer(user).data
-        return user_data
+        return user
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
