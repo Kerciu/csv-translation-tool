@@ -2,7 +2,6 @@ import csv
 from datetime import datetime
 from io import TextIOWrapper
 
-from auth_app.serializers import UserAuthSerializer
 from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.response import Response
@@ -11,6 +10,7 @@ from translation_module import translate as r_translate
 
 from .models import Cell, Column, File
 from .serializers import CSVFileSerializer
+from .utils import JWTUserAuthentication
 
 
 def find_language(request):
@@ -21,7 +21,7 @@ def translate(request):
     return HttpResponse(r_translate("Rust love", "en", "es"))
 
 
-class CSVUploadView(APIView):
+class CSVUploadView(APIView, JWTUserAuthentication):
 
     def post(self, request):
         csv_serializer = CSVFileSerializer(data=request.data)
@@ -30,34 +30,34 @@ class CSVUploadView(APIView):
 
         uploaded_file = csv_serializer.validated_data["file"]
 
-        serializer = UserAuthSerializer(data={"token": request.COOKIES.get("jwt")})
-        if not serializer.is_valid(raise_exception=True):
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        user = serializer.validated_data
+        user = self.get_authenticated_user(request=request)
 
         reader = csv.reader(TextIOWrapper(uploaded_file.file, encoding="utf-8"))
         all_rows = list(reader)
 
-        columns_data = {}
-        for row_idx, row in enumerate(all_rows):
-            for col_idx, text in enumerate(row):
-                columns_data.setdefault(col_idx, []).append((row_idx, text))
-
-        columns = []
-        for col_idx, cells in columns_data.items():
-            cell_objs = [
-                Cell(
-                    text=text,
-                    row_number=row_num,
-                    is_translated=False,
-                    text_translated="",
-                    detected_language="",
+        columns_data = all_rows[0][0].split(";")
+        cells_data = [[] for _ in columns_data]
+        for row_idx, row in enumerate(all_rows[1:]):
+            if len(row) != 0:
+                for cell_idx, cell in enumerate(row[0].split(";")):
+                    cells_data[cell_idx].append(cell)
+        columns_list = []
+        for col_idx, columns in enumerate(columns_data):
+            cell_objs = []
+            for cell_idx, cell in enumerate(cells_data[col_idx]):
+                cell_objs.append(
+                    Cell(
+                        text=cell,
+                        row_number=cell_idx,
+                        is_translated=False,
+                        text_translated="",
+                        detected_language="",
+                    ).to_dict()
                 )
-                for row_num, text in cells
-            ]
-            columns.append(
+
+            columns_list.append(
                 Column(
-                    name=f"Column {col_idx}",
+                    name=columns,
                     column_number=col_idx,
                     rows_number=len(cell_objs),
                     cells=cell_objs,
@@ -67,7 +67,7 @@ class CSVUploadView(APIView):
         file_obj = File.objects.create(
             title=csv_serializer.validated_data["title"],
             upload_time=datetime.now(),
-            columns=columns,
+            columns=columns_list,
             columns_number=len(columns),
         )
 
@@ -78,8 +78,3 @@ class CSVUploadView(APIView):
         user.save()
 
         return Response({"status": "success", "file_title": file_obj.title})
-
-
-class GetUserCSVFiles(APIView):
-    def get_queryset(self, request):
-        return self.request.user.files or []

@@ -54,7 +54,7 @@ class Column(EmbeddedModel):
             "name": self.name,
             "rows_number": self.rows_number,
             "column_number": self.column_number,
-            "cells": [cell.to_dict() for cell in self.cells] if self.cells else [],
+            "cells": self.cells,
         }
 
 
@@ -72,3 +72,17 @@ class File(models.Model):
 
     def __str__(self):
         return self.title
+
+    def to_dict(self):
+        test = [column.to_dict() for column in self.columns] if self.columns else []
+        print({"columns": test})
+        print(self.columns)
+        return {
+            "id": str(self.id),
+            "title": self.title,
+            "upload_time": self.upload_time,
+            "columns_number": self.columns_number,
+            "columns": (
+                [column.to_dict() for column in self.columns] if self.columns else []
+            ),
+        }
