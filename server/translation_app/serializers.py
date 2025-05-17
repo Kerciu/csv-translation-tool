@@ -17,7 +17,7 @@ class FileUpdateCellSerializer(serializers.Serializer):
         row_number = attrs.get("row_number")
         if file.columns_number < column_number:
             raise serializers.ValidationError({"file": "Invalid column number"})
-        if file.columns[column_number].rows_number < row_number:
+        if file.columns[column_number]["rows_number"] < row_number:
             raise serializers.ValidationError({"file": "Invalid row number"})
         try:
             # find first language of text
@@ -59,12 +59,12 @@ class FindCSVFileSerializer(serializers.Serializer):
                 validated = True
 
         if not validated:
-            return serializers.ValidationError(
+            raise serializers.ValidationError(
                 {"user": "User doesn't have such a File."}
             )
 
         file = File.objects.filter(id=file_id).first()
         if file is None:
-            return serializers.ValidationError({"file": "File doesn't exist."})
+            raise serializers.ValidationError({"file": "File doesn't exist."})
 
         return {"file": file}
