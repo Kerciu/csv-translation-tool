@@ -1,6 +1,6 @@
 import csv
 from datetime import datetime
-from io import TextIOWrapper
+from io import StringIO, TextIOWrapper
 
 from django.http import HttpResponse
 from rest_framework import status
@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from translation_module import translate as r_translate
 
 from .models import Cell, Column, File
-from .serializers import CSVFileSerializer
+from .serializers import CSVFileSerializer, DowloandCSVFileSerializer
 from .utils import JWTUserAuthentication
 
 
@@ -68,7 +68,7 @@ class CSVUploadView(APIView, JWTUserAuthentication):
             title=csv_serializer.validated_data["title"],
             upload_time=datetime.now(),
             columns=columns_list,
-            columns_number=len(columns),
+            columns_number=len(columns_list),
         )
 
         file_obj.save()
@@ -77,7 +77,9 @@ class CSVUploadView(APIView, JWTUserAuthentication):
         user.files.append(str(file_obj.id))
         user.save()
 
-        return Response({"status": "success", "file_title": file_obj.title})
+        return Response(
+            {"status": "success", "file_title": file_obj.title, "id": str(file_obj.id)}
+        )
 
 
 class GetUserCSVFiles(APIView, JWTUserAuthentication):
@@ -91,3 +93,42 @@ class GetUserCSVFiles(APIView, JWTUserAuthentication):
                 continue
             files.append(file.to_dict())
         return Response({"files": files})
+
+
+class DowloandCSVFile(APIView, JWTUserAuthentication):
+    def get(self, request):
+        user = self.get_authenticated_user(request=request)
+
+        serializer = DowloandCSVFileSerializer(
+            data=request.data, context={"user": user}
+        )
+        if not serializer.is_valid(raise_exception=True):
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        data = serializer.validated_data["file"]
+        if len(data["columns"]) == 0:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        columns = data["columns"][0]
+        if len(columns["cells"]) == 0:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        csv_data = []
+        csv_data.append([columns["name"]])
+        for cell in columns["cells"]:
+            csv_data.append([cell["text"]])
+
+        for column in data["columns"][1:]:
+            csv_data[0].append(column["name"])
+            for cell_idx, cell in enumerate(column["cells"]):
+                csv_data[cell_idx + 1].append(cell["text"])
+
+        csv_file = StringIO()
+        writer = csv.writer(csv_file, delimiter=";")
+        writer.writerow(csv_data[0])
+        writer.writerows(csv_data[1:])
+
+        response = HttpResponse(csv_file.getvalue(), content_type="text/csv")
+        filename = f"{data['title']}.csv"
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        return response
