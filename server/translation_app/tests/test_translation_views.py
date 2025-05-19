@@ -13,9 +13,7 @@ from rest_framework.test import APIClient, APITestCase
 from translation_app.models import Cell, Column, File
 
 
-class BaseSetupMixin:
-    """Reusable fixtures for every test-case."""
-
+class BaseSetup:
     def _create_user(self):
         user = CustomUser.objects.create(
             username="tester",
@@ -29,7 +27,7 @@ class BaseSetupMixin:
         return f"token_{user_id}"
 
 
-class TranslateCellViewTest(BaseSetupMixin, APITestCase):
+class TranslateCellViewTest(BaseSetup, APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.url = reverse("translate")
@@ -72,7 +70,7 @@ class TranslateCellViewTest(BaseSetupMixin, APITestCase):
         mock_translate.assert_called_once_with("Rust love", "en", "es")
 
 
-class CSVUploadViewTest(BaseSetupMixin, APITestCase):
+class CSVUploadViewTest(BaseSetup, APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.url = reverse("upload csv")
@@ -101,7 +99,7 @@ class CSVUploadViewTest(BaseSetupMixin, APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
 
-class GetUserCSVFilesViewTest(BaseSetupMixin, APITestCase):
+class GetUserCSVFilesViewTest(BaseSetup, APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.url = reverse("user csv")
@@ -121,7 +119,7 @@ class GetUserCSVFilesViewTest(BaseSetupMixin, APITestCase):
         self.assertEqual(resp.data["files"][0]["title"], "mine")
 
 
-class DownloadCSVFileViewTest(BaseSetupMixin, APITestCase):
+class DownloadCSVFileViewTest(BaseSetup, APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.url = reverse("dowloand csv")
