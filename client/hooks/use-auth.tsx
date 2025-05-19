@@ -41,6 +41,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setTimeout(() => {
         try {
           if (email && password.length >= 6) {
+            /* TODO: Login endpoint and user creation */
+
             const newUser = {
               id: Math.random().toString(36).substring(2, 9),
               name: email.split('@')[0],
@@ -50,6 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             localStorage.setItem('user', JSON.stringify(newUser));
             document.cookie = `user_session=true; path=/; max-age=${60 * 60 * 24 * 7}`;
             resolve();
+            /* This thing above is simulation */
             router.push('/dashboard');
           } else {
             reject(new Error('Invalid credentials'));
@@ -69,6 +72,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setTimeout(() => {
         try {
           if (name && email && password.length >= 6) {
+
+            /* TODO: Register endpoint and user creation */
             const newUser = {
               id: Math.random().toString(36).substring(2, 9),
               name,
@@ -92,10 +97,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const loginWithProvider = async (provider: string) => {
+    // OAUTH2 LOGIN
     setIsLoading(true);
     return new Promise<void>((resolve, reject) => {
       setTimeout(() => {
         try {
+
+            /* TODO: Provider login endpoint and user creation */
+
           const newUser = {
             id: Math.random().toString(36).substring(2, 9),
             name: `User ${Math.floor(Math.random() * 1000)}`,
@@ -117,11 +126,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = () => {
+
+    /* TODO: LogOUT endpoint and user creation */
     setIsLoading(true);
     setUser(null);
     localStorage.removeItem('user');
-    localStorage.removeItem('savedTranslations');
-    document.cookie = 'user_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    // document.cookie = 'user_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     setTimeout(() => {
       setIsLoading(false);
       router.push('/');
