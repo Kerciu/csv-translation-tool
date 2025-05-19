@@ -22,6 +22,8 @@ def find_language(request):
 
 
 def translate(request):
+    # Here should take in list of string
+    # if in redis (text, src_lang, tgt_lang) -> fetch from cache
     return HttpResponse(translate_text("Rust love", "en", "es"))
 
 

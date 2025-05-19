@@ -48,6 +48,7 @@ const Dashboard = () => {
   const { toast } = useToast();
 
   const handleFileUpload = (uploadedData: string[][], uploadedHeaders: string[]) => {
+
     setCsvData(uploadedData);
     setHeaders(uploadedHeaders);
     setSelectedColumns([]);
@@ -56,7 +57,10 @@ const Dashboard = () => {
     setTranslated(false);
     setTranslationErrors([]);
 
+    /* TODO: CSV Upload endpoint */
+
     toast({
+      /* Here should be backend message */
       title: 'CSV File uploaded successfully!',
       description: `${uploadedData.length} rows and ${uploadedHeaders.length} columns detected`,
     });
@@ -148,6 +152,8 @@ const Dashboard = () => {
     setShowUploadConfirmation(false);
     setTranslationErrors([]);
 
+    /* TODO: Clear csv data from the database */
+
     toast({
       title: 'Dashboard cleared',
       description: 'You can now upload a new CSV file',
@@ -198,6 +204,7 @@ const Dashboard = () => {
       const newData = baseData.map((row) => [...row]);
       const newErrors: { row: number; col: number }[] = [];
 
+      /* Endpoint for translating */
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       selectedRows.forEach((rowIndex) => {
@@ -224,6 +231,8 @@ const Dashboard = () => {
           }
         });
       });
+
+      /* SIMULATION ABOVE*/
 
       setTranslatedData(newData);
       setTranslationErrors(newErrors);
