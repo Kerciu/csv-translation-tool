@@ -80,7 +80,6 @@ class CSVUploadView(APIView, JWTUserAuthentication):
                         text=cell,
                         row_number=cell_idx,
                         is_translated=False,
-                        text_translated="",
                         detected_language="",
                     ).to_dict()
                 )
@@ -156,7 +155,9 @@ class DowloandCSVFile(APIView, JWTUserAuthentication):
         writer.writerow(csv_data[0])
         writer.writerows(csv_data[1:])
 
-        response = HttpResponse(csv_file.getvalue(), content_type="text/csv")
+        response = HttpResponse(
+            csv_file.getvalue(), content_type="text/csv", status=status.HTTP_200_OK
+        )
         filename = f"{data['title']}.csv"
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
         return response
