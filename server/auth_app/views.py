@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import (
+    GitHubAuthCallbackSerializer,
+    GitHubAuthInitSerializer,
     GoogleAuthCallbackSerializer,
     GoogleAuthInitSerializer,
     UserAuthSerializer,
@@ -75,6 +77,31 @@ class GoogleLoginCallbackView(APIView):
         state = request.GET.get("state") or request.session.get("oauth_state")
 
         serializer = GoogleAuthCallbackSerializer(data={"code": code, "state": state})
+        if serializer.is_valid(raise_exception=True):
+            user_data = serializer.save()
+            token = user_data["token"]
+            response = redirect("http://localhost:3000/oauth-success")
+            response.set_cookie(key="jwt", value=token, httponly=True)
+            return response
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GithubLoginInitView(APIView):
+    def get(self, request):
+        serializer = GitHubAuthInitSerializer(data={})
+        if serializer.is_valid(raise_exception=True):
+            data = serializer.save()
+            request.session["oauth_state"] = data["state"]
+            return Response({"auth_url": data["auth_url"]})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GithubLoginCallbackView(APIView):
+    def get(self, request):
+        code = request.GET.get("code")
+        state = request.GET.get("state") or request.session.get("oauth_state")
+
+        serializer = GitHubAuthCallbackSerializer(data={"code": code, "state": state})
         if serializer.is_valid(raise_exception=True):
             user_data = serializer.save()
             token = user_data["token"]
