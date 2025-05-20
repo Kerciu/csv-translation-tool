@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from django_mongodb_backend.fields import (
     ArrayField,
     EmbeddedModelField,
@@ -82,11 +82,15 @@ class File(models.Model):
             ),
         }
 
-    def update_cell(self, col_num, row_num, update_data):
-        columns = list(self.columns)
-        cells = list(columns[col_num].cells)
-        cells[row_num].update(update_data)
-        columns[col_num].cells = cells
-        self.columns = [column.to_dict() for column in columns] if columns else []
+    @classmethod
+    def update_cell(cls, file_id, col_num, row_num, update_data):
+        with transaction.atomic():
+            file = cls.objects.select_for_update().get(id=file_id)
 
-        self.save()
+            columns = list(file.columns)
+            cells = list(columns[col_num].cells)
+            cells[row_num].update(update_data)
+            columns[col_num].cells = cells
+            file.columns = [column.to_dict() for column in columns]
+
+            file.save()

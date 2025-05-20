@@ -40,7 +40,8 @@ class TranslateCellView(APIView, JWTUserAuthentication):
         )
         if not update_serializer.is_valid(raise_exception=True):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        file.update_cell(
+        File.update_cell(
+            file.id,
             update_serializer.validated_data["column_number"],
             update_serializer.validated_data["row_number"],
             {
@@ -61,6 +62,7 @@ class CSVUploadView(APIView, JWTUserAuthentication):
             return Response(csv_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         uploaded_file = csv_serializer.validated_data["file"]
+        file_name = uploaded_file.name
 
         user = self.get_authenticated_user(request=request)
 
@@ -96,7 +98,7 @@ class CSVUploadView(APIView, JWTUserAuthentication):
             )
 
         file_obj = File.objects.create(
-            title=csv_serializer.validated_data["title"],
+            title=file_name,
             upload_time=datetime.now(),
             columns=columns_list,
             columns_number=len(columns_list),
@@ -109,7 +111,7 @@ class CSVUploadView(APIView, JWTUserAuthentication):
         user.save(update_fields=["files"])
 
         return Response(
-            {"status": "success", "file_title": file_obj.title, "id": str(file_obj.id)}
+            {"status": "success", "file_title": file_name, "id": str(file_obj.id)}
         )
 
 
@@ -127,7 +129,7 @@ class GetUserCSVFiles(APIView, JWTUserAuthentication):
 
 
 class DowloandCSVFile(APIView, JWTUserAuthentication):
-    def get(self, request):
+    def post(self, request):
         user = self.get_authenticated_user(request=request)
 
         serializer = FindCSVFileSerializer(data=request.data, context={"user": user})
