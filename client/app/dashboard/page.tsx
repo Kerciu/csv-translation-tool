@@ -24,10 +24,13 @@ import { LanguageType } from '@/lib/types';
 import { getLanguageName } from '@/utils/getLanguageName';
 import { FileSpreadsheet, HelpCircle, Loader2, Upload } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
+import axios from 'axios';
 
 const Dashboard = () => {
   const [csvData, setCsvData] = useState<string[][]>([]);
   const [headers, setHeaders] = useState<string[]>([]);
+  const [fileId, setFileId] = useState<number>([]);
+  const [title, setTitle] = useState<string>([]);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [rowRange, setRowRange] = useState<[number, number]>([1, 1]);
@@ -47,23 +50,43 @@ const Dashboard = () => {
   const [showUploadConfirmation, setShowUploadConfirmation] = useState(false);
   const { toast } = useToast();
 
-  const handleFileUpload = (uploadedData: string[][], uploadedHeaders: string[]) => {
+  const handleFileUpload = async (uploadedData: string[][], uploadedHeaders: string[], file:File) => {
 
-    setCsvData(uploadedData);
-    setHeaders(uploadedHeaders);
-    setSelectedColumns([]);
-    setSelectedRows([]);
-    setRowRange([1, uploadedData.length]);
-    setTranslated(false);
-    setTranslationErrors([]);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
 
-    /* TODO: CSV Upload endpoint */
-
-    toast({
-      /* Here should be backend message */
-      title: 'CSV File uploaded successfully!',
-      description: `${uploadedData.length} rows and ${uploadedHeaders.length} columns detected`,
-    });
+      const response = await axios.post('http://localhost:8000/translation/upload_csv', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        withCredentials: true,
+      });
+      const {status, title, id} = response.data;
+      setFileId(id)
+      setTitle(title)
+      setCsvData(uploadedData);
+      setHeaders(uploadedHeaders);
+      setSelectedColumns([]);
+      setSelectedRows([]);
+      setRowRange([1, uploadedData.length]);
+      setTranslated(false);
+      setTranslationErrors([]);
+      toast({
+        /* Here should be backend message */
+        title: `CSV File ${title} uploaded successfully!`,
+        description: `${uploadedData.length} rows and ${uploadedHeaders.length} columns detected`,
+      });
+    } catch (error) {
+      console.error('File upload error:', error);
+      toast({
+        title: 'Upload failed',
+        description: error.response?.data?.message || 'There was an error uploading the file',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleColumnToggle = (column: string, isShiftKey = false, isCtrlKey = false) => {
@@ -199,40 +222,34 @@ const Dashboard = () => {
     setTranslating(true);
     setTranslationErrors([]);
 
-    try {
-      const baseData = translatedData.length > 0 ? translatedData : csvData;
-      const newData = baseData.map((row) => [...row]);
-      const newErrors: { row: number; col: number }[] = [];
+    const baseData = translatedData.length > 0 ? translatedData : csvData;
+    const newData = baseData.map((row) => [...row]);
+    const newErrors: { row: number; col: number }[] = [];
 
-      /* Endpoint for translating */
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      selectedRows.forEach((rowIndex) => {
-        selectedColumns.forEach((column) => {
-          const colIndex = headers.indexOf(column);
-          if (colIndex >= 0 && rowIndex < newData.length) {
-            const currentValue = newData[rowIndex][colIndex];
-            const hasError = Math.random() < 0.2; // 20% chance of error
+    selectedRows.forEach((rowIndex) => {
+      selectedColumns.forEach( async (column) => {
+        const colIndex = headers.indexOf(column);
+        if (colIndex >= 0 && rowIndex < newData.length) {
+          try{
+            const res = await axios.post('http://localhost:8000/translation/translate_cell', {
+                    "file_id": fileId,
+                    "column_number": colIndex,
+                    "row_number": rowIndex,
+                    "target_language": targetLanguage,
+                    "source_language": sourceLanguage
+              }, { withCredentials: true });
+            newData[rowIndex][colIndex] = `${res.data["translated"]} (${res.data["detected_language"]} -> ${targetLanguage})`;
 
-            let newValue;
-            if (currentValue.includes('[TRANSLATED TO')) {
-              newValue = currentValue;
-            } else {
-              newValue = hasError
-                ? `${csvData[rowIndex][colIndex]} (${sourceLanguage} → ${targetLanguage}?)`
-                : `${csvData[rowIndex][colIndex]} (${sourceLanguage} → ${targetLanguage})`;
-            }
-
-            newData[rowIndex][colIndex] = newValue;
-
-            if (hasError) {
-              newErrors.push({ row: rowIndex, col: colIndex });
-            }
+          } catch(error){
+              const currentValue = newData[rowIndex][colIndex];
+              newData[rowIndex][colIndex] = `${currentValue} (Cannot translate)`;
           }
-        });
+        }
       });
+    });
 
-      /* SIMULATION ABOVE*/
 
       setTranslatedData(newData);
       setTranslationErrors(newErrors);
@@ -244,21 +261,11 @@ const Dashboard = () => {
           `Translated ${selectedColumns.length} columns in ${selectedRows.length} rows ` +
           `from ${getLanguageName(sourceLanguage)} to ${getLanguageName(targetLanguage)}`,
       });
-    } catch (error) {
-      console.error('Translation error:', error);
-      toast({
-        title: 'Translation failed',
-        description:
-          error instanceof Error ? error.message : 'There was an error during translation',
-        variant: 'destructive',
-      });
-    } finally {
       setTranslating(false);
-    }
+
   };
 
-  const downloadCSV = () => {
-    /* download */
+  const downloadCSV = async () => {
     if (!translatedData.length && !csvData.length) {
       toast({
         title: 'No data to download',
@@ -268,33 +275,40 @@ const Dashboard = () => {
       return;
     }
 
-    // BACKEND: Generate downloadable CSV file
-    // API Call: POST /api/csv/export
-    // Request body: { data: translatedData.length ? translatedData : csvData, headers }
-    // Response: Blob or download URL
+     try {
+      const response = await axios.post(
+        "http://localhost:8000/translation/dowloand_csv",
+        { file_id: fileId },
+        {
+          responseType: "blob",
+          withCredentials: true,
+        }
+      );
 
-    const dataToDownload = translatedData.length ? translatedData : csvData;
-    const csvContent = [headers.join(','), ...dataToDownload.map((row) => row.join(','))].join(
-      '\n',
-    );
+      const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `translated_${title}.csv`);
+      document.body.appendChild(link);
+      link.click();
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'translated_data.csv');
-    document.body.appendChild(link);
-    link.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+      }, 100);
 
-    setTimeout(() => {
-      URL.revokeObjectURL(url);
-      document.body.removeChild(link);
-    }, 100);
-
-    toast({
-      title: 'File downloaded',
-      description: 'Your CSV file has been downloaded successfully',
-    });
+      toast({
+        title: "File downloaded",
+        description: "Your CSV file has been downloaded successfully",
+      });
+    } catch (err) {
+      toast({
+        title: "Download failed",
+        description: "There was a problem downloading the CSV.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleCellRevert = (rowIndex: number, colIndex: number) => {

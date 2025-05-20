@@ -6,7 +6,8 @@ import { Button } from './ui/button';
 import Papa from 'papaparse';
 
 interface CSVUploaderProps {
-  onFileUpload: (data: string[][], headers: string[]) => void;
+  onFileUpload: (data: string[][], headers: string[], file: File) => void;
+  onError?: (error: unknown) => void;
 }
 
 const CSVUploader = ({ onFileUpload }: CSVUploaderProps) => {
@@ -55,7 +56,7 @@ const CSVUploader = ({ onFileUpload }: CSVUploaderProps) => {
           const headers = parsedData[0];
           const data = parsedData.slice(1).filter((row) => row.some((cell) => cell.trim() !== ''));
 
-          onFileUpload(data, headers);
+          onFileUpload(data, headers, file);
         }
 
         setLoading(false);
