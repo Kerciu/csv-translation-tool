@@ -58,6 +58,15 @@ class UserSignUpSerializer(serializers.ModelSerializer):
             password=hashed_password,
             date_joined=datetime.now(),
         )
+        payload = {
+            "id": str(user.id),
+            "exp": datetime.now() + timedelta(minutes=60),
+            "iat": datetime.now(),
+        }
+
+        token = jwt.encode(payload, "secret", algorithm="HS256")
+
+        user.token = token
         return user
 
 
@@ -115,7 +124,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 GOOGLE_CLIENT_ID = os.getenv("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY")
 GOOGLE_CLIENT_SECRET = os.getenv("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET")
-REDIRECT_URI = "http://localhost:8000/authenticatation/google/callback/"
+REDIRECT_URI = "http://localhost:8000/authentication/google/callback/"
 
 
 class GoogleAuthInitSerializer(serializers.Serializer):
