@@ -1,28 +1,39 @@
+from langdetect import DetectorFactory, detect, lang_detect_exception
 from rest_framework import serializers
 from translation_module import translate as translate_text
 
 from .models import File
 
+DetectorFactory.seed = 0
+
 
 class FileUpdateCellSerializer(serializers.Serializer):
     column_number = serializers.IntegerField()
     row_number = serializers.IntegerField()
+    target_language = serializers.CharField()
 
     class Meta:
-        fields = ["column_number", "row_number"]
+        fields = ["column_number", "row_number", "target_language"]
 
     def validate(self, attrs):
         file = self.context["file"]
         column_number = attrs.get("column_number")
         row_number = attrs.get("row_number")
+        target_language = attrs.get("target_language")
         if file.columns_number < column_number:
             raise serializers.ValidationError({"file": "Invalid column number"})
-        if file.columns[column_number]["rows_number"] < row_number:
+        if file.columns[column_number].rows_number < row_number:
             raise serializers.ValidationError({"file": "Invalid row number"})
+        text = file.columns[column_number].cells[row_number]["text"]
         try:
-            # find first language of text
-            # example solution
-            attrs["translated"] = translate_text("Rust love", "en", "es")
+            original_language = detect(text=text)
+        except lang_detect_exception.LangDetectException:
+            raise serializers.ValidationError({"detect": "Cannot detext any language"})
+        print(translate_text("Grey", "en", "de"))
+        try:
+            attrs["translated"] = translate_text(
+                text, original_language, target_language
+            )
         except Exception:
             raise serializers.ValidationError({"text": "Can't translate"})
 
