@@ -173,9 +173,6 @@ const Dashboard = () => {
     setTranslated(false);
     setShowUploadConfirmation(false);
     setTranslationErrors([]);
-
-    /* TODO: Clear csv data from the database */
-
     toast({
       title: 'Dashboard cleared',
       description: 'You can now upload a new CSV file',
@@ -339,9 +336,6 @@ const Dashboard = () => {
 
   const handleCellRevert = async (rowIndex: number, colIndex: number) => {
     if (csvData.length > 0) {
-      // BACKEND: Revert a cell to its original value
-      // API Call: PUT /api/translations/revert-cell
-      // Request body: { rowIndex, colIndex, translationId? }
       const response = await axios.post( "http://localhost:8000/translation/revert_cell",{
           column_idx: colIndex,
           row_idx: rowIndex

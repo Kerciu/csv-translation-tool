@@ -128,3 +128,11 @@ class File(models.Model):
             file.columns = [column.to_dict() for column in columns]
 
             file.save()
+
+    @classmethod
+    @transaction.atomic
+    def delete_file(cls, file_id):
+        with transaction.atomic():
+            file = cls.objects.filter(id=file_id).first()
+            if file is not None:
+                file.delete()

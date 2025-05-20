@@ -80,6 +80,10 @@ class RevertCellView(APIView, JWTUserAuthentication):
         return Response(status=201)
 
 
+def async_file_delete(file_id):
+    File.delete_file(file_id)
+
+
 class CSVUploadView(APIView, JWTUserAuthentication):
 
     def post(self, request):
@@ -132,7 +136,13 @@ class CSVUploadView(APIView, JWTUserAuthentication):
         )
 
         file_obj.save()
-
+        old_file_id = user.file
+        if old_file_id is not None:
+            Thread(
+                target=async_file_delete,
+                args=(old_file_id,),
+                daemon=True,
+            ).start()
         user.file = str(file_obj.id)
         user.save(update_fields=["file"])
 
