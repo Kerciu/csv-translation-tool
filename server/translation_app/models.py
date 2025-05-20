@@ -6,10 +6,13 @@ from django_mongodb_backend.fields import (
 )
 from django_mongodb_backend.models import EmbeddedModel
 
+from .const import CANNOT_DETECT_LANGUAGE, CANOOT_TRANSLATE, TEXT_ERROR
+
 
 class Cell(EmbeddedModel):
     id = ObjectIdAutoField(primary_key=True)
     text = models.CharField(max_length=100)
+    original_text = models.CharField(max_length=100)
     row_number = models.IntegerField(default=0)
     is_translated = models.BooleanField(default=False)
 
@@ -26,6 +29,7 @@ class Cell(EmbeddedModel):
         return {
             "id": self.id,
             "text": self.text,
+            "original_text": self.original_text,
             "row_number": self.row_number,
             "is_translated": self.is_translated,
             "detected_language": self.detected_language,
@@ -83,14 +87,28 @@ class File(models.Model):
         }
 
     @classmethod
-    def update_cell(cls, file_id, col_num, row_num, update_data):
+    @transaction.atomic
+    def update_cells(
+        cls, file_id, col_numbers, row_numbers, text_list, detected_language_list
+    ):
         with transaction.atomic():
             file = cls.objects.select_for_update().get(id=file_id)
-
             columns = list(file.columns)
-            cells = list(columns[col_num].cells)
-            cells[row_num].update(update_data)
-            columns[col_num].cells = cells
+            for n in range(0, len(col_numbers)):
+                if (
+                    text_list[n] != CANNOT_DETECT_LANGUAGE
+                    and text_list[n] != CANOOT_TRANSLATE
+                    and text_list[n] != TEXT_ERROR
+                ):
+                    update_data = {
+                        "text": text_list[n],
+                        "is_translated": True,
+                        "detected_language": detected_language_list[n],
+                    }
+                    cells = list(columns[col_numbers[n]].cells)
+                    cells[row_numbers[n]].update(update_data)
+                    columns[col_numbers[n]].cells = cells
+
             file.columns = [column.to_dict() for column in columns]
 
             file.save()

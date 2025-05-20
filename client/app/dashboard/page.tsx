@@ -73,7 +73,6 @@ const Dashboard = () => {
       setTranslated(false);
       setTranslationErrors([]);
       toast({
-        /* Here should be backend message */
         title: `CSV File ${title} uploaded successfully!`,
         description: `${uploadedData.length} rows and ${uploadedHeaders.length} columns detected`,
       });
@@ -228,26 +227,55 @@ const Dashboard = () => {
 
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
+    const columnIdxList = [];
+    const rowIdxList = [];
+
     selectedRows.forEach((rowIndex) => {
-      selectedColumns.forEach( async (column) => {
+      selectedColumns.forEach((column) => {
         const colIndex = headers.indexOf(column);
         if (colIndex >= 0 && rowIndex < newData.length) {
-          try{
-            const res = await axios.post('http://localhost:8000/translation/translate_cell', {
-                    "file_id": fileId,
-                    "column_number": colIndex,
-                    "row_number": rowIndex,
-                    "target_language": targetLanguage,
-                    "source_language": sourceLanguage
-              }, { withCredentials: true });
-            newData[rowIndex][colIndex] = `${res.data["translated"]} (${res.data["detected_language"]} -> ${targetLanguage})`;
-
-          } catch(error){
-              const currentValue = newData[rowIndex][colIndex];
-              newData[rowIndex][colIndex] = `${currentValue} (Cannot translate)`;
-          }
+          columnIdxList.push(colIndex);
+          rowIdxList.push(rowIndex);
         }
       });
+    });
+
+    axios.post(
+      'http://localhost:8000/translation/translate_cells',
+      {
+        column_idx_list: columnIdxList,
+        row_idx_list: rowIdxList,
+        target_language: targetLanguage,
+        source_language: sourceLanguage
+      },
+      { withCredentials: true }
+    )
+    .then((res) => {
+      const translated = res.data.translated_list;
+      const detected = res.data.detected_languages;
+
+      for (let i = 0; i < columnIdxList.length; i++) {
+        const row = rowIdxList[i];
+        const col = columnIdxList[i];
+        const t = translated[i];
+        const d = detected[i];
+
+        if (t !== "Cannot detect any language" && t !== "Cannot translate" && t !== "Error") {
+              newData[row][col] = `${t} (${d} -> ${targetLanguage})`;
+            } else {
+              const current = newData[row][col];
+              const originalText = current.split(' (')[0];
+              newData[row][col] = `${originalText} (${t})`;
+            }      }
+    })
+    .catch((error) => {
+      console.error("Translation error:", error);
+      for (let i = 0; i < columnIdxList.length; i++) {
+        const row = rowIdxList[i];
+        const col = columnIdxList[i];
+        const current = newData[row][col];
+        newData[row][col] = `${current} (Cannot translate)`;
+      }
     });
 
 

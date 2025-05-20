@@ -1,6 +1,7 @@
 from langdetect import DetectorFactory, detect, lang_detect_exception
 from rest_framework import serializers
 
+from .const import CANNOT_DETECT_LANGUAGE, CANOOT_TRANSLATE, TEXT_ERROR
 from .models import File
 
 # from translation_module import translate as translate_text
@@ -9,40 +10,55 @@ from .models import File
 DetectorFactory.seed = 0
 
 
-class FileUpdateCellSerializer(serializers.Serializer):
-    column_number = serializers.IntegerField()
-    row_number = serializers.IntegerField()
+class FileUpdateCellsSerializer(serializers.Serializer):
+    column_idx_list = serializers.ListField(child=serializers.IntegerField())
+    row_idx_list = serializers.ListField(child=serializers.IntegerField())
     target_language = serializers.CharField()
     source_language = serializers.CharField()
 
     class Meta:
-        fields = ["column_number", "row_number", "target_language", "source_language"]
+        fields = [
+            "column_idx_list",
+            "row_idx_list",
+            "target_language",
+            "source_language",
+        ]
 
     def validate(self, attrs):
         file = self.context["file"]
-        column_number = attrs.get("column_number")
-        row_number = attrs.get("row_number")
+        column_idx_list = attrs.get("column_idx_list")
+        row_idx_list = attrs.get("row_idx_list")
         # target_language = attrs.get("target_language")
-        if file.columns_number < column_number:
-            raise serializers.ValidationError({"file": "Invalid column number"})
-        if file.columns[column_number].rows_number < row_number:
-            raise serializers.ValidationError({"file": "Invalid row number"})
-        text = file.columns[column_number].cells[row_number]["text"]
-        try:
-            detected_language = detect(text=text)
-            attrs["detected_language"] = detected_language
-        except lang_detect_exception.LangDetectException:
-            raise serializers.ValidationError({"detect": "Cannot detext any language"})
+        # source_language = attrs.get("source_language")
+        detected_languages = []
+        texts = []
+        columns_number = file.columns_number
+        for n in range(0, len(column_idx_list)):
+            if columns_number < column_idx_list[n]:
+                texts.append(TEXT_ERROR)
 
-        try:
-            # temporary solution because model doesn't work
-            attrs["translated"] = "sucess"
-            # attrs["translated"] = translate_text(
-            #    text, detected_language, target_language
-            # )
-        except Exception:
-            raise serializers.ValidationError({"text": "Can't translate"})
+            rows_number = file.columns[column_idx_list[n]].rows_number
 
+            if rows_number < row_idx_list[n]:
+                texts.append(TEXT_ERROR)
+
+            text = file.columns[column_idx_list[n]].cells[row_idx_list[n]]["text"]
+            try:
+                detected_language = detect(text=text)
+                detected_languages.append(detected_language)
+            except lang_detect_exception.LangDetectException:
+                texts.append(CANNOT_DETECT_LANGUAGE)
+                detected_languages.append(CANNOT_DETECT_LANGUAGE)
+            try:
+                # temporary solution because model doesn't work
+                texts.append("sucess")
+                #  texts.append(translate_text(
+                #    text, detected_language, target_language
+                # ))
+            except Exception:
+                texts.append(CANOOT_TRANSLATE)
+        attrs["detected_languages"] = detected_languages
+        attrs["translated_list"] = texts
         return attrs
 
 
@@ -60,24 +76,14 @@ class CSVFileSerializer(serializers.Serializer):
 
 
 class FindCSVFileSerializer(serializers.Serializer):
-    file_id = serializers.CharField()
-
-    class Meta:
-        fields = ["file_id"]
 
     def validate(self, attrs):
         user = self.context["user"]
-        file_id = attrs["file_id"]
 
-        validated = False
-        for id in user.files:
-            if str(id) == str(file_id):
-                validated = True
+        file_id = user.file
 
-        if not validated:
-            raise serializers.ValidationError(
-                {"user": "User doesn't have such a File."}
-            )
+        if not file_id:
+            raise serializers.ValidationError({"user": "User doesn't have any file."})
 
         file = File.objects.filter(id=file_id).first()
         if file is None:

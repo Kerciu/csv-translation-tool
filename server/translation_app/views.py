@@ -1,6 +1,7 @@
 import csv
 from datetime import datetime
 from io import StringIO, TextIOWrapper
+from threading import Thread
 
 from django.http import HttpResponse
 from rest_framework import status
@@ -11,7 +12,7 @@ from translation_module import translate as translate_text
 from .models import Cell, Column, File
 from .serializers import (
     CSVFileSerializer,
-    FileUpdateCellSerializer,
+    FileUpdateCellsSerializer,
     FindCSVFileSerializer,
 )
 from .utils import JWTUserAuthentication
@@ -27,7 +28,13 @@ def translate(request):
     return HttpResponse(translate_text("Rust love", "en", "es"))
 
 
-class TranslateCellView(APIView, JWTUserAuthentication):
+def async_update(file_id, column_idx_list, row_idx_list, translated, detected_language):
+    File.update_cells(
+        file_id, column_idx_list, row_idx_list, translated, detected_language
+    )
+
+
+class TranslateCellsView(APIView, JWTUserAuthentication):
 
     def post(self, request):
         user = self.get_authenticated_user(request=request)
@@ -35,22 +42,22 @@ class TranslateCellView(APIView, JWTUserAuthentication):
         if not serializer.is_valid(raise_exception=True):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         file = serializer.validated_data["file"]
-        update_serializer = FileUpdateCellSerializer(
+        update_serializer = FileUpdateCellsSerializer(
             data=request.data, context={"file": file}
         )
         if not update_serializer.is_valid(raise_exception=True):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        File.update_cell(
-            file.id,
-            update_serializer.validated_data["column_number"],
-            update_serializer.validated_data["row_number"],
-            {
-                "text": update_serializer.validated_data["translated"],
-                "is_translated": True,
-                "detected_language": "es-ops-vhs-test",
-            },
-        )
-
+        Thread(
+            target=async_update,
+            args=(
+                file.id,
+                update_serializer.validated_data["column_idx_list"],
+                update_serializer.validated_data["row_idx_list"],
+                update_serializer.validated_data["translated_list"],
+                update_serializer.validated_data["detected_languages"],
+            ),
+            daemon=True,
+        ).start()
         return Response(update_serializer.validated_data, status=201)
 
 
@@ -82,6 +89,7 @@ class CSVUploadView(APIView, JWTUserAuthentication):
                 cell_objs.append(
                     Cell(
                         text=cell,
+                        original_text=cell,
                         row_number=cell_idx,
                         is_translated=False,
                         detected_language="",
@@ -106,9 +114,8 @@ class CSVUploadView(APIView, JWTUserAuthentication):
 
         file_obj.save()
 
-        user.files = user.files or []
-        user.files.append(str(file_obj.id))
-        user.save(update_fields=["files"])
+        user.file = str(file_obj.id)
+        user.save(update_fields=["file"])
 
         return Response(
             {"status": "success", "file_title": file_name, "id": str(file_obj.id)}
@@ -119,13 +126,10 @@ class GetUserCSVFiles(APIView, JWTUserAuthentication):
     def get(self, request):
         user = self.get_authenticated_user(request=request)
 
-        files = []
-        for id in user.files:
-            file = File.objects.filter(id=id).first()
-            if file is None:
-                continue
-            files.append(file.to_dict())
-        return Response({"files": files})
+        file = File.objects.filter(id=user.file).first()
+        if file is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response({"file": file.to_dict()})
 
 
 class DowloandCSVFile(APIView, JWTUserAuthentication):
