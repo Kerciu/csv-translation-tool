@@ -112,3 +112,19 @@ class File(models.Model):
             file.columns = [column.to_dict() for column in columns]
 
             file.save()
+
+    @classmethod
+    @transaction.atomic
+    def revert_cell(cls, file_id, col_num, row_num):
+        with transaction.atomic():
+            file = cls.objects.select_for_update().get(id=file_id)
+
+            columns = list(file.columns)
+            cells = list(columns[col_num].cells)
+            cell = cells[row_num]
+            update_data = {"text": cell["original_text"], "is_translated": False}
+            cells[row_num].update(update_data)
+            columns[col_num].cells = cells
+            file.columns = [column.to_dict() for column in columns]
+
+            file.save()

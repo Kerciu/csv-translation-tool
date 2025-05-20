@@ -263,9 +263,7 @@ const Dashboard = () => {
         if (t !== "Cannot detect any language" && t !== "Cannot translate" && t !== "Error") {
               newData[row][col] = `${t} (${d} -> ${targetLanguage})`;
             } else {
-              const current = newData[row][col];
-              const originalText = current.split(' (')[0];
-              newData[row][col] = `${originalText} (${t})`;
+              newData[row][col] = `${csvData[row][col]} (${t})`;
             }      }
     })
     .catch((error) => {
@@ -339,12 +337,16 @@ const Dashboard = () => {
     }
   };
 
-  const handleCellRevert = (rowIndex: number, colIndex: number) => {
+  const handleCellRevert = async (rowIndex: number, colIndex: number) => {
     if (csvData.length > 0) {
       // BACKEND: Revert a cell to its original value
       // API Call: PUT /api/translations/revert-cell
       // Request body: { rowIndex, colIndex, translationId? }
-
+      const response = await axios.post( "http://localhost:8000/translation/revert_cell",{
+          column_idx: colIndex,
+          row_idx: rowIndex
+        }, { withCredentials: true}
+      );
       const newData = [...translatedData];
       newData[rowIndex][colIndex] = csvData[rowIndex][colIndex];
       setTranslatedData(newData);

@@ -34,6 +34,10 @@ def async_update(file_id, column_idx_list, row_idx_list, translated, detected_la
     )
 
 
+def async_revert(file_id, column_idx, row_idx):
+    File.revert_cell(file_id, column_idx, row_idx)
+
+
 class TranslateCellsView(APIView, JWTUserAuthentication):
 
     def post(self, request):
@@ -59,6 +63,21 @@ class TranslateCellsView(APIView, JWTUserAuthentication):
             daemon=True,
         ).start()
         return Response(update_serializer.validated_data, status=201)
+
+
+class RevertCellView(APIView, JWTUserAuthentication):
+    def post(self, request):
+        user = self.get_authenticated_user(request=request)
+        serializer = FindCSVFileSerializer(data=request.data, context={"user": user})
+        if not serializer.is_valid(raise_exception=True):
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        file = serializer.validated_data["file"]
+        Thread(
+            target=async_revert,
+            args=(file.id, request.data["column_idx"], request.data["row_idx"]),
+            daemon=True,
+        ).start()
+        return Response(status=201)
 
 
 class CSVUploadView(APIView, JWTUserAuthentication):

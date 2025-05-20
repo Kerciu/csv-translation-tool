@@ -9,4 +9,5 @@ urlpatterns = [
     path("translate_cells", views.TranslateCellsView.as_view(), name="translate"),
     path("find_language", views.find_language, name="find language"),
     path("translate", views.translate, name="translate"),
+    path("revert_cell", views.RevertCellView.as_view(), name="revert cell"),
 ]
