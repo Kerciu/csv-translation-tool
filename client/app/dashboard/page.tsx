@@ -400,6 +400,54 @@ const Dashboard = () => {
   );
 
   useEffect(() => {
+    const fetchUserCSV = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('http://localhost:8000/translation/get_user_csv', {
+          withCredentials: true,
+        });
+
+        const fileData = response.data.file;
+
+        const headers = fileData.columns.map((column: any) => column.name);
+        const data = [];
+
+        const rowCount = fileData.columns[0]?.cells.length || 0;
+
+        for (let i = 0; i < rowCount; i++) {
+          const row: string[] = [];
+          fileData.columns.forEach((column: any) => {
+            row.push(column.cells[i].text);
+          });
+          data.push(row);
+        }
+
+        setFileId(fileData.id);
+        setTitle(fileData.title);
+        setCsvData(data);
+        setHeaders(headers);
+        setRowRange([1, data.length]);
+
+        toast({
+          title: `CSV File ${fileData.title} loaded successfully!`,
+          description: `${data.length} rows and ${headers.length} columns detected`,
+        });
+      } catch (error) {
+        console.error('Error loading CSV file:', error);
+        toast({
+          title: 'Load failed',
+          description: error.response?.data?.message || 'There was an error loading the file',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserCSV();
+  }, []);
+
+  useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
