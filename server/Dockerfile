@@ -10,6 +10,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 COPY --from=translator-model:latest /wheels/*.whl /tmp/
+COPY --from=translator-model:latest /model/scripts/ ./scripts/
+
 COPY requirements.txt .
 
 RUN pip install /tmp/*.whl
