@@ -14,4 +14,10 @@ urlpatterns = [
         views.GoogleLoginCallbackView.as_view(),
         name="google-callback",
     ),
+    path("github/", views.GithubLoginInitView.as_view(), name="github-login"),
+    path(
+        "github/callback/",
+        views.GithubLoginCallbackView.as_view(),
+        name="github-callback",
+    ),
 ]

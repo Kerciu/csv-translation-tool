@@ -58,6 +58,15 @@ class UserSignUpSerializer(serializers.ModelSerializer):
             password=hashed_password,
             date_joined=datetime.now(),
         )
+        payload = {
+            "id": str(user.id),
+            "exp": datetime.now() + timedelta(minutes=60),
+            "iat": datetime.now(),
+        }
+
+        token = jwt.encode(payload, "secret", algorithm="HS256")
+
+        user.token = token
         return user
 
 
@@ -115,7 +124,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 GOOGLE_CLIENT_ID = os.getenv("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY")
 GOOGLE_CLIENT_SECRET = os.getenv("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET")
-REDIRECT_URI = "http://localhost:8000/authenticatation/google/callback/"
+REDIRECT_URI = "http://localhost:8000/authentication/google/callback/"
 
 
 class GoogleAuthInitSerializer(serializers.Serializer):
@@ -162,5 +171,64 @@ class GoogleAuthCallbackSerializer(serializers.Serializer):
             "email": user.email,
             "id": str(user.id),
             "token": jwttoken,
+            "created": created,
+        }
+
+
+GITHUB_CLIENT_ID = os.getenv("SOCIAL_AUTH_GITHUB_KEY")
+GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
+GITHUB_REDIRECT_URI = "http://localhost:8000/authentication/github/callback/"
+
+
+class GitHubAuthInitSerializer(serializers.Serializer):
+    def create(self, validated_data):
+        session = OAuth2Session(
+            GITHUB_CLIENT_ID, scope="user:email", redirect_uri=GITHUB_REDIRECT_URI
+        )
+        uri, state = session.create_authorization_url(
+            "https://github.com/login/oauth/authorize", redirect_uri=GITHUB_REDIRECT_URI
+        )
+        return {"auth_url": uri, "state": state}
+
+
+class GitHubAuthCallbackSerializer(serializers.Serializer):
+    code = serializers.CharField()
+    state = serializers.CharField()
+
+    def create(self, validated_data):
+        session = OAuth2Session(
+            GITHUB_CLIENT_ID,
+            state=validated_data["state"],
+            redirect_uri=GITHUB_REDIRECT_URI,
+        )
+
+        token = session.fetch_token(
+            "https://github.com/login/oauth/access_token",
+            code=validated_data["code"],
+            client_secret=GITHUB_CLIENT_SECRET,
+        )
+
+        user_info = session.get("https://api.github.com/user").json()
+        emails_info = session.get("https://api.github.com/user/emails").json()
+        primary_email = next((e["email"] for e in emails_info if e["primary"]), None)
+
+        user, created = CustomUser.objects.get_or_create(
+            username=user_info["login"],
+            email=primary_email,
+            date_joined=datetime.now(),
+        )
+        user.set_unusable_password()
+
+        payload = {
+            "id": str(user.id),
+            "exp": datetime.now() + timedelta(minutes=60),
+            "iat": datetime.now(),
+        }
+        token = jwt.encode(payload, "secret", algorithm="HS256")
+
+        return {
+            "email": user.email,
+            "id": str(user.id),
+            "token": token,
             "created": created,
         }
