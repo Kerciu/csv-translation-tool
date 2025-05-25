@@ -11,7 +11,7 @@ interface LanguageTranslationOptionProps {
 
 const LanguageTranslationOption = ({
   sourceLanguage = 'en',
-  targetLanguage = 'es',
+  targetLanguage = 'en',
   onLanguageChange,
 }: LanguageTranslationOptionProps) => {
   const [targetOpen, setTargetOpen] = useState(false);
@@ -25,14 +25,6 @@ const LanguageTranslationOption = ({
 
       <CardContent>
         <div className='space-y-4'>
-          <LanguagePopover
-            operationType='Source Language'
-            operationLanguage={sourceLanguage}
-            open={sourceOpen}
-            setOpen={setSourceOpen}
-            onLanguageChange={onLanguageChange}
-          />
-
           <LanguagePopover
             operationType='Target Language'
             operationLanguage={targetLanguage}

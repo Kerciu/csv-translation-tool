@@ -74,7 +74,9 @@ const login = async (email: string, password: string) => {
         password: password,
         username: name
       }, { withCredentials: true });
-      const res = await axios.get('http://localhost:8000/authentication/user', {});
+      const res = await axios.get('http://localhost:8000/authentication/user',
+        { withCredentials: true }
+      );
       setResponse(res.data);
       localStorage.setItem('user', JSON.stringify(res.data));
 

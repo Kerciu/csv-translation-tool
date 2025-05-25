@@ -1,9 +1,11 @@
 from django.core.cache import cache
 from rest_framework import serializers
-from translation_module import translate as translate_text
+from translation_module import detect_lang
 
-from .const import CANOOT_TRANSLATE, TEXT_ERROR
+from .const import CANNOT_DETECT_LANGUAGE, CANOOT_TRANSLATE, TEXT_ERROR
 from .models import File
+
+# from translation_module import translate as translate_text
 
 
 class FileUpdateCellsSerializer(serializers.Serializer):
@@ -17,7 +19,6 @@ class FileUpdateCellsSerializer(serializers.Serializer):
             "column_idx_list",
             "row_idx_list",
             "target_language",
-            "source_language",
         ]
 
     def validate(self, attrs):
@@ -25,7 +26,6 @@ class FileUpdateCellsSerializer(serializers.Serializer):
         column_idx_list = attrs.get("column_idx_list")
         row_idx_list = attrs.get("row_idx_list")
         target_language = attrs.get("target_language")
-        source_language = attrs.get("source_language")
         translated_texts = []
         columns_number = file.columns_number
 
@@ -39,6 +39,15 @@ class FileUpdateCellsSerializer(serializers.Serializer):
                 translated_texts.append((TEXT_ERROR, ""))
 
             text = file.columns[column_idx_list[n]].cells[row_idx_list[n]]["text"]
+            try:
+                source_language = detect_lang(text)
+            except Exception:
+                translated_texts.append((TEXT_ERROR, ""))
+                continue
+
+            if source_language == "None":
+                translated_texts.append((CANNOT_DETECT_LANGUAGE, ""))
+                continue
 
             key = f"{text}-{source_language}-{target_language}"
             value = cache.get(key)
@@ -48,20 +57,20 @@ class FileUpdateCellsSerializer(serializers.Serializer):
                 continue
 
             try:
-                translated_texts.append(
-                    translate_text(text, source_language, target_language)
-                )
-
+                # translated_texts.append(
+                #    (translate_text(
+                # text, source_language, target_language), source_language)
+                # )
+                translated_texts.append("Success", "jp")
                 cache.set(
                     f"{text}-{source_language}-{target_language}",
                     translated_texts[-1],
                     3600,
                 )
-
             except Exception:
                 translated_texts.append((CANOOT_TRANSLATE, ""))
+
         attrs["translated_list"] = translated_texts
-        print(translated_texts)
         return attrs
 
 

@@ -220,15 +220,6 @@ const Dashboard = () => {
       return;
     }
 
-    if (sourceLanguage === targetLanguage) {
-      toast({
-        title: 'Same languages selected',
-        description: 'Source and target languages must be different',
-        variant: 'destructive',
-      });
-      return;
-    }
-
     setTranslating(true);
     setTranslationErrors([]);
 
@@ -257,7 +248,6 @@ const Dashboard = () => {
         column_idx_list: columnIdxList,
         row_idx_list: rowIdxList,
         target_language: targetLanguage,
-        source_language: sourceLanguage
       },
       { withCredentials: true }
     )
@@ -284,8 +274,7 @@ const Dashboard = () => {
       toast({
         title: 'Translation completed',
         description:
-          `Translated ${selectedColumns.length} columns in ${selectedRows.length} rows ` +
-          `from ${getLanguageName(sourceLanguage)} to ${getLanguageName(targetLanguage)}`,
+          `Translated ${selectedColumns.length} columns in ${selectedRows.length} rows `
       });
       setTranslating(false);
     })
@@ -419,6 +408,10 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchUserCSV = async () => {
       try {
+        const res = await axios.get('http://localhost:8000/authentication/user',
+              { withCredentials: true }
+          );
+        localStorage.setItem('user', JSON.stringify(res.data));
         setLoading(true);
         const response = await axios.get('http://localhost:8000/translation/get_user_csv', {
           withCredentials: true,
@@ -450,12 +443,6 @@ const Dashboard = () => {
           description: `${data.length} rows and ${headers.length} columns detected`,
         });
       } catch (error) {
-        console.error('Error loading CSV file:', error);
-        toast({
-          title: 'Load failed',
-          description: error.response?.data?.message || 'There was an error loading the file',
-          variant: 'destructive',
-        });
       } finally {
         setLoading(false);
       }
