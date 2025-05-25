@@ -8,4 +8,9 @@ urlpatterns = [
     path("dowloand_csv", views.DowloandCSVFile.as_view(), name="dowloand csv"),
     path("translate_cells", views.TranslateCellsView.as_view(), name="translate"),
     path("revert_cell", views.RevertCellView.as_view(), name="revert cell"),
+    path(
+        "custom_update_cell",
+        views.CustomUserUpdateCellView.as_view(),
+        name="custom cell update",
+    ),
 ]

@@ -129,7 +129,21 @@ const Dashboard = () => {
 
   const handleCellEdit = (rowIndex: number, colIndex: number, value: string) => {
     const newData = [...translatedData];
+    try {
+      axios.post(
+        'http://localhost:8000/translation/custom_update_cell',
+        {
+          column_idx: colIndex,
+          row_idx: rowIndex,
+          custom_text: value,
+        },
+        { withCredentials: true }
+      )
+    } catch (error) {
+      console.error('File upload error:', error);
+    }
     newData[rowIndex][colIndex] = value;
+
     setTranslatedData(newData);
   };
 

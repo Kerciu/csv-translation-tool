@@ -66,6 +66,26 @@ class RevertCellView(APIView, JWTUserAuthentication):
         return Response(status=201)
 
 
+class CustomUserUpdateCellView(APIView, JWTUserAuthentication):
+    def post(self, request):
+        user = self.get_authenticated_user(request=request)
+        serializer = FindCSVFileSerializer(data=request.data, context={"user": user})
+        if not serializer.is_valid(raise_exception=True):
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        file = serializer.validated_data["file"]
+        Thread(
+            target=async_update,
+            args=(
+                file.id,
+                [request.data["column_idx"]],
+                [request.data["row_idx"]],
+                [(request.data["custom_text"], "custom")],
+            ),
+            daemon=True,
+        ).start()
+        return Response(status=201)
+
+
 def async_file_delete(file_id):
     File.delete_file(file_id)
 
