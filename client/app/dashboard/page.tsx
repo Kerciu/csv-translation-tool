@@ -408,6 +408,10 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchUserCSV = async () => {
       try {
+        const res = await axios.get('http://localhost:8000/authentication/user',
+              { withCredentials: true }
+          );
+        localStorage.setItem('user', JSON.stringify(res.data));
         setLoading(true);
         const response = await axios.get('http://localhost:8000/translation/get_user_csv', {
           withCredentials: true,
@@ -439,12 +443,6 @@ const Dashboard = () => {
           description: `${data.length} rows and ${headers.length} columns detected`,
         });
       } catch (error) {
-        console.error('Error loading CSV file:', error);
-        toast({
-          title: 'Load failed',
-          description: error.response?.data?.message || 'There was an error loading the file',
-          variant: 'destructive',
-        });
       } finally {
         setLoading(false);
       }
