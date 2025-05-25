@@ -249,30 +249,19 @@ const Dashboard = () => {
     )
     .then((res) => {
       const translated = res.data.translated_list;
-      const detected = res.data.detected_languages;
 
       for (let i = 0; i < columnIdxList.length; i++) {
         const row = rowIdxList[i];
         const col = columnIdxList[i];
-        const t = translated[i];
-        const d = detected[i];
+        const t = translated[i][0];
+        const d = translated[i][1];
 
         if (t !== "Cannot detect any language" && t !== "Cannot translate" && t !== "Error") {
-              newData[row][col] = `${t} (${d} -> ${targetLanguage})`;
-            } else {
-              newData[row][col] = `${csvData[row][col]} (${t})`;
-            }      }
-    })
-    .catch((error) => {
-      console.error("Translation error:", error);
-      for (let i = 0; i < columnIdxList.length; i++) {
-        const row = rowIdxList[i];
-        const col = columnIdxList[i];
-        const current = newData[row][col];
-        newData[row][col] = `${current} (Cannot translate)`;
+          newData[row][col] = `${t} (${d} -> ${targetLanguage})`;
+        } else {
+          newData[row][col] = `${csvData[row][col]} (${t})`;
+        }
       }
-    });
-
 
       setTranslatedData(newData);
       setTranslationErrors(newErrors);
@@ -285,6 +274,20 @@ const Dashboard = () => {
           `from ${getLanguageName(sourceLanguage)} to ${getLanguageName(targetLanguage)}`,
       });
       setTranslating(false);
+    })
+    .catch((error) => {
+      console.error("Translation error:", error);
+      for (let i = 0; i < columnIdxList.length; i++) {
+        const row = rowIdxList[i];
+        const col = columnIdxList[i];
+        const current = newData[row][col];
+        // xx -> yy patern or "(cannot translate)"
+        const cleaned = current.replace(/\((?:[a-z]{2}->[a-z]{2}|Cannot translate)\)\s*/gi, '');
+        newData[row][col] = `${cleaned} (Cannot translate)`;
+      }
+    });
+
+
 
   };
 

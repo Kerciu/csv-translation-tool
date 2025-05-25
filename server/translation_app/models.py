@@ -6,7 +6,7 @@ from django_mongodb_backend.fields import (
 )
 from django_mongodb_backend.models import EmbeddedModel
 
-from .const import CANNOT_DETECT_LANGUAGE, CANOOT_TRANSLATE, TEXT_ERROR
+from .const import CANOOT_TRANSLATE, TEXT_ERROR
 
 
 class Cell(EmbeddedModel):
@@ -88,22 +88,19 @@ class File(models.Model):
 
     @classmethod
     @transaction.atomic
-    def update_cells(
-        cls, file_id, col_numbers, row_numbers, text_list, detected_language_list
-    ):
+    def update_cells(cls, file_id, col_numbers, row_numbers, text_list):
         with transaction.atomic():
             file = cls.objects.select_for_update().get(id=file_id)
             columns = list(file.columns)
             for n in range(0, len(col_numbers)):
                 if (
-                    text_list[n] != CANNOT_DETECT_LANGUAGE
-                    and text_list[n] != CANOOT_TRANSLATE
-                    and text_list[n] != TEXT_ERROR
+                    text_list[n][0] != CANOOT_TRANSLATE
+                    and text_list[n][0] != TEXT_ERROR
                 ):
                     update_data = {
-                        "text": text_list[n],
+                        "text": text_list[n][0],
                         "is_translated": True,
-                        "detected_language": detected_language_list[n],
+                        "detected_language": text_list[n][1],
                     }
                     cells = list(columns[col_numbers[n]].cells)
                     cells[row_numbers[n]].update(update_data)

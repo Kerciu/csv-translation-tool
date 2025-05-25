@@ -28,10 +28,8 @@ def translate(request):
     return HttpResponse(translate_text("Rust love", "en", "es"))
 
 
-def async_update(file_id, column_idx_list, row_idx_list, translated, detected_language):
-    File.update_cells(
-        file_id, column_idx_list, row_idx_list, translated, detected_language
-    )
+def async_update(file_id, column_idx_list, row_idx_list, translated):
+    File.update_cells(file_id, column_idx_list, row_idx_list, translated)
 
 
 def async_revert(file_id, column_idx, row_idx):
@@ -58,7 +56,6 @@ class TranslateCellsView(APIView, JWTUserAuthentication):
                 update_serializer.validated_data["column_idx_list"],
                 update_serializer.validated_data["row_idx_list"],
                 update_serializer.validated_data["translated_list"],
-                update_serializer.validated_data["detected_languages"],
             ),
             daemon=True,
         ).start()
