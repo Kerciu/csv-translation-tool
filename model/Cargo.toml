@@ -19,12 +19,13 @@ reqwest = { version = "0.11", features = ["json", "stream", "blocking", "gzip"] 
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 clap = { version = "4.5.37", features = ["derive"] }
 serde_json = "1.0.140"
-serde = "1.0.219"
+serde = { version = "1.0.219", features = ["derive"] }
 base64 = "0.22.1"
 lingua = { version = "1.7.1", default-features = false, features = ["arabic", "korean", "japanese", "chinese", "portuguese", "german", "english", "french", "italian", "spanish", "russian"] }
-redis = "0.31.0"
+redis = { version = "0.31.0", features = ["aio", "tokio-comp"] }
+md5 = "0.7.0"
 
 
 [dev-dependencies]
 anyhow = "1.0"
-tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "full"] }
