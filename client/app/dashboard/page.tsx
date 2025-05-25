@@ -220,15 +220,6 @@ const Dashboard = () => {
       return;
     }
 
-    if (sourceLanguage === targetLanguage) {
-      toast({
-        title: 'Same languages selected',
-        description: 'Source and target languages must be different',
-        variant: 'destructive',
-      });
-      return;
-    }
-
     setTranslating(true);
     setTranslationErrors([]);
 
@@ -257,7 +248,6 @@ const Dashboard = () => {
         column_idx_list: columnIdxList,
         row_idx_list: rowIdxList,
         target_language: targetLanguage,
-        source_language: sourceLanguage
       },
       { withCredentials: true }
     )
@@ -284,8 +274,7 @@ const Dashboard = () => {
       toast({
         title: 'Translation completed',
         description:
-          `Translated ${selectedColumns.length} columns in ${selectedRows.length} rows ` +
-          `from ${getLanguageName(sourceLanguage)} to ${getLanguageName(targetLanguage)}`,
+          `Translated ${selectedColumns.length} columns in ${selectedRows.length} rows `
       });
       setTranslating(false);
     })
