@@ -43,7 +43,7 @@ const LoginDialog = ({ isOpen, onOpenChange }: LoginDialogProps) => {
         });
         onOpenChange(false);
       } else {
-        await login(email, password);
+        await register(username, email, password);
         toast({
           title: 'Registration successful',
           description: 'Registered successfully!',
