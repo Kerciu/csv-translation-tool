@@ -1,6 +1,9 @@
-use redis::{AsyncCommands, Client};
+use redis::aio::MultiplexedConnection;
+use redis::AsyncCommands;
+use redis::{Client, pipe};
 use serde::{Deserialize, Serialize};
-use std::time::Duration;
+use std::{time::Duration};
+use md5;
 
 #[derive(Clone)]
 pub struct TranslationCache {
@@ -15,5 +18,31 @@ impl TranslationCache {
             client,
             ttl: Duration::from_secs(ttl_seconds),
         }
+    }
+
+    async fn cache_key(&self, lang: &str, text: &str) -> String {
+        let hash = format!("{:x}", md5::compute(text));
+        format!("translation:{}:{}", lang, hash)
+    }
+
+    pub async fn get_cached(&self, lang: &str, text: &str) -> Option<String> {
+        let mut conn = self.client.get_multiplexed_async_connection().await.ok()?;
+        let key = self.cache_key(lang, text).await;
+
+        conn.get(&key).await.ok()?
+    }
+
+    pub async fn set_cached(&self, lang: &str, text: &str, translation: &str) {
+        let mut conn = match self.client.get_multiplexed_async_connection().await {
+            Ok(c) => c,
+            Err(_) => return,
+        };
+
+        let key = self.cache_key(lang, text).await;
+        let _: Result<(), _> = redis::pipe()
+            .set(&key, translation)
+            .expire(&key, self.ttl.as_secs() as i64)
+            .query_async(&mut conn)
+            .await;
     }
 }
