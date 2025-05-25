@@ -7,7 +7,6 @@ from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from translation_module import translate as translate_text
 
 from .models import Cell, Column, File
 from .serializers import (
@@ -16,16 +15,6 @@ from .serializers import (
     FindCSVFileSerializer,
 )
 from .utils import JWTUserAuthentication
-
-
-def find_language(request):
-    return HttpResponse("I don't know")
-
-
-def translate(request):
-    # Here should take in list of string
-    # if in redis (text, src_lang, tgt_lang) -> fetch from cache
-    return HttpResponse(translate_text("Rust love", "en", "es"))
 
 
 def async_update(file_id, column_idx_list, row_idx_list, translated):

@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from rest_framework import serializers
 from translation_module import translate as translate_text
 
@@ -38,13 +39,25 @@ class FileUpdateCellsSerializer(serializers.Serializer):
                 translated_texts.append((TEXT_ERROR, ""))
 
             text = file.columns[column_idx_list[n]].cells[row_idx_list[n]]["text"]
+
+            key = f"{text}-{source_language}-{target_language}"
+            value = cache.get(key)
+
+            if value is not None:
+                translated_texts.append(value)
+                continue
+
             try:
                 translated_texts.append(
-                    (
-                        translate_text(text, source_language, target_language),
-                        source_language,
-                    )
+                    translate_text(text, source_language, target_language)
                 )
+
+                cache.set(
+                    f"{text}-{source_language}-{target_language}",
+                    translated_texts[-1],
+                    3600,
+                )
+
             except Exception:
                 translated_texts.append((CANOOT_TRANSLATE, ""))
         attrs["translated_list"] = translated_texts
