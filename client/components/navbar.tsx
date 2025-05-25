@@ -20,17 +20,7 @@ import { ModeToggle } from './mode-toggle';
 const Navbar = () => {
   const [showLoginDialog, setShowLoginDialog] = useState(false);
 
-  /* DEBUG */
-  const [user, setUser] = useState({
-    name: 'Kacper',
-    email: 'Kerciuuu@gmail.com',
-    provider: 'GitHub',
-  });
-  const [isLoading, setLoading] = useState(false);
-  const logout = () => {};
-  /* This will be replaced by this thing below TODO*/
-
-  // const { user, logout, isLoading } = useAuth();
+  const { user, logout, isLoading } = useAuth();
 
   const pathname = usePathname();
   const isDashboard = pathname === '/dashboard';
