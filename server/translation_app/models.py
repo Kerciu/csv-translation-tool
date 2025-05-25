@@ -6,7 +6,7 @@ from django_mongodb_backend.fields import (
 )
 from django_mongodb_backend.models import EmbeddedModel
 
-from .const import CANOOT_TRANSLATE, TEXT_ERROR
+from .const import CANNOT_DETECT_LANGUAGE, CANOOT_TRANSLATE, TEXT_ERROR
 
 
 class Cell(EmbeddedModel):
@@ -96,6 +96,7 @@ class File(models.Model):
                 if (
                     text_list[n][0] != CANOOT_TRANSLATE
                     and text_list[n][0] != TEXT_ERROR
+                    and text_list[n][0] != CANNOT_DETECT_LANGUAGE
                 ):
                     update_data = {
                         "text": text_list[n][0],
