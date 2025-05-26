@@ -1,16 +1,14 @@
 pub mod translation;
 pub mod new_translation;
 pub mod config;
-use clap::builder::Str;
 use config::get_model_config;
-use tokio::runtime::Runtime;
 use translation::model::TranslationModel;
 use pyo3::prelude::*;
-use std::sync::Arc;
 
 use crate::translation::detect_language::detect_language;
 
 #[pyfunction]
+#[allow(unsafe_code)]
 #[allow(unsafe_op_in_unsafe_fn)]
 fn translate(text: &str, src_lang: &str, tgt_lang: &str) -> PyResult<(String, String)> {
     let detected_lang = if src_lang == "any" {
