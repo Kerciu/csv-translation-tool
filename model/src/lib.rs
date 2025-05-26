@@ -1,9 +1,13 @@
 pub mod translation;
+pub mod new_translation;
 pub mod config;
 use clap::builder::Str;
 use config::get_model_config;
-use translation::{ model::TranslationModel};
+use tokio::runtime::Runtime;
+use translation::model::TranslationModel;
 use pyo3::prelude::*;
+use std::sync::Arc;
+
 use crate::translation::detect_language::detect_language;
 
 #[pyfunction]
