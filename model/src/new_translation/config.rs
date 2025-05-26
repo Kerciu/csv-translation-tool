@@ -44,4 +44,8 @@ impl TranslatorConfig {
             VarBuilder::from_mmaped_safetensors(&[model_path], DType::F32, &self.device).map_err(Into::into)
         }
     }
+
+    pub fn config(&self) -> &Config {
+        &self.model_config
+    }
 }

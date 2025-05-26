@@ -1,7 +1,5 @@
-use redis::aio::MultiplexedConnection;
 use redis::AsyncCommands;
-use redis::{Client, pipe};
-use serde::{Deserialize, Serialize};
+use redis::Client;
 use std::{time::Duration};
 use md5;
 
