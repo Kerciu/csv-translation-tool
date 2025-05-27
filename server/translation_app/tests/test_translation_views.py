@@ -1,12 +1,10 @@
-# tests/test_translation_views.py
 import csv
-import json
 from datetime import datetime
 from io import BytesIO, StringIO
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from auth_app.models import CustomUser
-from bson import ObjectId
+from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
@@ -27,11 +25,10 @@ class BaseSetup:
         return f"token_{user_id}"
 
 
-class TranslateCellViewTest(BaseSetup, APITestCase):
+class TranslateCellsViewTest(BaseSetup, APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.url = reverse("translate")
-
         cells = [
             Cell(
                 text="Hola", row_number=0, is_translated=False, detected_language="es"
@@ -44,30 +41,25 @@ class TranslateCellViewTest(BaseSetup, APITestCase):
             name="Greeting", column_number=0, rows_number=2, cells=cells
         ).to_dict()
         self.file = File.objects.create(
-            title="greet",
-            upload_time=datetime.now(),
-            columns=[col],
-            columns_number=1,
+            title="greet", upload_time=datetime.now(), columns=[col], columns_number=1
         )
         self.user = self._create_user()
-        self.user.files.append(str(self.file.id))
+        self.user.file = str(self.file.id)
+        self.user.save()
 
     @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
-    @patch("translation_app.views.translate_text", return_value="Hello")
-    def test_successful_translation(self, mock_translate, mock_auth):
+    def test_successful_translation(self, mock_auth):
         mock_auth.return_value = self.user
         data = {
             "file_id": str(self.file.id),
-            "column_number": 0,
-            "row_number": 0,
+            "column_idx_list": [0],
+            "row_idx_list": [0],
+            "target_language": "en",
         }
 
         resp = self.client.post(self.url, data, format="json")
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-
-        body = json.loads(resp.content.decode())
-        self.assertEqual(body["translated"], "Hello")
-        mock_translate.assert_called_once_with("Rust love", "en", "es")
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        self.assertIn("translated_list", resp.data)
 
 
 class CSVUploadViewTest(BaseSetup, APITestCase):
@@ -79,17 +71,16 @@ class CSVUploadViewTest(BaseSetup, APITestCase):
     @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
     def test_valid_csv_upload(self, mock_auth):
         mock_auth.return_value = self.user
-
         csv_content = "col1;col2\n1;2\n3;4\n"
         tmp = BytesIO(csv_content.encode("utf-8"))
         tmp.name = "data.csv"
-
-        data = {"file": tmp, "title": "sheet"}
+        data = {"file": tmp}
         resp = self.client.post(self.url, data, format="multipart")
 
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertIn("id", resp.data)
-        self.assertTrue(self.user.files)
+        self.user.refresh_from_db()
+        self.assertIsNotNone(self.user.file)
 
     def test_reject_non_csv_extension(self):
         tmp = BytesIO(b"text")
@@ -104,19 +95,18 @@ class GetUserCSVFilesViewTest(BaseSetup, APITestCase):
         self.client = APIClient()
         self.url = reverse("user csv")
         self.user = self._create_user()
-
         self.file = File.objects.create(
             title="mine", upload_time=datetime.now(), columns=[], columns_number=0
         )
-        self.user.files.append(str(self.file.id))
+        self.user.file = str(self.file.id)
+        self.user.save()
 
     @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
     def test_returns_only_users_files(self, mock_auth):
         mock_auth.return_value = self.user
         resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(resp.data["files"]), 1)
-        self.assertEqual(resp.data["files"][0]["title"], "mine")
+        self.assertEqual(resp.data["file"]["title"], "mine")
 
 
 class DownloadCSVFileViewTest(BaseSetup, APITestCase):
@@ -124,7 +114,6 @@ class DownloadCSVFileViewTest(BaseSetup, APITestCase):
         self.client = APIClient()
         self.url = reverse("dowloand csv")
         self.user = self._create_user()
-
         cells = [
             Cell(
                 text="a1", row_number=0, is_translated=False, detected_language=""
@@ -133,21 +122,22 @@ class DownloadCSVFileViewTest(BaseSetup, APITestCase):
                 text="a2", row_number=1, is_translated=False, detected_language=""
             ).to_dict(),
         ]
-        col = Column(name="A", column_number=0, rows_number=2, cells=cells).to_dict()
+        col1 = Column(name="A", column_number=0, rows_number=2, cells=cells).to_dict()
         col2 = Column(name="B", column_number=1, rows_number=2, cells=cells).to_dict()
         self.file = File.objects.create(
             title="matrix",
             upload_time=datetime.now(),
-            columns=[col, col2],
+            columns=[col1, col2],
             columns_number=2,
         )
-        self.user.files.append(str(self.file.id))
+        self.user.file = str(self.file.id)
+        self.user.save()
 
     @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
     def test_downloads_csv_for_owner(self, mock_auth):
         mock_auth.return_value = self.user
-        data = {"file_id": self.file.id}
-        resp = self.client.get(self.url, data)
+        data = {"file_id": str(self.file.id)}
+        resp = self.client.post(self.url, data)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(resp["Content-Type"], "text/csv")
         self.assertIn("attachment; filename=", resp["Content-Disposition"])
@@ -156,9 +146,109 @@ class DownloadCSVFileViewTest(BaseSetup, APITestCase):
         self.assertEqual(rows[0], ["A", "B"])
         self.assertEqual(rows[1], ["a1", "a1"])
 
+
+class RevertCellViewTest(BaseSetup, APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.url = reverse("revert cell")
+        col = Column(
+            name="Greeting",
+            column_number=0,
+            rows_number=1,
+            cells=[Cell(text="Hola", original_text="Hola", row_number=0).to_dict()],
+        ).to_dict()
+        self.file = File.objects.create(
+            title="greet", upload_time=datetime.now(), columns=[col], columns_number=1
+        )
+        self.user = self._create_user()
+        self.user.file = str(self.file.id)
+
     @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
-    def test_forbidden_for_stranger(self, mock_auth):
+    def test_revert_cell_success(self, mock_auth):
         mock_auth.return_value = self.user
-        data = {"file_id": str(ObjectId())}
-        resp = self.client.get(self.url, data)
-        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        data = {"file_id": str(self.file.id), "column_idx": 0, "row_idx": 0}
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, 201)
+
+
+class CustomUserUpdateCellViewTest(BaseSetup, APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.url = reverse("custom cell update")
+        col = Column(
+            name="Greeting",
+            column_number=0,
+            rows_number=1,
+            cells=[Cell(text="Hola", original_text="Hola", row_number=0).to_dict()],
+        ).to_dict()
+        self.file = File.objects.create(
+            title="greet", upload_time=datetime.now(), columns=[col], columns_number=1
+        )
+        self.user = self._create_user()
+        self.user.file = str(self.file.id)
+
+    @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
+    def test_custom_update_cell_success(self, mock_auth):
+        mock_auth.return_value = self.user
+        data = {
+            "file_id": str(self.file.id),
+            "column_idx": 0,
+            "row_idx": 0,
+            "custom_text": "Bonjour",
+        }
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, 201)
+
+
+class GithubLoginInitViewTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.url = reverse("github-login")
+
+    @patch("auth_app.serializers.OAuth2Session")
+    def test_successful_github_init(self, mock_oauth):
+        mock_session = MagicMock()
+        mock_session.create_authorization_url.return_value = (
+            "http://github.auth.url",
+            "github_state_123",
+        )
+        mock_oauth.return_value = mock_session
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("auth_url", response.data)
+        self.assertEqual("github_state_123", self.client.session["oauth_state"])
+
+
+class GithubLoginCallbackViewTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.url = reverse("github-callback")
+
+        session = self.client.session
+        session["oauth_state"] = "expected_state"
+        session.save()
+
+    def test_missing_code(self):
+        response = self.client.get(self.url, {"state": "expected_state"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @patch("auth_app.serializers.OAuth2Session")
+    def test_successful_callback_sets_cookie_and_redirects(self, mock_oauth):
+        mock_session = MagicMock()
+        mock_session.fetch_token.return_value = {"access_token": "mock_access_token"}
+        mock_session.get.side_effect = [
+            MagicMock(json=lambda: {"login": "mockuser", "id": 1}),
+            MagicMock(json=lambda: [{"email": "mock@github.com", "primary": True}]),
+        ]
+        mock_oauth.return_value = mock_session
+
+        response = self.client.get(
+            self.url, {"code": "valid_code", "state": "expected_state"}
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "http://localhost:3000/oauth-success")
+        self.assertIn("jwt", response.cookies)
+        self.assertTrue(response.cookies["jwt"]["httponly"])

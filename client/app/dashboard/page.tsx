@@ -412,6 +412,10 @@ const Dashboard = () => {
               { withCredentials: true }
           );
         localStorage.setItem('user', JSON.stringify(res.data));
+      } catch (error){
+        localStorage.removeItem('user');
+      }
+      try {
         setLoading(true);
         const response = await axios.get('http://localhost:8000/translation/get_user_csv', {
           withCredentials: true,

@@ -15,7 +15,9 @@ const LandingPage = () => {
             );
           localStorage.setItem('user', JSON.stringify(res.data));
 
-        } catch (error) {};
+        } catch (error) {
+          localStorage.removeItem('user');
+        };
       };
       getUser();
     }, []);
