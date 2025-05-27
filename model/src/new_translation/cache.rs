@@ -11,7 +11,8 @@ pub struct TranslationCache {
 
 impl TranslationCache {
     pub fn new(redis_url: &str, ttl_seconds: u64) -> Self {
-        let client = Client::open(redis_url).unwrap();
+        let client = Client::open(redis_url)
+            .expect("Failed to create Redis client");
         Self {
             client,
             ttl: Duration::from_secs(ttl_seconds),
