@@ -30,11 +30,12 @@ impl Translator {
         model_path: String,
         source_tokenizer_path: String,
         target_tokenizer_path: String,
+        config_path: String,
         redis_url: String,
         cache_ttl: u64,
     ) -> PyResult<Self> {
         let rt = Arc::new(Runtime::new().map_err(|e| PyRuntimeError::new_err(e.to_string()))?);
-        let config = TranslatorConfig::new().map_err(|e| PyRuntimeError::new_err(e.to_string()))?;
+        let config = TranslatorConfig::new(&config_path).map_err(|e| PyRuntimeError::new_err(e.to_string()))?;
 
         let translator = Arc::new(Mutex::new(
             BatchTranslator::new(
