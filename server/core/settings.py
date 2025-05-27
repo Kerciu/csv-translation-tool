@@ -152,3 +152,14 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
 }
+
+TRANSLATION_MODEL_PATH = os.getenv(
+    "TRANSLATION_MODEL_PATH", "models/model.safetensors"
+)
+TRANSLATION_TOKENIZER_PATH = os.getenv(
+    "TRANSLATION_TOKENIZER_PATH", "models/tokenizers.json"
+)
+TRANSLATION_CONFIG_PATH = os.getenv(
+    "TRANSLATION_CONFIG_PATH", "models/config.json"
+)
+CACHE_TTL = os.getenv("CACHE_TTL", 3600)
