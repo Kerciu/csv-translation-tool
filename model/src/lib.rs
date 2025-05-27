@@ -1,21 +1,19 @@
 #![allow(unsafe_op_in_unsafe_fn)]
 
-pub mod translation;
-pub mod new_translation;
 pub mod config;
+pub mod new_translation;
+pub mod translation;
 
 use config::get_model_config;
-use translation::model::TranslationModel;
 use pyo3::{exceptions::PyRuntimeError, prelude::*};
 use std::sync::{Arc, Mutex};
 use tokio::runtime::Runtime;
+use translation::model::TranslationModel;
 
 use crate::translation::detect_language::detect_language;
 
 use crate::new_translation::{
-    translator::BatchTranslator,
-    cache::TranslationCache,
-    config::TranslatorConfig,
+    cache::TranslationCache, config::TranslatorConfig, translator::BatchTranslator,
 };
 
 #[pyclass]
@@ -27,7 +25,6 @@ struct Translator {
 
 #[pymethods]
 impl Translator {
-
     #[new]
     #[allow(unsafe_code)]
     fn new(
@@ -39,7 +36,8 @@ impl Translator {
         cache_ttl: u64,
     ) -> PyResult<Self> {
         let rt = Arc::new(Runtime::new().map_err(|e| PyRuntimeError::new_err(e.to_string()))?);
-        let config = TranslatorConfig::new(&config_path).map_err(|e| PyRuntimeError::new_err(e.to_string()))?;
+        let config = TranslatorConfig::new(&config_path)
+            .map_err(|e| PyRuntimeError::new_err(e.to_string()))?;
 
         let translator = Arc::new(Mutex::new(
             BatchTranslator::new(
@@ -48,7 +46,7 @@ impl Translator {
                 &target_tokenizer_path,
                 &model_path,
             )
-            .map_err(|e| PyRuntimeError::new_err(e.to_string()))?
+            .map_err(|e| PyRuntimeError::new_err(e.to_string()))?,
         ));
 
         let cache = Arc::new(TranslationCache::new(&redis_url, cache_ttl));
@@ -118,15 +116,15 @@ impl Translator {
 #[allow(unsafe_code)]
 fn translate(text: &str, src_lang: &str, tgt_lang: &str) -> PyResult<(String, String)> {
     let detected_lang = if src_lang == "any" {
-            match detect_language(text) {
-                Some(lang) => lang.iso_code_639_1().to_string(),
-                None => "None".to_string(),
-            }
-        } else {
-            src_lang.to_string()
-        };
+        match detect_language(text) {
+            Some(lang) => lang.iso_code_639_1().to_string(),
+            None => "None".to_string(),
+        }
+    } else {
+        src_lang.to_string()
+    };
 
-    if detected_lang == "None"{
+    if detected_lang == "None" {
         return Ok(("Could not detect language.".to_string(), "None".to_string()));
     }
 
@@ -138,7 +136,8 @@ fn translate(text: &str, src_lang: &str, tgt_lang: &str) -> PyResult<(String, St
     let mut model = TranslationModel::new(config)
         .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
 
-    let translated_text= model.translate(text)
+    let translated_text = model
+        .translate(text)
         .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
 
     Ok((translated_text, detected_lang))

@@ -3,7 +3,8 @@ pub fn format_input(text: &str, tgt_lang: &str) -> String {
 }
 
 pub fn format_batch(texts: &[String], tgt_lang: &str) -> Vec<String> {
-    texts.iter()
+    texts
+        .iter()
         .map(|text| format_input(text, tgt_lang))
         .collect::<Vec<_>>()
 }

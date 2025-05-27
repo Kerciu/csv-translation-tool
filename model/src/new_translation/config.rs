@@ -1,5 +1,5 @@
 use anyhow::Result;
-use candle::{Device, DType};
+use candle::{DType, Device};
 use candle_nn::VarBuilder;
 use candle_transformers::models::marian::Config;
 
@@ -46,7 +46,8 @@ impl TranslatorConfig {
 
     pub fn load_var_builder(&self, model_path: &str) -> Result<VarBuilder> {
         unsafe {
-            VarBuilder::from_mmaped_safetensors(&[model_path], DType::F32, &self.device).map_err(Into::into)
+            VarBuilder::from_mmaped_safetensors(&[model_path], DType::F32, &self.device)
+                .map_err(Into::into)
         }
     }
 

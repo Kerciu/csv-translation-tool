@@ -1,12 +1,15 @@
-use anyhow::{Result, Error};
-use candle::{Device, Tensor, DType};
-use clap::ValueEnum;
-use candle_transformers::models::marian::MTModel;
-use tokenizers::Tokenizer;
+use anyhow::{Error, Result};
+use candle::{DType, Device, Tensor};
 use candle_transformers::generation::LogitsProcessor;
+use candle_transformers::models::marian::MTModel;
+use clap::ValueEnum;
 use hf_hub::api::sync::Api;
+use tokenizers::Tokenizer;
 
-use crate::{config::ModelConfig, translation::loader::load_from_candle, translation::loader::convert_and_load};
+use crate::{
+    config::ModelConfig, translation::loader::convert_and_load,
+    translation::loader::load_from_candle,
+};
 
 #[derive(Clone, Debug, Copy, ValueEnum)]
 enum Which {
@@ -39,14 +42,14 @@ pub struct TranslationModel {
 }
 
 impl TranslationModel {
-
     fn has_candle_support(model_id: &str) -> bool {
-        matches!(model_id,
-            "Helsinki-NLP/opus-mt-fr-en" |
-            "Helsinki-NLP/opus-mt-en-zh" |
-            "Helsinki-NLP/opus-mt-en-hi" |
-            "Helsinki-NLP/opus-mt-en-es" |
-            "Helsinki-NLP/opus-mt-en-ru"
+        matches!(
+            model_id,
+            "Helsinki-NLP/opus-mt-fr-en"
+                | "Helsinki-NLP/opus-mt-en-zh"
+                | "Helsinki-NLP/opus-mt-en-hi"
+                | "Helsinki-NLP/opus-mt-en-es"
+                | "Helsinki-NLP/opus-mt-en-ru"
         )
     }
 
@@ -56,23 +59,22 @@ impl TranslationModel {
 
         if Self::has_candle_support(&model_config.model_id) {
             load_from_candle(&api, model_config, device)
-        }
-        else {
+        } else {
             convert_and_load(model_config, device)
         }
-
     }
 
     fn tokenize_input(&self, text: &str) -> Result<Vec<u32>> {
         println!("Tokenizing input: {}", text);
-        let input_text = format!("{} {} {}",
-            self.config.src_token,
-            text,
-            self.config.tgt_token
+        let input_text = format!(
+            "{} {} {}",
+            self.config.src_token, text, self.config.tgt_token
         );
 
-        let encoding = self.tokenizer.encode(input_text, true)
-        .map_err(|e| Error::msg(format!("Encoding error: {}", e)))?;
+        let encoding = self
+            .tokenizer
+            .encode(input_text, true)
+            .map_err(|e| Error::msg(format!("Encoding error: {}", e)))?;
 
         println!("Token IDs: {:?}", encoding.get_ids());
         println!("Tokens: {:?}", encoding.get_tokens());
@@ -103,18 +105,32 @@ impl TranslationModel {
         let mut token_ids = vec![self.config.decoder_start_token_id];
         let mut logits_processor = LogitsProcessor::new(299792458, None, None);
 
-        println!("[DECODER] Max steps: {}", self.config.max_position_embeddings);
-        println!("[DECODER] Start token: {}", self.config.decoder_start_token_id);
+        println!(
+            "[DECODER] Max steps: {}",
+            self.config.max_position_embeddings
+        );
+        println!(
+            "[DECODER] Start token: {}",
+            self.config.decoder_start_token_id
+        );
         println!("[DECODER] EOS token: {}", self.config.eos_token_id);
 
         for step in 0..self.config.max_position_embeddings {
-            let context_size = if token_ids.len() <= 1 { token_ids.len() } else { 1 };
+            let context_size = if token_ids.len() <= 1 {
+                token_ids.len()
+            } else {
+                1
+            };
             let start_pos = token_ids.len().saturating_sub(context_size);
 
             println!("\n[STEP {}] Current tokens: {:?}", step, token_ids);
 
             let input_ids = Tensor::new(&token_ids[start_pos..], &self.device)?.unsqueeze(0)?;
-            println!("[STEP {}] Decoder input shape: {:?}", step, input_ids.dims());
+            println!(
+                "[STEP {}] Decoder input shape: {:?}",
+                step,
+                input_ids.dims()
+            );
 
             let logits = self.model.decode(&input_ids, &encoder_output, start_pos)?;
             println!("[STEP {}] Logits shape: {:?}", step, logits.dims());
@@ -133,11 +149,10 @@ impl TranslationModel {
 
         println!("[FINAL TOKENS] {:?}", token_ids);
 
-        let decoded = self.tokenizer_dec.decode(&token_ids, true)
-            .map_err(|e| {
-                println!("[ERROR] Decoding failed for tokens: {:?}", token_ids);
-                Error::msg(format!("Decoding error: {}", e))
-            })?;
+        let decoded = self.tokenizer_dec.decode(&token_ids, true).map_err(|e| {
+            println!("[ERROR] Decoding failed for tokens: {:?}", token_ids);
+            Error::msg(format!("Decoding error: {}", e))
+        })?;
 
         println!("[RAW DECODED] '{}'", decoded);
 
@@ -150,5 +165,4 @@ impl TranslationModel {
         println!("[CLEANED RESULT] '{}'", cleaned);
         Ok(cleaned)
     }
-
 }

@@ -1,5 +1,5 @@
-use translation_module::config::*;
 use anyhow::Result;
+use translation_module::config::*;
 
 #[test]
 fn test_validate_language() {

@@ -1,7 +1,7 @@
+use md5;
 use redis::AsyncCommands;
 use redis::Client;
-use std::{time::Duration};
-use md5;
+use std::time::Duration;
 
 #[derive(Clone)]
 pub struct TranslationCache {
@@ -11,8 +11,7 @@ pub struct TranslationCache {
 
 impl TranslationCache {
     pub fn new(redis_url: &str, ttl_seconds: u64) -> Self {
-        let client = Client::open(redis_url)
-            .expect("Failed to create Redis client");
+        let client = Client::open(redis_url).expect("Failed to create Redis client");
         Self {
             client,
             ttl: Duration::from_secs(ttl_seconds),
