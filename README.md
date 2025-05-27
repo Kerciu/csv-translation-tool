@@ -60,12 +60,31 @@
 </table>
 
 ## Prerequisites
+  - [Python](https://www.python.org/downloads/) (latest stable version)
+  - [Docker](https://www.docker.com/) (latest stable version)
+  - [Rust](https://www.rust-lang.org/tools/install) (latest stable version)
+  - [Node.js](https://nodejs.org/) (v16+ recommended)
+  - [npm](https://www.npmjs.com/) (comes with Node.js)
 
-- [Python](https://www.python.org/downloads/) ( < 13, v12 Recommended)
-- [Rust](https://www.rust-lang.org/tools/install) (latest stable version)
-- [Node.js](https://nodejs.org/) (v16+ recommended)
-- [npm](https://www.npmjs.com/) (comes with Node.js)
-- [cURL](https://curl.se/)
+## Linting and formating
+
+  - [pre-commit](https://pre-commit.com) for automatic coding style verification and formating
+  - ***python***: flake8, black, isort
+  - ***react***: ESlint, Prettier
+  - ***rust***:  clippy, fmt
+### To run
+  #### Python-react
+  ```bash
+  pip install -r requirements-dev.txt
+  pre-commit install
+  pre-commit run --all-files
+  ```
+  #### Rust
+  ```bash
+  cd model
+  cargo fmt
+  cargo clippy
+  ```
 
 
 ## Quick Start
