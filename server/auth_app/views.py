@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,11 +16,19 @@ from .serializers import (
 )
 
 
+@swagger_auto_schema(
+    tags=["Health"], operation_description="Health check endpoint to verify API is up."
+)
 def health_check(request):
     return JsonResponse({"status": "ok"})
 
 
 class SignUpView(APIView):
+    @swagger_auto_schema(
+        request_body=UserSignUpSerializer,
+        tags=["Authentication"],
+        operation_description="Register a new user and return a JWT token.",
+    )
     def post(self, request):
         user_data = request.data
         serializer = UserSignUpSerializer(data=user_data)
@@ -29,11 +38,15 @@ class SignUpView(APIView):
             response = Response({"jwt": token})
             response.set_cookie(key="jwt", value=token, httponly=True)
             return response
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogInView(APIView):
+    @swagger_auto_schema(
+        request_body=UserLogInSerializer,
+        tags=["Authentication"],
+        operation_description="Log in user and return a JWT token.",
+    )
     def post(self, request):
         user_data = request.data
         serializer = UserLogInSerializer(data=user_data)
@@ -46,6 +59,10 @@ class LogInView(APIView):
 
 
 class UserView(APIView):
+    @swagger_auto_schema(
+        tags=["Authentication"],
+        operation_description="Get user's profile using JWT from cookie.",
+    )
     def get(self, request):
         serializer = UserAuthSerializer(data={"token": request.COOKIES.get("jwt")})
         if serializer.is_valid(raise_exception=True):
@@ -55,6 +72,10 @@ class UserView(APIView):
 
 
 class LogOutView(APIView):
+    @swagger_auto_schema(
+        tags=["Authentication"],
+        operation_description="Log out user by deleting the JWT cookie.",
+    )
     def post(self, request):
         response = Response({"message": "success"})
         response.delete_cookie("jwt")
@@ -62,6 +83,10 @@ class LogOutView(APIView):
 
 
 class GoogleLoginInitView(APIView):
+    @swagger_auto_schema(
+        tags=["Authentication: Google"],
+        operation_description="Start Google OAuth login and return authorization URL.",
+    )
     def get(self, request):
         serializer = GoogleAuthInitSerializer(data={})
         if serializer.is_valid(raise_exception=True):
@@ -72,6 +97,10 @@ class GoogleLoginInitView(APIView):
 
 
 class GoogleLoginCallbackView(APIView):
+    @swagger_auto_schema(
+        tags=["Authentication: Google"],
+        operation_description="Handle Google OAuth callback and set JWT cookie.",
+    )
     def get(self, request):
         code = request.GET.get("code")
         state = request.GET.get("state") or request.session.get("oauth_state")
@@ -87,6 +116,10 @@ class GoogleLoginCallbackView(APIView):
 
 
 class GithubLoginInitView(APIView):
+    @swagger_auto_schema(
+        tags=["Authentication: GitHub"],
+        operation_description="Start GitHub OAuth login and return authorization URL.",
+    )
     def get(self, request):
         serializer = GitHubAuthInitSerializer(data={})
         if serializer.is_valid(raise_exception=True):
@@ -97,6 +130,10 @@ class GithubLoginInitView(APIView):
 
 
 class GithubLoginCallbackView(APIView):
+    @swagger_auto_schema(
+        tags=["Authentication: GitHub"],
+        operation_description="Handle GitHub OAuth callback and set JWT cookie.",
+    )
     def get(self, request):
         code = request.GET.get("code")
         state = request.GET.get("state") or request.session.get("oauth_state")
