@@ -11,5 +11,5 @@ class TranslationAppConfig(AppConfig):
 
         # warmup the translator
         dummy_batch = ["hello"] * 8
-        translator.translate_batch("es", dummy_batch)
-        translator.translate_batch("en", dummy_batch)
+        translator.translate(dummy_batch, "es", 1024)
+        translator.translate(dummy_batch, "en", 1024)

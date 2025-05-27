@@ -156,8 +156,11 @@ REST_FRAMEWORK = {
 TRANSLATION_MODEL_PATH = os.getenv(
     "TRANSLATION_MODEL_PATH", "models/model.safetensors"
 )
-TRANSLATION_TOKENIZER_PATH = os.getenv(
-    "TRANSLATION_TOKENIZER_PATH", "models/tokenizers.json"
+TRANSLATION_SRC_TOKENIZER_PATH = os.getenv(
+    "TRANSLATION_SRC_TOKENIZER_PATH", "models/source.spm"
+)
+TRANSLATION_SRC_TOKENIZER_PATH = os.getenv(
+    "TRANSLATION_TGT_TOKENIZER_PATH", "models/target.spm"
 )
 TRANSLATION_CONFIG_PATH = os.getenv(
     "TRANSLATION_CONFIG_PATH", "models/config.json"
