@@ -6,8 +6,11 @@ import warnings
 from pathlib import Path
 
 from transformers import AutoTokenizer
-from transformers.convert_slow_tokenizer import (SpmConverter, import_protobuf,
-                                                 requires_backends)
+from transformers.convert_slow_tokenizer import (
+    SpmConverter,
+    import_protobuf,
+    requires_backends,
+)
 
 sys.stdout.reconfigure(encoding="utf-8")
 
