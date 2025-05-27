@@ -1,3 +1,5 @@
+#![allow(unsafe_op_in_unsafe_fn)]
+
 pub mod translation;
 pub mod new_translation;
 pub mod config;
@@ -25,7 +27,9 @@ struct Translator {
 
 #[pymethods]
 impl Translator {
+
     #[new]
+    #[allow(unsafe_code)]
     fn new(
         model_path: String,
         source_tokenizer_path: String,
@@ -56,6 +60,7 @@ impl Translator {
         })
     }
 
+    #[allow(unsafe_code)]
     fn translate(
         &self,
         texts: Vec<String>,
@@ -111,7 +116,6 @@ impl Translator {
 
 #[pyfunction]
 #[allow(unsafe_code)]
-#[allow(unsafe_op_in_unsafe_fn)]
 fn translate(text: &str, src_lang: &str, tgt_lang: &str) -> PyResult<(String, String)> {
     let detected_lang = if src_lang == "any" {
             match detect_language(text) {
