@@ -60,14 +60,35 @@
 </table>
 
 ## Prerequisites
-  - [Python](https://www.python.org/downloads/) (latest stable version)
+  - [Python](https://www.python.org/downloads/) (<13v, 12v recommended)
   - [Docker](https://www.docker.com/) (latest stable version)
   - [Rust](https://www.rust-lang.org/tools/install) (latest stable version)
   - [Node.js](https://nodejs.org/) (v16+ recommended)
   - [npm](https://www.npmjs.com/) (comes with Node.js)
 
-## Linting and formating
 
+## Quick Start
+
+1. **Clone the repository**
+   ```bash
+   git clone https://gitlab-stud.elka.pw.edu.pl/kgorski1/zpr_25l
+   cd zpr_25l
+
+2. **Open installed docker's desktop application**
+
+3. **Build docker**
+   ```bash
+    docker-compose build
+   ```
+
+4. **Run docker**
+   ```bash
+    docker-compose up
+   ```
+
+
+
+## Linting and formating
   - [pre-commit](https://pre-commit.com) for automatic coding style verification and formating
   - ***python***: flake8, black, isort
   - ***react***: ESlint, Prettier
@@ -86,17 +107,34 @@
   cargo clippy
   ```
 
+## Documentation
+### Python
+- **REST API**: ***Swagger*** - you can see it by running the application and going to [here](http://127.0.0.1:8000/swagger/)
+- **Models, Serializers, Utils**: ***docstrings***
 
-## Quick Start
+## Testing
 
-1. **Clone the repository**
+### Python
+1. **Run docker**
    ```bash
-   git clone https://gitlab-stud.elka.pw.edu.pl/kgorski1/zpr_25l
-   cd zpr_25l
-
-2. **Run the application**
-   ```bash
-    run.bat
-
-   # More will come when docker will be set up
+    docker-compose up
    ```
+2. **Start translator-model container's bash**
+```bash
+  docker exec -it translator-model bash
+```
+3. **Run tests**
+```bash
+  python manage.py test
+```
+
+### Rust
+1. **Go to model folder**
+   ```bash
+   cd model
+   ```
+2. **Run tests**
+  ```bash
+  cargo test
+  ```
+
