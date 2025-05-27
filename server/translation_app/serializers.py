@@ -12,7 +12,6 @@ class FileUpdateCellsSerializer(serializers.Serializer):
     column_idx_list = serializers.ListField(child=serializers.IntegerField())
     row_idx_list = serializers.ListField(child=serializers.IntegerField())
     target_language = serializers.CharField()
-    source_language = serializers.CharField()
 
     class Meta:
         fields = [
@@ -32,11 +31,13 @@ class FileUpdateCellsSerializer(serializers.Serializer):
         for n in range(0, len(column_idx_list)):
             if columns_number < column_idx_list[n]:
                 translated_texts.append((TEXT_ERROR, ""))
+                continue
 
             rows_number = file.columns[column_idx_list[n]].rows_number
 
             if rows_number < row_idx_list[n]:
                 translated_texts.append((TEXT_ERROR, ""))
+                continue
 
             text = file.columns[column_idx_list[n]].cells[row_idx_list[n]]["text"]
             try:
@@ -69,7 +70,6 @@ class FileUpdateCellsSerializer(serializers.Serializer):
                 )
             except Exception:
                 translated_texts.append((CANOOT_TRANSLATE, ""))
-
         attrs["translated_list"] = translated_texts
         return attrs
 

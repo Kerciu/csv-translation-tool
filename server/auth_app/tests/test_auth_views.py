@@ -172,3 +172,61 @@ class GoogleLoginCallbackViewTest(TestCase):
     def test_missing_code(self):
         response = self.client.get(self.url, {"state": "teststate123"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class GithubLoginInitViewTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.url = reverse("github-login")
+
+    @patch("auth_app.serializers.OAuth2Session")
+    def test_successful_github_init(self, mock_oauth):
+        mock_session = MagicMock()
+        mock_session.create_authorization_url.return_value = (
+            "http://github.auth.url",
+            "github_state_123",
+        )
+        mock_oauth.return_value = mock_session
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("auth_url", response.data)
+        self.assertEqual("github_state_123", self.client.session["oauth_state"])
+
+
+class GithubLoginCallbackViewTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.url = reverse("github-callback")
+
+        session = self.client.session
+        session["oauth_state"] = "expected_state"
+        session.save()
+
+    def test_invalid_state(self):
+        with self.assertRaises(OAuthError):
+            self.client.get(self.url, {"code": "valid_code", "state": "wrong_state"})
+
+    def test_missing_code(self):
+        response = self.client.get(self.url, {"state": "expected_state"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @patch("auth_app.serializers.OAuth2Session")
+    def test_successful_callback_sets_cookie_and_redirects(self, mock_oauth):
+        mock_session = MagicMock()
+        mock_session.fetch_token.return_value = {"access_token": "mock_access_token"}
+        mock_session.get.side_effect = [
+            MagicMock(json=lambda: {"login": "mockuser", "id": 1}),
+            MagicMock(json=lambda: [{"email": "mock@github.com", "primary": True}]),
+        ]
+        mock_oauth.return_value = mock_session
+
+        response = self.client.get(
+            self.url, {"code": "valid_code", "state": "expected_state"}
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "http://localhost:3000/oauth-success")
+        self.assertIn("jwt", response.cookies)
+        self.assertTrue(response.cookies["jwt"]["httponly"])

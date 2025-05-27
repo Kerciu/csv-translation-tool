@@ -143,12 +143,15 @@ class CSVUploadView(APIView, JWTUserAuthentication):
 
         file_obj.save()
         old_file_id = user.file
-        if old_file_id is not None:
-            Thread(
-                target=async_file_delete,
-                args=(old_file_id,),
-                daemon=True,
-            ).start()
+        try:
+            if old_file_id is not None:
+                Thread(
+                    target=async_file_delete,
+                    args=(old_file_id,),
+                    daemon=True,
+                ).start()
+        except Exception:
+            print("No such file")
         user.file = str(file_obj.id)
         user.save(update_fields=["file"])
 
