@@ -4,6 +4,17 @@ from django_mongodb_backend.fields import ObjectIdAutoField
 
 
 class CustomUser(AbstractUser):
+    """
+    Custom user model extending Django's AbstractUser.
+
+    Fields:
+        - username: Unique login name.
+        - email: Unique user email.
+        - password: Hashed password.
+        - date_joined: Timestamp of when user registered.
+        - file: Associated file id.
+    """
+
     id = ObjectIdAutoField(primary_key=True)
 
     username = models.CharField(max_length=100, unique=True)

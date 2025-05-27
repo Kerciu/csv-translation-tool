@@ -15,6 +15,15 @@ ph = PasswordHasher()
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for representing a user.
+
+    Fields:
+        id: Stringified ObjectId.
+        username: Username of the user.
+        email: Email of the user.
+    """
+
     id = serializers.SerializerMethodField()
 
     class Meta:
@@ -26,6 +35,15 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserSignUpSerializer(serializers.ModelSerializer):
+    """
+    Serializer for user sign-up.
+
+    Fields:
+        username: Desired username.
+        email: User's email address.
+        password: User's plain-text password (write-only).
+    """
+
     password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -33,6 +51,9 @@ class UserSignUpSerializer(serializers.ModelSerializer):
         fields = ["username", "email", "password"]
 
     def validate(self, attrs):
+        """
+        Validates email, and uniqness of it and username
+        """
         email = attrs.get("email", "")
         if "@" not in email:
             raise serializers.ValidationError({"email": "Invalid email"})
@@ -46,6 +67,9 @@ class UserSignUpSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
+        """
+        Creates new user and returns token
+        """
         username = validated_data["username"]
         email = validated_data["email"]
         raw_password = validated_data["password"]
@@ -71,10 +95,21 @@ class UserSignUpSerializer(serializers.ModelSerializer):
 
 
 class UserLogInSerializer(serializers.Serializer):
+    """
+    Serializer for user login.
+
+    Fields:
+        email: Email address.
+        password: Plain-text password.
+    """
+
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
+        """
+        Validates email/password, find user and returns JWT token
+        """
         email = attrs.get("email")
         password = attrs.get("password")
 
@@ -104,9 +139,19 @@ class UserLogInSerializer(serializers.Serializer):
 
 
 class UserAuthSerializer(serializers.Serializer):
+    """
+    Serializer for verifying JWT tokens for authentication.
+
+    Fields:
+        token: JWT token string.
+    """
+
     token = serializers.CharField()
 
     def validate(self, attrs):
+        """
+        Validates token
+        """
         token = attrs.get("token")
 
         try:
@@ -128,7 +173,14 @@ REDIRECT_URI = "http://localhost:8000/authentication/google/callback/"
 
 
 class GoogleAuthInitSerializer(serializers.Serializer):
+    """
+    Serializer to initiate Google OAuth2 flow.
+    """
+
     def create(self, validated_data):
+        """
+        Return google authorization url and state
+        """
         session = OAuth2Session(GOOGLE_CLIENT_ID, scope="openid email profile")
         uri, state = session.create_authorization_url(
             "https://accounts.google.com/o/oauth2/auth", redirect_uri=REDIRECT_URI
@@ -137,10 +189,21 @@ class GoogleAuthInitSerializer(serializers.Serializer):
 
 
 class GoogleAuthCallbackSerializer(serializers.Serializer):
+    """
+    Serializer to handle the callback from Google OAuth2.
+
+    Fields:
+        code: OAuth2 code returned by Google.
+        state: State token to prevent CSRF.
+    """
+
     code = serializers.CharField()
     state = serializers.CharField()
 
     def create(self, validated_data):
+        """
+        Verifies OAuth2Session and sign up/in user and returns JWT token
+        """
         session = OAuth2Session(
             GOOGLE_CLIENT_ID, state=validated_data["state"], redirect_uri=REDIRECT_URI
         )
@@ -181,7 +244,14 @@ GITHUB_REDIRECT_URI = "http://localhost:8000/authentication/github/callback/"
 
 
 class GitHubAuthInitSerializer(serializers.Serializer):
+    """
+    Serializer to initiate Github OAuth2 flow.
+    """
+
     def create(self, validated_data):
+        """
+        Return github authorization url and state
+        """
         session = OAuth2Session(
             GITHUB_CLIENT_ID, scope="user:email", redirect_uri=GITHUB_REDIRECT_URI
         )
@@ -192,10 +262,21 @@ class GitHubAuthInitSerializer(serializers.Serializer):
 
 
 class GitHubAuthCallbackSerializer(serializers.Serializer):
+    """
+    Serializer to handle the callback from Github OAuth2.
+
+    Fields:
+        code: OAuth2 code returned by Github.
+        state: State token to prevent CSRF.
+    """
+
     code = serializers.CharField()
     state = serializers.CharField()
 
     def create(self, validated_data):
+        """
+        Verifies OAuth2Session and sign up/in user and returns JWT token
+        """
         session = OAuth2Session(
             GITHUB_CLIENT_ID,
             state=validated_data["state"],

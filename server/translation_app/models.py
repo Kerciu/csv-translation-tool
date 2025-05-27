@@ -10,6 +10,18 @@ from .const import CANNOT_DETECT_LANGUAGE, CANOOT_TRANSLATE, TEXT_ERROR
 
 
 class Cell(EmbeddedModel):
+    """
+    Represents a single cell in a column.
+
+    Attributes:
+        id: Primary key.
+        text: Current cell content.
+        original_text: Original unmodified content.
+        row_number: Position of the row in the table.
+        is_translated: Whether the cell has been translated.
+        detected_language: Language detected from original text.
+    """
+
     id = ObjectIdAutoField(primary_key=True)
     text = models.CharField(max_length=100)
     original_text = models.CharField(max_length=100)
@@ -37,6 +49,17 @@ class Cell(EmbeddedModel):
 
 
 class Column(EmbeddedModel):
+    """
+    Represents a column in a table containing a list of Cell objects.
+
+    Attributes:
+        id: Primary key.
+        name: Name of the column.
+        rows_number: Total number of rows in the column.
+        column_number: Index of the column.
+        cells: List of embedded Cell objects.
+    """
+
     id = ObjectIdAutoField(primary_key=True)
     name = models.CharField(max_length=100)
     rows_number = models.IntegerField(default=0)
@@ -61,6 +84,17 @@ class Column(EmbeddedModel):
 
 
 class File(models.Model):
+    """
+    Represents an uploaded file with structured tabular content.
+
+    Attributes:
+        id: Primary key.
+        title: File name or title.
+        upload_time: When the file was uploaded.
+        columns: Embedded list of Column objects.
+        columns_number : Number of columns in the file.
+    """
+
     id = ObjectIdAutoField(primary_key=True)
     title = models.CharField(max_length=200)
     upload_time = models.DateTimeField("upload_time")
@@ -89,6 +123,15 @@ class File(models.Model):
     @classmethod
     @transaction.atomic
     def update_cells(cls, file_id, col_numbers, row_numbers, text_list):
+        """
+        Atomic transaction updating multiple cells within the file.
+
+        Args:
+            file_id: ID of the file to update.
+            col_numbers: List of column indices.
+            row_numbers: List of row indices.
+            text_list (List[Tuple[str, str]]): Translated text and detected language.
+        """
         with transaction.atomic():
             file = cls.objects.select_for_update().get(id=file_id)
             columns = list(file.columns)
@@ -114,6 +157,14 @@ class File(models.Model):
     @classmethod
     @transaction.atomic
     def revert_cell(cls, file_id, col_num, row_num):
+        """
+        Atomic transaction Reverting a specific cell to its original state.
+
+        Args:
+            file_id: File ID.
+            col_num: Column index.
+            row_num: Row index.
+        """
         with transaction.atomic():
             file = cls.objects.select_for_update().get(id=file_id)
 
@@ -130,6 +181,12 @@ class File(models.Model):
     @classmethod
     @transaction.atomic
     def delete_file(cls, file_id):
+        """
+        Atomic transaction deleting safely a file by ID.
+
+        Args:
+            file_id: The ID of the file to delete.
+        """
         with transaction.atomic():
             file = cls.objects.filter(id=file_id).first()
             if file is not None:
