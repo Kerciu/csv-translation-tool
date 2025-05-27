@@ -25,7 +25,6 @@ lingua = { version = "1.7.1", default-features = false, features = ["arabic", "k
 redis = { version = "0.31.0", features = ["aio", "tokio-comp"] }
 md5 = "0.7.0"
 
-
 [dev-dependencies]
 anyhow = "1.0"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "full"] }
