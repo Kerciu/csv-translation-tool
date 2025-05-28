@@ -21,8 +21,9 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'myst_parser',
-]
+    'sphinxcontrib.openapi',
 
+]
 # Add your project to the Python path
 import os
 import sys

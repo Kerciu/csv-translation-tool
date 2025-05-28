@@ -20,3 +20,4 @@ documentation for details.
    translation_app_serializers
    translation_app_model
    translation_app_utils
+   api

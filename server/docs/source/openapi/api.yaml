@@ -1,0 +1,288 @@
+---
+swagger: '2.0'
+info:
+  title: CSV Translation Tool Rest API
+  description: A backend API for my app with REST APIs
+  license:
+    name: MIT License
+  version: v1
+host: localhost:8000
+schemes:
+- http
+basePath: "/"
+consumes:
+- application/json
+produces:
+- application/json
+securityDefinitions:
+  Basic:
+    type: basic
+security:
+- Basic: []
+paths:
+  "/authentication/github/":
+    get:
+      operationId: authentication_github_list
+      description: Start GitHub OAuth login and return authorization URL.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+      - 'Authentication: GitHub'
+    parameters: []
+  "/authentication/github/callback/":
+    get:
+      operationId: authentication_github_callback_list
+      description: Handle GitHub OAuth callback and set JWT cookie.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+      - 'Authentication: GitHub'
+    parameters: []
+  "/authentication/google/":
+    get:
+      operationId: authentication_google_list
+      description: Start Google OAuth login and return authorization URL.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+      - 'Authentication: Google'
+    parameters: []
+  "/authentication/google/callback/":
+    get:
+      operationId: authentication_google_callback_list
+      description: Handle Google OAuth callback and set JWT cookie.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+      - 'Authentication: Google'
+    parameters: []
+  "/authentication/log":
+    post:
+      operationId: authentication_log_create
+      description: Log in user and return a JWT token.
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          "$ref": "#/definitions/UserLogIn"
+      responses:
+        '201':
+          description: ''
+          schema:
+            "$ref": "#/definitions/UserLogIn"
+      tags:
+      - Authentication
+    parameters: []
+  "/authentication/logout":
+    post:
+      operationId: authentication_logout_create
+      description: Log out user by deleting the JWT cookie.
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+      - Authentication
+    parameters: []
+  "/authentication/sign":
+    post:
+      operationId: authentication_sign_create
+      description: Register a new user and return a JWT token.
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          "$ref": "#/definitions/UserSignUp"
+      responses:
+        '201':
+          description: ''
+          schema:
+            "$ref": "#/definitions/UserSignUp"
+      tags:
+      - Authentication
+    parameters: []
+  "/authentication/user":
+    get:
+      operationId: authentication_user_list
+      description: Get user's profile using JWT from cookie.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+      - Authentication
+    parameters: []
+  "/translation/custom_update_cell":
+    post:
+      operationId: translation_custom_update_cell_create
+      description: Manually update a specific cell with custom text.
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+      - CSV Operations
+    parameters: []
+  "/translation/dowloand_csv":
+    post:
+      operationId: translation_dowloand_csv_create
+      description: Download the user's CSV file with translated values.
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+      - CSV Operations
+    parameters: []
+  "/translation/get_user_csv":
+    get:
+      operationId: translation_get_user_csv_list
+      description: Get the currently active CSV file for the authenticated user.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+      - CSV Operations
+    parameters: []
+  "/translation/revert_cell":
+    post:
+      operationId: translation_revert_cell_create
+      description: Revert a single translated cell back to its original state.
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          "$ref": "#/definitions/UpdateCell"
+      responses:
+        '201':
+          description: ''
+          schema:
+            "$ref": "#/definitions/UpdateCell"
+      tags:
+      - CSV Operations
+    parameters: []
+  "/translation/translate_cells":
+    post:
+      operationId: translation_translate_cells_create
+      description: Translate selected cells in a CSV file.
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          "$ref": "#/definitions/FileUpdateCells"
+      responses:
+        '201':
+          description: ''
+          schema:
+            "$ref": "#/definitions/FileUpdateCells"
+      tags:
+      - CSV Operations
+    parameters: []
+  "/translation/upload_csv":
+    post:
+      operationId: translation_upload_csv_create
+      description: Upload a CSV file, parse it,store it in the database and delete
+        from database user's old csv.
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          "$ref": "#/definitions/CSVFile"
+      responses:
+        '201':
+          description: ''
+          schema:
+            "$ref": "#/definitions/CSVFile"
+      tags:
+      - CSV Operations
+    parameters: []
+definitions:
+  UserLogIn:
+    required:
+    - email
+    - password
+    type: object
+    properties:
+      email:
+        title: Email
+        type: string
+        format: email
+        minLength: 1
+      password:
+        title: Password
+        type: string
+        minLength: 1
+  UserSignUp:
+    required:
+    - username
+    - email
+    - password
+    type: object
+    properties:
+      username:
+        title: Username
+        type: string
+        maxLength: 100
+        minLength: 1
+      email:
+        title: Email
+        type: string
+        maxLength: 200
+        minLength: 1
+      password:
+        title: Password
+        type: string
+        minLength: 1
+  UpdateCell:
+    required:
+    - column_idx
+    - row_idx
+    type: object
+    properties:
+      column_idx:
+        title: Column idx
+        type: integer
+      row_idx:
+        title: Row idx
+        type: integer
+  FileUpdateCells:
+    required:
+    - column_idx_list
+    - row_idx_list
+    - target_language
+    type: object
+    properties:
+      column_idx_list:
+        type: array
+        items:
+          type: integer
+      row_idx_list:
+        type: array
+        items:
+          type: integer
+      target_language:
+        title: Target language
+        type: string
+        minLength: 1
+  CSVFile:
+    type: object
+    properties:
+      file:
+        title: File
+        type: string
+        readOnly: true
+        format: uri
