@@ -21,6 +21,18 @@
 ### Szymon Kamiński (331387)
 
 - **Backend**
-  _[to be filled]_
+  -Implemented complete backend in **Python-django**
+  -Made **JWT token** authorization and **OAuth2 Google and Github** authorization
+  -Implemented .csv files processing
+  -Made whole database with users and files models
+  -Implemented atomic asynchronus database updating 
+- **Integration**
+  -Integrated **backend** and **frontend**
+- **DevOps/Documentation**
+  - Wrote and implemented **Pre-commit hook** for automatic formating and styling commits
+  - Configurted **CI/CD** for documentation
+  - Implemented **Swagger** REST api documentation for backend
+  - Implemented **Sphinx** documentation for backend
+  - Wrote README.md docummentation and whole **user** guide
 
 ---
