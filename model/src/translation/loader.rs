@@ -7,6 +7,7 @@ use candle_transformers::models::marian::MTModel;
 use anyhow::{Result, Error};
 use std::path::Path;
 use tokenizers::Tokenizer;
+use std::sync::{Arc, Mutex};
 
 pub fn load_from_candle(api: &Api, model_config: ModelConfig, device: Device) -> Result<TranslationModel> {
     let src_lang = model_config.src_token.trim_start_matches(">>").trim_end_matches("<<");
@@ -74,9 +75,9 @@ pub fn load_from_candle(api: &Api, model_config: ModelConfig, device: Device) ->
     let model = MTModel::new(&config, vb)?;
 
     Ok(TranslationModel {
-        model,
-        tokenizer,
-        tokenizer_dec,
+        model: Arc::new(Mutex::new(model)),
+        tokenizer: Arc::new(tokenizer),
+        tokenizer_dec: Arc::new(tokenizer_dec),
         config: model_config,
         device,
     })
@@ -124,9 +125,9 @@ pub fn convert_and_load(model_config: ModelConfig, device: Device) -> Result<Tra
     println!("Successfully converted model from Hugging Face to safetensors Candle format.");
 
     Ok(TranslationModel {
-        model,
-        tokenizer,
-        tokenizer_dec,
+        model: Arc::new(Mutex::new(model)),
+        tokenizer: Arc::new(tokenizer),
+        tokenizer_dec: Arc::new(tokenizer_dec),
         config: model_config,
         device,
     })

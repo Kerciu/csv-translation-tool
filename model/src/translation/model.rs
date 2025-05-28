@@ -5,6 +5,9 @@ use candle_transformers::models::marian::MTModel;
 use tokenizers::Tokenizer;
 use candle_transformers::generation::LogitsProcessor;
 use hf_hub::api::sync::Api;
+use rayon::prelude::*;
+
+use std::sync::{Arc, Mutex};
 
 use crate::{config::ModelConfig, translation::loader::load_from_candle, translation::loader::convert_and_load};
 
@@ -31,9 +34,9 @@ enum LanguagePair {
 }
 
 pub struct TranslationModel {
-    pub model: MTModel,
-    pub tokenizer: Tokenizer,
-    pub tokenizer_dec: Tokenizer,
+    pub model: Arc<Mutex<MTModel>>,
+    pub tokenizer: Arc<Tokenizer>,
+    pub tokenizer_dec: Arc<Tokenizer>,
     pub config: ModelConfig,
     pub device: Device,
 }
@@ -97,7 +100,8 @@ impl TranslationModel {
         let tokens_tensor = self.prepare_input(text)?;
         println!("[DEBUG] Input tensor shape: {:?}", tokens_tensor.dims());
 
-        let encoder_output = self.model.encoder().forward(&tokens_tensor, 0)?;
+        let mut model = self.model.lock().unwrap();
+        let encoder_output = model.encoder().forward(&tokens_tensor, 0)?;
         println!("[DEBUG] Encoder output shape: {:?}", encoder_output.dims());
 
         let mut token_ids = vec![self.config.decoder_start_token_id];
@@ -116,7 +120,8 @@ impl TranslationModel {
             let input_ids = Tensor::new(&token_ids[start_pos..], &self.device)?.unsqueeze(0)?;
             println!("[STEP {}] Decoder input shape: {:?}", step, input_ids.dims());
 
-            let logits = self.model.decode(&input_ids, &encoder_output, start_pos)?;
+            let mut model = self.model.lock().unwrap();
+            let logits = model.decode(&input_ids, &encoder_output, start_pos)?;
             println!("[STEP {}] Logits shape: {:?}", step, logits.dims());
 
             let logits = logits.squeeze(0)?.get(logits.dim(0)? - 1)?;
@@ -151,4 +156,94 @@ impl TranslationModel {
         Ok(cleaned)
     }
 
+
+    fn tokenize_batch(&self, texts: &[&str]) -> Result<Vec<Vec<u32>>> {
+        let inputs: Vec<String> = texts.iter()
+            .map(|text| format!("{}{}{}",
+                self.config.src_token,
+                text,
+                self.config.tgt_token
+            ))
+            .collect();
+
+        self.tokenizer.encode_batch(inputs, true)
+            .map(|encodings| {
+                encodings.iter()
+                    .map(|e| e.get_ids().to_vec())
+                    .collect()
+            })
+            .map_err(|e| anyhow::anyhow!("Batch tokenization failed: {}", e))
+    }
+
+    // Optimized batch translation
+    pub fn translate_batch(&mut self, texts: &[&str]) -> Result<Vec<String>> {
+        let tokenized = self.tokenize_batch(texts)?;
+        const BATCH_SIZE: usize = 8;
+        let mut results = Vec::with_capacity(texts.len());
+
+        for chunk in tokenized.chunks(BATCH_SIZE) {
+            // Create tensors
+            let tensors: Result<Vec<Tensor>> = chunk.iter()
+                .map(|tokens| {
+                    Tensor::new(tokens.as_slice(), &self.device)
+                        .and_then(|t| t.to_dtype(DType::I64))
+                        .and_then(|t| t.unsqueeze(0))
+                        .map_err(anyhow::Error::from)
+                })
+                .collect();
+
+            let input_tensors = tensors?;
+            let stacked = Tensor::cat(&input_tensors, 0)?;
+
+            // Lock model for batched encoding
+            let mut model = self.model.lock().unwrap();
+            let encoder_output = model.encoder().forward(&stacked, 0)?;
+
+            // Parallel decoding
+            let chunk_results: Result<Vec<String>> = (0..chunk.len())
+                .into_par_iter()
+                .map(|i| {
+                    let encoder_output_i = encoder_output.narrow(0, i, 1)?;
+                    self.decode_single(encoder_output_i)
+                })
+                .collect();
+
+            results.extend(chunk_results?);
+        }
+
+        Ok(results)
+    }
+
+    // Decode single sequence
+    fn decode_single(&self, encoder_output: Tensor) -> Result<String> {
+        let mut token_ids = vec![self.config.decoder_start_token_id];
+        let mut logits_processor = LogitsProcessor::new(299792458, None, None);
+
+        for _ in 0..self.config.max_position_embeddings {
+            let start_pos = token_ids.len().saturating_sub(1);
+            let input_ids = Tensor::new(&token_ids[start_pos..], &self.device)?.unsqueeze(0)?;
+
+            // Lock model for decoding
+            let mut model = self.model.lock().unwrap();
+            let logits = model.decode(&input_ids, &encoder_output, start_pos)?;
+            let logits = logits.squeeze(0)?.get(logits.dim(0)? - 1)?;
+            let next_token = logits_processor.sample(&logits)?;
+
+            token_ids.push(next_token);
+            if next_token == self.config.eos_token_id {
+                break;
+            }
+        }
+
+        let decoded = self.tokenizer_dec.decode(&token_ids, true)
+            .map_err(|e| anyhow::anyhow!("Decoding failed: {}", e))?;
+
+        let cleaned = decoded
+            .replace("<NIL>", "")
+            .replace(&self.config.tgt_token, "")
+            .trim()
+            .to_string();
+
+        Ok(cleaned)
+    }
 }
