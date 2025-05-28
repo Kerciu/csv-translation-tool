@@ -9,13 +9,15 @@ from .models import File
 
 
 class FileUpdateCellsSerializer(serializers.Serializer):
-    """
-    Serializer for updating multiple cells in a file with translated text.
+    """Serializer for updating multiple cells in a file with translated text.
 
-    Fields:
-        column_idx_list: List of column indexes to update.
+    Args:
+        column_idx_list: List of column indexed to update.
         row_idx_list: List of row indexes to update.
         target_language: Target language for translation.
+
+    Returns:
+        Validated data with translation_text_list [(text, detected_lang)].
     """
 
     column_idx_list = serializers.ListField(child=serializers.IntegerField())
@@ -88,12 +90,13 @@ class FileUpdateCellsSerializer(serializers.Serializer):
 
 
 class UpdateCellSerializer(serializers.Serializer):
-    """
-    Serializer for validating existance of cell within a file.
+    """Serializer for validating existance of cell within a file.
 
-    Fields:
+    Args:
         column_idx: Index of the column.
         row_idx: Index of the row.
+    Returns:
+        Validated column and row data.
     """
 
     column_idx = serializers.IntegerField()
@@ -124,11 +127,12 @@ class UpdateCellSerializer(serializers.Serializer):
 
 
 class CSVFileSerializer(serializers.Serializer):
-    """
-    Serializer for uploading a CSV file.
+    """Serializer for uploading a CSV file.
 
-    Fields:
+    Args:
         file: Uploaded CSV file.
+    Returns:
+        Validated file data.
     """
 
     file = serializers.FileField()
@@ -147,8 +151,11 @@ class CSVFileSerializer(serializers.Serializer):
 
 
 class FindCSVFileSerializer(serializers.Serializer):
-    """
-    Serializer for locating a CSV file associated with a user.
+    """Serializer for locating a CSV file associated with a user.
+    Args:
+        user: user instance parsed in context
+    Returns:
+        User's file
     """
 
     def validate(self, attrs):

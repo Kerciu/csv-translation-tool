@@ -15,13 +15,15 @@ ph = PasswordHasher()
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """
-    Serializer for representing a user.
+    """Serializer for representing a user
 
-    Fields:
-        id: Stringified ObjectId.
-        username: Username of the user.
+    Args:
+        id: Stringified Id.
+        username: User's username.
         email: Email of the user.
+
+    Returns:
+        True if successful, False otherwise.
     """
 
     id = serializers.SerializerMethodField()
@@ -35,13 +37,15 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserSignUpSerializer(serializers.ModelSerializer):
-    """
-    Serializer for user sign-up.
+    """Serializer for user sign up.
 
-    Fields:
+    Args:
         username: Desired username.
-        email: User's email address.
-        password: User's plain-text password (write-only).
+        email: Desired user's email address.
+        password: User's plain text password (write-only)/
+
+    Returns:
+        New user instance with JWT token attached
     """
 
     password = serializers.CharField(write_only=True)
@@ -95,12 +99,14 @@ class UserSignUpSerializer(serializers.ModelSerializer):
 
 
 class UserLogInSerializer(serializers.Serializer):
-    """
-    Serializer for user login.
+    """Serializer for user login.
 
-    Fields:
+    Args:
         email: Email address.
         password: Plain-text password.
+
+    Returns:
+        User data and JWT token.
     """
 
     email = serializers.EmailField()
@@ -139,11 +145,13 @@ class UserLogInSerializer(serializers.Serializer):
 
 
 class UserAuthSerializer(serializers.Serializer):
-    """
-    Serializer for verifying JWT tokens for authentication.
+    """Seriazlier verify JWT token for user authentication.
 
-    Fields:
-        token: JWT token string.
+    Args:
+        token: JWT token.
+
+    Returns:
+        User instance
     """
 
     token = serializers.CharField()
@@ -173,8 +181,10 @@ REDIRECT_URI = "http://localhost:8000/authentication/google/callback/"
 
 
 class GoogleAuthInitSerializer(serializers.Serializer):
-    """
-    Serializer to initiate Google OAuth2 flow.
+    """Serializer to initiate Google OAuth2 flow.
+
+    Returns:
+        Authentication Google url and state
     """
 
     def create(self, validated_data):
@@ -189,12 +199,14 @@ class GoogleAuthInitSerializer(serializers.Serializer):
 
 
 class GoogleAuthCallbackSerializer(serializers.Serializer):
-    """
-    Serializer to handle the callback from Google OAuth2.
+    """Serializer to handle the callback from Google OAuth2.
 
-    Fields:
+    Args:
         code: OAuth2 code returned by Google.
         state: State token to prevent CSRF.
+
+    Returns:
+        User's email, id and JWT token
     """
 
     code = serializers.CharField()
@@ -244,8 +256,10 @@ GITHUB_REDIRECT_URI = "http://localhost:8000/authentication/github/callback/"
 
 
 class GitHubAuthInitSerializer(serializers.Serializer):
-    """
-    Serializer to initiate Github OAuth2 flow.
+    """Serializer to initiate Github OAuth2 flow.
+
+    Returns:
+        Authentication Github url and state
     """
 
     def create(self, validated_data):
@@ -262,12 +276,14 @@ class GitHubAuthInitSerializer(serializers.Serializer):
 
 
 class GitHubAuthCallbackSerializer(serializers.Serializer):
-    """
-    Serializer to handle the callback from Github OAuth2.
+    """Serializer to handle the callback from Github OAuth2.
 
-    Fields:
+    Args:
         code: OAuth2 code returned by Github.
         state: State token to prevent CSRF.
+
+    Returns:
+        User's email, id and JWT token
     """
 
     code = serializers.CharField()

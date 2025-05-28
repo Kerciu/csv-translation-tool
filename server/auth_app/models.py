@@ -7,12 +7,12 @@ class CustomUser(AbstractUser):
     """
     Custom user model extending Django's AbstractUser.
 
-    Fields:
-        - username: Unique login name.
-        - email: Unique user email.
-        - password: Hashed password.
-        - date_joined: Timestamp of when user registered.
-        - file: Associated file id.
+    Args:
+        username: Unique login name.
+        email: Unique user email.
+        password: Hashed password.
+        date_joined: Timestamp of when user registered.
+        file: Associated file id.
     """
 
     id = ObjectIdAutoField(primary_key=True)

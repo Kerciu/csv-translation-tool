@@ -10,10 +10,9 @@ from .const import CANNOT_DETECT_LANGUAGE, CANOOT_TRANSLATE, TEXT_ERROR
 
 
 class Cell(EmbeddedModel):
-    """
-    Represents a single cell in a column.
+    """Represents a single cell in a column.
 
-    Attributes:
+    Args:
         id: Primary key.
         text: Current cell content.
         original_text: Original unmodified content.
@@ -49,10 +48,9 @@ class Cell(EmbeddedModel):
 
 
 class Column(EmbeddedModel):
-    """
-    Represents a column in a table containing a list of Cell objects.
+    """Represents a column in a table containing a list of Cell objects.
 
-    Attributes:
+    Args:
         id: Primary key.
         name: Name of the column.
         rows_number: Total number of rows in the column.
@@ -84,10 +82,9 @@ class Column(EmbeddedModel):
 
 
 class File(models.Model):
-    """
-    Represents an uploaded file with structured tabular content.
+    """Represents an uploaded file with structured tabular content.
 
-    Attributes:
+    Args:
         id: Primary key.
         title: File name or title.
         upload_time: When the file was uploaded.
@@ -123,8 +120,7 @@ class File(models.Model):
     @classmethod
     @transaction.atomic
     def update_cells(cls, file_id, col_numbers, row_numbers, text_list):
-        """
-        Atomic transaction updating multiple cells within the file.
+        """Atomic transaction updating multiple cells within the file.
 
         Args:
             file_id: ID of the file to update.
@@ -157,8 +153,7 @@ class File(models.Model):
     @classmethod
     @transaction.atomic
     def revert_cell(cls, file_id, col_num, row_num):
-        """
-        Atomic transaction Reverting a specific cell to its original state.
+        """Atomic transaction Reverting a specific cell to its original state.
 
         Args:
             file_id: File ID.
@@ -181,8 +176,7 @@ class File(models.Model):
     @classmethod
     @transaction.atomic
     def delete_file(cls, file_id):
-        """
-        Atomic transaction deleting safely a file by ID.
+        """Atomic transaction deleting safely a file by ID.
 
         Args:
             file_id: The ID of the file to delete.
