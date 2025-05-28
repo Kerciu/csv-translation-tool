@@ -26,6 +26,8 @@ md5 = "0.7.0"
 redis = { version = "0.31.0", features = ["aio", "tokio-comp"]}
 rayon = "1.10.0"
 pyo3-asyncio = "0.20.0"
+mockall = "0.13.1"
+candle-examples = "0.9.1"
 
 
 [dev-dependencies]
