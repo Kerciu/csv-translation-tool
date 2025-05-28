@@ -17,6 +17,7 @@ pub struct ModelConfig {
     pub max_position_embeddings: usize,
     pub eos_token_id: u32,
     pub forced_eos_token_id: u32,
+    pub pad_token_id: u32,
 }
 
 #[derive(Debug, Deserialize)]
@@ -98,6 +99,22 @@ impl ModelConfig {
     }
 }
 
+impl Default for ModelConfig {
+    fn default() -> Self {
+        Self {
+            model_id: String::new(),
+            src_token: String::new(),
+            tgt_token: String::new(),
+            decoder_start_token_id: 0,
+            eos_token_id: 0,
+            max_position_embeddings: 512,
+            forced_eos_token_id: 0,
+            marian_config: marian::Config::opus_mt_en_fr(),
+            pad_token_id: 0,
+        }
+    }
+}
+
 const SUPPORTED_LANGUAGES: &[&str] = &["en", "es", "fr", "de", "it", "pt", "ru", "zh", "ja", "ko", "ar"];
 
 pub fn validate_language(lang: &str) -> Result<()> {
@@ -151,7 +168,8 @@ pub fn check_model_exists(model_id: &str) -> Result<()> {
 }
 
 fn conversion_files_exist(src_lang: &str, tgt_lang: &str) -> Result<bool> {
-    let models_dir = Path::new("scripts/converted_models");
+    let models_dir = Path::new("scripts/converted_models")
+        .join(format!("{}-{}", src_lang, tgt_lang));
 
     let config_path = models_dir.join(format!("config-{}-{}.json", src_lang, tgt_lang));
     let model_path = models_dir.join(format!("model-{}-{}.safetensors", src_lang, tgt_lang));
@@ -174,6 +192,7 @@ fn construct_model_config_from_json(src_lang: &str, tgt_lang: &str) -> Result<ma
 
     let config_path = Path::new("scripts")
         .join("converted_models")
+        .join(format!("{}-{}", src_lang, tgt_lang))
         .join(format!("config-{}-{}.json", src_lang, tgt_lang));
 
     let file = std::fs::File::open(&config_path)?;
@@ -252,5 +271,6 @@ pub fn get_model_config(src_lang: &str, tgt_lang: &str) -> Result<ModelConfig> {
         max_position_embeddings: marian_config.max_position_embeddings,
         eos_token_id: marian_config.eos_token_id,
         forced_eos_token_id: marian_config.forced_eos_token_id,
+        pad_token_id: marian_config.pad_token_id,
     })
 }

@@ -6,8 +6,8 @@ use std::time::Duration;
 
 #[derive(Clone)]
 pub struct TranslationCache {
-    client: Client,
-    ttl: Duration,
+    pub client: Client,
+    pub ttl: Duration,
 }
 
 impl TranslationCache {
@@ -19,7 +19,7 @@ impl TranslationCache {
         }
     }
 
-    fn cache_key(&self, src_lang: &str, tgt_lang: &str, text: &str) -> String {
+    pub fn cache_key(&self, src_lang: &str, tgt_lang: &str, text: &str) -> String {
         let hash = format!("{:x}", md5::compute(text));
         format!("translation:{}:{}:{}", src_lang, tgt_lang, hash)
     }
