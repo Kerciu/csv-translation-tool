@@ -1,4 +1,6 @@
 use clap::ValueEnum;
+use super::translation_map::TranslationMap;
+use anyhow::Context;
 
 #[derive(Clone, Debug, Copy, PartialEq, Eq, ValueEnum)]
 pub enum LanguagePair {
@@ -23,4 +25,18 @@ pub const SUPPORTED_LANGUAGES: &[LanguagePair] = &[
 pub enum Which {
     Base,
     Big,
+}
+
+pub fn is_in_translations_map(src_lang: &str, tgt_lang: &str) -> bool {
+    let translations_map = TranslationMap::new();
+
+    if translations_map.contains_translation(src_lang, tgt_lang) {
+        true
+    } else {
+        eprintln!(
+            "Translation from '{}' to '{}' is not supported.",
+            src_lang, tgt_lang
+        );
+        false
+    }
 }

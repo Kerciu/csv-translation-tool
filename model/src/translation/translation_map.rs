@@ -1,0 +1,36 @@
+use std::collections::HashMap;
+use serde::Deserialize;
+use std::path::PathBuf;
+
+#[derive(Debug, Deserialize)]
+pub struct TranslationMap(HashMap<String, Vec<String>>);
+
+impl TranslationMap {
+    pub fn new() -> Self {
+        let json_path = PathBuf::from("scripts")
+            .join("data")
+            .join("translations_map.json");
+        eprintln!("Loading translation map from: {}", json_path.display());
+
+        Self::load_from_json(json_path.to_str().unwrap()).unwrap_or_else(|e| {
+            eprintln!("Failed to load translation map, using empty map. Error: {}", e);
+            TranslationMap(HashMap::new())
+        })
+    }
+
+    fn load_from_json(json_path: &str) -> Result<Self, Box<dyn std::error::Error>> {
+        let file = std::fs::File::open(json_path)?;
+        let reader = std::io::BufReader::new(file);
+        let map: HashMap<String, Vec<String>> = serde_json::from_reader(reader)?;
+        Ok(TranslationMap(map))
+    }
+
+    // Dodaj helper do dostępu do wewnętrznej mapy
+    pub fn contains_translation(&self, src_lang: &str, tgt_lang: &str) -> bool {
+        let normalized_src = src_lang.to_lowercase();
+        let normalized_tgt = tgt_lang.to_lowercase();
+
+        self.0.get(&normalized_src)
+            .map_or(false, |targets| targets.contains(&normalized_tgt))
+    }
+}

@@ -7,6 +7,8 @@ use serde::Deserialize;
 use candle_nn::Activation;
 use std::path::Path;
 
+use crate::translation::language::is_in_translations_map;
+
 #[derive(Debug, Clone)]
 pub struct ModelConfig {
     pub model_id: String,
@@ -245,6 +247,13 @@ pub fn get_model_config(src_lang: &str, tgt_lang: &str) -> Result<ModelConfig> {
 
     let model_id = build_model_id(src_lang, tgt_lang);
     // check_model_exists(&model_id)?;
+
+    if !is_in_translations_map(src_lang, tgt_lang) {
+        return Err(Error::msg(format!(
+            "Translation from {} to {} is not supported",
+            src_lang, tgt_lang
+        )));
+    }
 
     let marian_config = match model_id.as_str() {
         "Helsinki-NLP/opus-mt-fr-en" => marian::Config::opus_mt_fr_en(),
