@@ -10,6 +10,7 @@ exclude: |
     server/core/settings.py|
     model/scripts/.*|
     server/docs/.*|
+    requirements-dev.txt|
   )$
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
