@@ -410,6 +410,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchUserCSV = async () => {
+      setLoading(true);
+
       try {
         const res = await axios.get('http://localhost:8000/authentication/user', {
           withCredentials: true,
@@ -419,7 +421,6 @@ const Dashboard = () => {
         localStorage.removeItem('user');
       }
       try {
-        setLoading(true);
         const response = await axios.get('http://localhost:8000/translation/get_user_csv', {
           withCredentials: true,
         });

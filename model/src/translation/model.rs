@@ -1,10 +1,14 @@
 use anyhow::{Error, Result};
 use candle::{DType, Device, Tensor};
 use candle_transformers::generation::LogitsProcessor;
-
+use clap::ValueEnum;
 use candle_examples::token_output_stream::TokenOutputStream;
 use hf_hub::api::sync::Api;
 use rayon::prelude::*;
+use candle_transformers::models::marian::MTModel;
+use tokenizers::Tokenizer;
+
+
 
 // use std::sync::{Arc, Mutex};
 

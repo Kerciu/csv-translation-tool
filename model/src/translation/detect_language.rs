@@ -1,4 +1,4 @@
-use lingua::Language::{
+pub use lingua::Language::{
     Arabic, Chinese, English, French, German, Italian, Japanese, Korean, Portuguese, Russian,
     Spanish,
 };
