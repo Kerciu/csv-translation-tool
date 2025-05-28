@@ -2,6 +2,9 @@ pub mod model;
 pub mod loader;
 pub mod language;
 pub mod detect_language;
+pub mod translator;
+pub mod cache;
+pub mod translation_map;
 
 pub use model::TranslationModel;
 pub use language::LanguagePair;
