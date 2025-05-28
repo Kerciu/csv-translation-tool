@@ -12,6 +12,7 @@ use crate::translation::detect_language::{detect_language, map_language_to_code}
 #[pyclass]
 pub struct Translator {
     cache: Arc<TranslationCache>,
+    rt: Runtime,
 }
 
 impl Translator {
@@ -21,8 +22,7 @@ impl Translator {
         texts: &[String],
         tgt_lang: &str,
     ) -> PyResult<Vec<String>> {
-        let rt = Runtime::new()?;
-        rt.block_on(async move {
+        self.rt.block_on(async move {
             let mut results = vec![String::new(); texts.len()];
             let mut uncached_indices = Vec::new();
             let mut uncached_texts = Vec::new();
@@ -67,15 +67,17 @@ impl Translator {
     #[new]
     fn new(redis_url: String, cache_ttl: u64) -> PyResult<Self> {
         let cache = TranslationCache::new(&redis_url, cache_ttl);
+        let rt = Runtime::new().map_err(|e| PyRuntimeError::new_err(e.to_string()))?;
         Ok(Self {
             cache: Arc::new(cache),
+            rt,
         })
     }
 
     fn translate_batch(
         &self,
-        mut src_lang: String,
         texts: Vec<String>,
+        mut src_lang: String,
         tgt_lang: String,
     ) -> PyResult<Vec<String>> {
         if src_lang == "auto" || src_lang.is_empty() {
