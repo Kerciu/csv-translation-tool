@@ -17,7 +17,7 @@
 
 <table>
   <tr>
-    <td width="25%">
+    <td width="20%">
       <h3 align="center">Frontend</h3>
       <p align="center">
         <img src="https://img.shields.io/badge/Next.js-14-black?logo=nextdotjs&logoColor=white" alt="Next.js">
@@ -28,7 +28,7 @@
         <img src="https://img.shields.io/badge/shadcn/ui-0.5-%23000000?logo=ui" alt="shadcn/ui">
       </p>
     </td>
-    <td width="25%">
+    <td width="20%">
       <h3 align="center">Backend</h3>
       <p align="center">
         <img src="https://img.shields.io/badge/Django-4.2-%23092E20?logo=django&logoColor=white" alt="Django">
@@ -37,18 +37,23 @@
         <img src="https://img.shields.io/badge/JWT-%23000000?logo=json-web-tokens&logoColor=white" alt="JWT">
       </p>
     </td>
-    <td width="25%">
-      <h3 align="center">Data & ML</h3>
+    <td width="20%">
+      <h3 align="center">AI/ML</h3>
       <p align="center">
         <img src="https://img.shields.io/badge/Rust-1.70-%23000000?logo=rust&logoColor=white" alt="Rust">
         <img src="https://img.shields.io/badge/PyO3-0.20-%23FFD43B?logo=python&logoColor=white" alt="PyO3">
-        <img src="https://img.shields.io/badge/MongoDB-7.0-%2347A248?logo=mongodb&logoColor=white" alt="MongoDB">
-        <img src="https://img.shields.io/badge/Redis-DC382D?logo=redis&logoColor=white" alt="Redis">
         <img src="https://img.shields.io/badge/MarianMT-%23000000?logo=huggingface&logoColor=white" alt="MarianMT">
         <img src="https://img.shields.io/badge/Hugging_Face-%23FFD21E?logo=huggingface&logoColor=black" alt="Hugging Face">
       </p>
     </td>
-    <td width="25%">
+    <td width="20%">
+      <h3 align="center">Data</h3>
+      <p align="center">
+        <img src="https://img.shields.io/badge/MongoDB-7.0-%2347A248?logo=mongodb&logoColor=white" alt="MongoDB">
+        <img src="https://img.shields.io/badge/Redis-DC382D?logo=redis&logoColor=white" alt="Redis">
+      </p>
+    </td>
+    <td width="20%">
       <h3 align="center">Infrastructure</h3>
       <p align="center">
         <img src="https://img.shields.io/badge/Docker-24.0-%232496ED?logo=docker&logoColor=white" alt="Docker">
