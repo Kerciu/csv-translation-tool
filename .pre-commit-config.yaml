@@ -9,6 +9,7 @@ exclude: |
     server/mongo_migrations/.*|
     server/core/settings.py|
     model/scripts/.*|
+    server/docs/.*|
   )$
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
