@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'auth_app.apps.AuthAppConfig',
     'rest_framework',
     'corsheaders',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [

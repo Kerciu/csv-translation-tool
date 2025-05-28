@@ -36,47 +36,55 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-const login = async (email: string, password: string) => {
-  setIsLoading(true);
+  const login = async (email: string, password: string) => {
+    setIsLoading(true);
 
-  try {
-    if (!email) {
-      throw new Error('Invalid credentials');
+    try {
+      if (!email) {
+        throw new Error('Invalid credentials');
+      }
+      if (password.length < 6) {
+        throw new Error('Too short password');
+      }
+
+      const auth_res = await axios.post(
+        'http://localhost:8000/authentication/log',
+        {
+          email: email,
+          password: password,
+        },
+        { withCredentials: true },
+      );
+      const res = await axios.get('http://localhost:8000/authentication/user', {
+        withCredentials: true,
+      });
+      setResponse(res.data);
+      localStorage.setItem('user', JSON.stringify(res.data));
+
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
     }
-    if ( password.length < 6){
-      throw new Error('Too short password');
-    }
-
-    const auth_res = await axios.post('http://localhost:8000/authentication/log', {
-      email: email,
-      password: password
-    }, { withCredentials: true });
-    const res = await axios.get('http://localhost:8000/authentication/user',
-      { withCredentials: true }
-    );
-    setResponse(res.data);
-    localStorage.setItem('user', JSON.stringify(res.data));
-
-    router.push('/dashboard');
-  } catch (error) {
-    console.error('Login failed:', error);
-    throw error;
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   const register = async (name: string, email: string, password: string) => {
     setIsLoading(true);
     try {
-      const auth_res = await axios.post('http://localhost:8000/authentication/sign', {
-        email: email,
-        password: password,
-        username: name
-      }, { withCredentials: true });
-      const res = await axios.get('http://localhost:8000/authentication/user',
-        { withCredentials: true }
+      const auth_res = await axios.post(
+        'http://localhost:8000/authentication/sign',
+        {
+          email: email,
+          password: password,
+          username: name,
+        },
+        { withCredentials: true },
       );
+      const res = await axios.get('http://localhost:8000/authentication/user', {
+        withCredentials: true,
+      });
       setResponse(res.data);
       localStorage.setItem('user', JSON.stringify(res.data));
 
@@ -97,19 +105,23 @@ const login = async (email: string, password: string) => {
       if (res.data.auth_url) {
         window.location.href = res.data.auth_url;
       } else {
-        console.error("No auth_url returned");
+        console.error('No auth_url returned');
         setIsLoading(false);
       }
     } catch (err) {
-      console.error("OAuth login error:", err);
+      console.error('OAuth login error:', err);
       setIsLoading(false);
     }
   };
 
   const logout = async () => {
-    await axios.post("http://localhost:8000/authentication/logout", {}, {
-      withCredentials: true,
-    });
+    await axios.post(
+      'http://localhost:8000/authentication/logout',
+      {},
+      {
+        withCredentials: true,
+      },
+    );
     setUser(null);
     localStorage.removeItem('user');
   };

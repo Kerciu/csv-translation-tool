@@ -1,11 +1,11 @@
-use anyhow::{Result, Error};
-use hf_hub::api::sync::Api;
-use std::process::Command;
-use candle_transformers::models::marian;
-use serde_json;
-use serde::Deserialize;
+use anyhow::{Error, Result};
 use candle_nn::Activation;
+use candle_transformers::models::marian;
+use hf_hub::api::sync::Api;
+use serde::Deserialize;
+use serde_json;
 use std::path::Path;
+use std::process::Command;
 
 use crate::translation::language::is_in_translations_map;
 
@@ -48,8 +48,12 @@ struct HuggingFaceConfig {
     share_encoder_decoder_embeddings: bool,
 }
 
-fn default_share_embeddings() -> bool { true }
-fn default_scale_embedding() -> bool { true }
+fn default_share_embeddings() -> bool {
+    true
+}
+fn default_scale_embedding() -> bool {
+    true
+}
 
 impl TryFrom<HuggingFaceConfig> for marian::Config {
     type Error = Error;
@@ -91,7 +95,10 @@ fn activation_from_str(s: &str) -> Result<Activation> {
         "gelu" => Ok(Activation::Gelu),
         "relu" => Ok(Activation::Relu),
         "sigmoid" => Ok(Activation::Sigmoid),
-        _ => Err(Error::msg(format!("Unsupported activation function: {}", s))),
+        _ => Err(Error::msg(format!(
+            "Unsupported activation function: {}",
+            s
+        ))),
     }
 }
 
@@ -100,6 +107,7 @@ impl ModelConfig {
         self.marian_config.clone()
     }
 }
+
 
 impl Default for ModelConfig {
     fn default() -> Self {
@@ -139,7 +147,7 @@ pub fn check_model_exists(model_id: &str) -> Result<()> {
         Ok(path) => {
             println!("Found safetensors at: {:?}", path);
             return Ok(());
-        },
+        }
         Err(err) => {
             println!("model.safetensors not found: {}", err);
         }
@@ -175,19 +183,27 @@ fn conversion_files_exist(src_lang: &str, tgt_lang: &str) -> Result<bool> {
 
     let config_path = models_dir.join(format!("config-{}-{}.json", src_lang, tgt_lang));
     let model_path = models_dir.join(format!("model-{}-{}.safetensors", src_lang, tgt_lang));
-    let src_tokenizer = models_dir.join(format!("tokenizer-marian-base-{}-{}.json", src_lang, tgt_lang));
-    let tgt_tokenizer = models_dir.join(format!("tokenizer-marian-base-{}-{}.json", tgt_lang, src_lang));
+    let src_tokenizer = models_dir.join(format!(
+        "tokenizer-marian-base-{}-{}.json",
+        src_lang, tgt_lang
+    ));
+    let tgt_tokenizer = models_dir.join(format!(
+        "tokenizer-marian-base-{}-{}.json",
+        tgt_lang, src_lang
+    ));
 
     Ok(config_path.exists()
         && model_path.exists()
         && src_tokenizer.exists()
-        && tgt_tokenizer.exists()
-    )
+        && tgt_tokenizer.exists())
 }
 
 fn construct_model_config_from_json(src_lang: &str, tgt_lang: &str) -> Result<marian::Config> {
     if !conversion_files_exist(src_lang, tgt_lang)? {
-        print!("Generating preparation files for {}->{} conversion... ", src_lang, tgt_lang);
+        print!(
+            "Generating preparation files for {}->{} conversion... ",
+            src_lang, tgt_lang
+        );
         generate_preparation_files(src_lang, tgt_lang)?;
         println!("Done.");
     }
@@ -217,8 +233,8 @@ fn construct_model_config_from_json(src_lang: &str, tgt_lang: &str) -> Result<ma
         d_model: hf_config.d_model,
         decoder_start_token_id: hf_config.decoder_start_token_id, // Direct from config
         scale_embedding: hf_config.scale_embedding,
-        pad_token_id: hf_config.pad_token_id,          // Direct from config
-        eos_token_id: hf_config.eos_token_id,          // Direct from config
+        pad_token_id: hf_config.pad_token_id, // Direct from config
+        eos_token_id: hf_config.eos_token_id, // Direct from config
         forced_eos_token_id: hf_config.forced_eos_token_id,
         share_encoder_decoder_embeddings: hf_config.share_encoder_decoder_embeddings,
     })

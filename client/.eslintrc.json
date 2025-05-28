@@ -22,7 +22,14 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
-  "plugins": ["@typescript-eslint", "react", "react-hooks", "tailwindcss"],
+  "plugins": [
+    "@typescript-eslint",
+    "react",
+    "react-hooks",
+    "tailwindcss",
+    "@typescript-eslint",
+    "prettier"
+  ],
   "rules": {
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",

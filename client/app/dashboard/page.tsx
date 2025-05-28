@@ -50,8 +50,11 @@ const Dashboard = () => {
   const [showUploadConfirmation, setShowUploadConfirmation] = useState(false);
   const { toast } = useToast();
 
-  const handleFileUpload = async (uploadedData: string[][], uploadedHeaders: string[], file:File) => {
-
+  const handleFileUpload = async (
+    uploadedData: string[][],
+    uploadedHeaders: string[],
+    file: File,
+  ) => {
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -62,9 +65,9 @@ const Dashboard = () => {
         },
         withCredentials: true,
       });
-      const {status, title, id} = response.data;
-      setFileId(id)
-      setTitle(title)
+      const { status, title, id } = response.data;
+      setFileId(id);
+      setTitle(title);
       setCsvData(uploadedData);
       setHeaders(uploadedHeaders);
       setSelectedColumns([]);
@@ -137,8 +140,8 @@ const Dashboard = () => {
           row_idx: rowIndex,
           custom_text: value,
         },
-        { withCredentials: true }
-      )
+        { withCredentials: true },
+      );
     } catch (error) {
       console.error('File upload error:', error);
     }
@@ -242,56 +245,53 @@ const Dashboard = () => {
       });
     });
 
-    axios.post(
-      'http://localhost:8000/translation/translate_cells',
-      {
-        column_idx_list: columnIdxList,
-        row_idx_list: rowIdxList,
-        target_language: targetLanguage,
-      },
-      { withCredentials: true }
-    )
-    .then((res) => {
-      const translated = res.data.translated_list;
+    axios
+      .post(
+        'http://localhost:8000/translation/translate_cells',
+        {
+          column_idx_list: columnIdxList,
+          row_idx_list: rowIdxList,
+          target_language: targetLanguage,
+        },
+        { withCredentials: true },
+      )
+      .then((res) => {
+        const translated = res.data.translated_list;
 
-      for (let i = 0; i < columnIdxList.length; i++) {
-        const row = rowIdxList[i];
-        const col = columnIdxList[i];
-        const t = translated[i][0];
-        const d = translated[i][1];
+        for (let i = 0; i < columnIdxList.length; i++) {
+          const row = rowIdxList[i];
+          const col = columnIdxList[i];
+          const t = translated[i][0];
+          const d = translated[i][1];
 
-        if (t !== "Cannot detect any language" && t !== "Cannot translate" && t !== "Error") {
-          newData[row][col] = `${t} (${d} -> ${targetLanguage})`;
-        } else {
-          newData[row][col] = `${csvData[row][col]} (${t})`;
+          if (t !== 'Cannot detect any language' && t !== 'Cannot translate' && t !== 'Error') {
+            newData[row][col] = `${t} (${d} -> ${targetLanguage})`;
+          } else {
+            newData[row][col] = `${csvData[row][col]} (${t})`;
+          }
         }
-      }
 
-      setTranslatedData(newData);
-      setTranslationErrors(newErrors);
-      setTranslated(true);
+        setTranslatedData(newData);
+        setTranslationErrors(newErrors);
+        setTranslated(true);
 
-      toast({
-        title: 'Translation completed',
-        description:
-          `Translated ${selectedColumns.length} columns in ${selectedRows.length} rows `
+        toast({
+          title: 'Translation completed',
+          description: `Translated ${selectedColumns.length} columns in ${selectedRows.length} rows `,
+        });
+        setTranslating(false);
+      })
+      .catch((error) => {
+        console.error('Translation error:', error);
+        for (let i = 0; i < columnIdxList.length; i++) {
+          const row = rowIdxList[i];
+          const col = columnIdxList[i];
+          const current = newData[row][col];
+          // xx -> yy patern or "(cannot translate)"
+          const cleaned = current.replace(/\((?:[a-z]{2}->[a-z]{2}|Cannot translate)\)\s*/gi, '');
+          newData[row][col] = `${cleaned} (Cannot translate)`;
+        }
       });
-      setTranslating(false);
-    })
-    .catch((error) => {
-      console.error("Translation error:", error);
-      for (let i = 0; i < columnIdxList.length; i++) {
-        const row = rowIdxList[i];
-        const col = columnIdxList[i];
-        const current = newData[row][col];
-        // xx -> yy patern or "(cannot translate)"
-        const cleaned = current.replace(/\((?:[a-z]{2}->[a-z]{2}|Cannot translate)\)\s*/gi, '');
-        newData[row][col] = `${cleaned} (Cannot translate)`;
-      }
-    });
-
-
-
   };
 
   const downloadCSV = async () => {
@@ -304,21 +304,21 @@ const Dashboard = () => {
       return;
     }
 
-     try {
+    try {
       const response = await axios.post(
-        "http://localhost:8000/translation/dowloand_csv",
+        'http://localhost:8000/translation/dowloand_csv',
         { file_id: fileId },
         {
-          responseType: "blob",
+          responseType: 'blob',
           withCredentials: true,
-        }
+        },
       );
 
       const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
-      link.setAttribute("download", `translated_${title}.csv`);
+      link.setAttribute('download', `translated_${title}.csv`);
       document.body.appendChild(link);
       link.click();
 
@@ -328,24 +328,27 @@ const Dashboard = () => {
       }, 100);
 
       toast({
-        title: "File downloaded",
-        description: "Your CSV file has been downloaded successfully",
+        title: 'File downloaded',
+        description: 'Your CSV file has been downloaded successfully',
       });
     } catch (err) {
       toast({
-        title: "Download failed",
-        description: "There was a problem downloading the CSV.",
-        variant: "destructive",
+        title: 'Download failed',
+        description: 'There was a problem downloading the CSV.',
+        variant: 'destructive',
       });
     }
   };
 
   const handleCellRevert = async (rowIndex: number, colIndex: number) => {
     if (csvData.length > 0) {
-      const response = await axios.post( "http://localhost:8000/translation/revert_cell",{
+      const response = await axios.post(
+        'http://localhost:8000/translation/revert_cell',
+        {
           column_idx: colIndex,
-          row_idx: rowIndex
-        }, { withCredentials: true}
+          row_idx: rowIndex,
+        },
+        { withCredentials: true },
       );
       const newData = [...translatedData];
       newData[rowIndex][colIndex] = csvData[rowIndex][colIndex];
@@ -408,11 +411,11 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchUserCSV = async () => {
       try {
-        const res = await axios.get('http://localhost:8000/authentication/user',
-              { withCredentials: true }
-          );
+        const res = await axios.get('http://localhost:8000/authentication/user', {
+          withCredentials: true,
+        });
         localStorage.setItem('user', JSON.stringify(res.data));
-      } catch (error){
+      } catch (error) {
         localStorage.removeItem('user');
       }
       try {

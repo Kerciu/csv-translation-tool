@@ -4,6 +4,7 @@ from io import StringIO, TextIOWrapper
 from threading import Thread
 
 from django.http import HttpResponse
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,6 +14,7 @@ from .serializers import (
     CSVFileSerializer,
     FileUpdateCellsSerializer,
     FindCSVFileSerializer,
+    UpdateCellSerializer,
 )
 from .utils import JWTUserAuthentication
 
@@ -27,6 +29,11 @@ def async_revert(file_id, column_idx, row_idx):
 
 class TranslateCellsView(APIView, JWTUserAuthentication):
 
+    @swagger_auto_schema(
+        tags=["CSV Operations"],
+        request_body=FileUpdateCellsSerializer,
+        operation_description="Translate selected cells in a CSV file.",
+    )
     def post(self, request):
         user = self.get_authenticated_user(request=request)
         serializer = FindCSVFileSerializer(data=request.data, context={"user": user})
@@ -37,7 +44,10 @@ class TranslateCellsView(APIView, JWTUserAuthentication):
             data=request.data, context={"file": file}
         )
         if not update_serializer.is_valid(raise_exception=True):
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                update_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+
         Thread(
             target=async_update,
             args=(
@@ -52,33 +62,56 @@ class TranslateCellsView(APIView, JWTUserAuthentication):
 
 
 class RevertCellView(APIView, JWTUserAuthentication):
+
+    @swagger_auto_schema(
+        tags=["CSV Operations"],
+        request_body=UpdateCellSerializer,
+        operation_description=(
+            "Revert a single translated cell back to its original state."
+        ),
+    )
     def post(self, request):
         user = self.get_authenticated_user(request=request)
         serializer = FindCSVFileSerializer(data=request.data, context={"user": user})
         if not serializer.is_valid(raise_exception=True):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        idx_serializer = UpdateCellSerializer(data=request.data, context={"user": user})
+        if not idx_serializer.is_valid(raise_exception=True):
+            return Response(idx_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         file = serializer.validated_data["file"]
         Thread(
             target=async_revert,
-            args=(file.id, request.data["column_idx"], request.data["row_idx"]),
+            args=(
+                file.id,
+                idx_serializer.validated_data["column_idx"],
+                idx_serializer.validated_data["row_idx"],
+            ),
             daemon=True,
         ).start()
         return Response(status=201)
 
 
 class CustomUserUpdateCellView(APIView, JWTUserAuthentication):
+
+    @swagger_auto_schema(
+        tags=["CSV Operations"],
+        operation_description="Manually update a specific cell with custom text.",
+    )
     def post(self, request):
         user = self.get_authenticated_user(request=request)
         serializer = FindCSVFileSerializer(data=request.data, context={"user": user})
         if not serializer.is_valid(raise_exception=True):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         file = serializer.validated_data["file"]
+        idx_serializer = UpdateCellSerializer(data=request.data, context={"user": user})
+        if not idx_serializer.is_valid(raise_exception=True):
+            return Response(idx_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         Thread(
             target=async_update,
             args=(
                 file.id,
-                [request.data["column_idx"]],
-                [request.data["row_idx"]],
+                [idx_serializer.validated_data["column_idx"]],
+                [idx_serializer.validated_data["row_idx"]],
                 [(request.data["custom_text"], "custom")],
             ),
             daemon=True,
@@ -92,7 +125,17 @@ def async_file_delete(file_id):
 
 class CSVUploadView(APIView, JWTUserAuthentication):
 
+    @swagger_auto_schema(
+        tags=["CSV Operations"],
+        request_body=CSVFileSerializer,
+        operation_description=(
+            "Upload a CSV file, parse it,"
+            + "store it in the database and delete from database user's old csv."
+        ),
+    )
     def post(self, request):
+        user = self.get_authenticated_user(request=request)
+
         csv_serializer = CSVFileSerializer(data=request.data)
         if not csv_serializer.is_valid():
             return Response(csv_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -100,34 +143,31 @@ class CSVUploadView(APIView, JWTUserAuthentication):
         uploaded_file = csv_serializer.validated_data["file"]
         file_name = uploaded_file.name
 
-        user = self.get_authenticated_user(request=request)
-
         reader = csv.reader(TextIOWrapper(uploaded_file.file, encoding="utf-8"))
         all_rows = list(reader)
 
         columns_data = all_rows[0][0].split(";")
         cells_data = [[] for _ in columns_data]
-        for row_idx, row in enumerate(all_rows[1:]):
+        for row in all_rows[1:]:
             if len(row) != 0:
                 for cell_idx, cell in enumerate(row[0].split(";")):
                     cells_data[cell_idx].append(cell)
-        columns_list = []
-        for col_idx, columns in enumerate(columns_data):
-            cell_objs = []
-            for cell_idx, cell in enumerate(cells_data[col_idx]):
-                cell_objs.append(
-                    Cell(
-                        text=cell,
-                        original_text=cell,
-                        row_number=cell_idx,
-                        is_translated=False,
-                        detected_language="",
-                    ).to_dict()
-                )
 
+        columns_list = []
+        for col_idx, column_name in enumerate(columns_data):
+            cell_objs = [
+                Cell(
+                    text=cell,
+                    original_text=cell,
+                    row_number=cell_idx,
+                    is_translated=False,
+                    detected_language="",
+                ).to_dict()
+                for cell_idx, cell in enumerate(cells_data[col_idx])
+            ]
             columns_list.append(
                 Column(
-                    name=columns,
+                    name=column_name,
                     column_number=col_idx,
                     rows_number=len(cell_objs),
                     cells=cell_objs,
@@ -140,15 +180,13 @@ class CSVUploadView(APIView, JWTUserAuthentication):
             columns=columns_list,
             columns_number=len(columns_list),
         )
-
         file_obj.save()
+
         old_file_id = user.file
         try:
             if old_file_id is not None:
                 Thread(
-                    target=async_file_delete,
-                    args=(old_file_id,),
-                    daemon=True,
+                    target=async_file_delete, args=(old_file_id,), daemon=True
                 ).start()
         except Exception:
             print("No such file")
@@ -161,9 +199,15 @@ class CSVUploadView(APIView, JWTUserAuthentication):
 
 
 class GetUserCSVFiles(APIView, JWTUserAuthentication):
+
+    @swagger_auto_schema(
+        tags=["CSV Operations"],
+        operation_description=(
+            "Get the currently active CSV file for the authenticated user."
+        ),
+    )
     def get(self, request):
         user = self.get_authenticated_user(request=request)
-
         file = File.objects.filter(id=user.file).first()
         if file is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -171,9 +215,13 @@ class GetUserCSVFiles(APIView, JWTUserAuthentication):
 
 
 class DowloandCSVFile(APIView, JWTUserAuthentication):
+
+    @swagger_auto_schema(
+        tags=["CSV Operations"],
+        operation_description="Download the user's CSV file with translated values.",
+    )
     def post(self, request):
         user = self.get_authenticated_user(request=request)
-
         serializer = FindCSVFileSerializer(data=request.data, context={"user": user})
         if not serializer.is_valid(raise_exception=True):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -186,15 +234,13 @@ class DowloandCSVFile(APIView, JWTUserAuthentication):
         if len(columns["cells"]) == 0:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        csv_data = []
-        csv_data.append([columns["name"]])
+        csv_data = [[columns["name"]]]
         for cell in columns["cells"]:
             csv_data.append([cell["text"]])
-
         for column in data["columns"][1:]:
             csv_data[0].append(column["name"])
-            for cell_idx, cell in enumerate(column["cells"]):
-                csv_data[cell_idx + 1].append(cell["text"])
+            for idx, cell in enumerate(column["cells"]):
+                csv_data[idx + 1].append(cell["text"])
 
         csv_file = StringIO()
         writer = csv.writer(csv_file, delimiter=";")

@@ -60,12 +60,11 @@
 </table>
 
 ## Prerequisites
-
-- [Python](https://www.python.org/downloads/) ( < 13, v12 Recommended)
-- [Rust](https://www.rust-lang.org/tools/install) (latest stable version)
-- [Node.js](https://nodejs.org/) (v16+ recommended)
-- [npm](https://www.npmjs.com/) (comes with Node.js)
-- [cURL](https://curl.se/)
+  - [Python](https://www.python.org/downloads/) (<13v, 12v recommended)
+  - [Docker](https://www.docker.com/) (latest stable version)
+  - [Rust](https://www.rust-lang.org/tools/install) (latest stable version)
+  - [Node.js](https://nodejs.org/) (v16+ recommended)
+  - [npm](https://www.npmjs.com/) (comes with Node.js)
 
 
 ## Quick Start
@@ -75,9 +74,97 @@
    git clone https://gitlab-stud.elka.pw.edu.pl/kgorski1/zpr_25l
    cd zpr_25l
 
-2. **Run the application**
-   ```bash
-    run.bat
+2. **Open installed docker's desktop application**
 
-   # More will come when docker will be set up
+3. **Build docker**
+   ```bash
+    docker-compose build
    ```
+
+4. **Run docker**
+   ```bash
+    docker-compose up
+   ```
+
+
+
+## Linting and formating
+  - [pre-commit](https://pre-commit.com) for automatic coding style verification and formating
+  - ***python***: flake8, black, isort
+  - ***react***: ESlint, Prettier
+  - ***rust***:  clippy, fmt
+### To run
+  #### Python-react
+  ```bash
+  pip install -r requirements-dev.txt
+  pre-commit install
+  pre-commit run --all-files
+  ```
+  #### Rust
+  ```bash
+  cd model
+  cargo fmt
+  cargo clippy
+  ```
+
+## Documentation
+### Python
+- **REST API**: ***Swagger*** - you can see it by running the application and going to [here](http://127.0.0.1:8000/swagger/)
+- **Models, Serializers, Utils**: ***docstrings + [Sphinx](https://www.sphinx-doc.org/en/master/)*** - to run:
+    1. #### Install all dependencies
+      pip install -r requirements-dev.txt
+    2. #### Go to docs folder in server
+      cd server
+      cd docs
+    3. #### Based on your system use make file
+    **Linux**:
+    ```bash
+    make html
+    ```
+
+  
+    **Windows:**
+    ```bash
+    .\make.bat html
+    ```
+
+    4. #### To see it open in your browser build/html/index.html or use this commend
+    **Linux:**
+    ```bash
+    cd .\build\html\
+    start index.html
+    ```
+
+  
+    **Windows:**
+    ```bash
+    cd .\build\html\
+    Start-Process index.html
+    ```
+
+## Testing
+
+### Python
+1. **Run docker**
+```bash
+docker-compose up
+```
+2. **Start translator-model container's bash**
+```bash
+  docker exec -it translator-model bash
+```
+3. **Run tests**
+```bash
+  python manage.py test
+```
+
+### Rust
+1. **Go to model folder**
+```bash
+cd model
+```
+2. **Run tests**
+```bash
+cargo test
+```
+
