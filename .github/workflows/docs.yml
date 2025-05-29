@@ -24,7 +24,13 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Build Sphinx HTML docs
-        run: make html
+        run: |
+          export MONGO_URL=mongodb://localhost:27017/db
+          export REDIS_URL=redis://localhost:6379
+          export SECRET_KEY=dummy
+          export DEBUG=False
+          export ALLOWED_HOSTS=localhost
+          make html
 
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main'
