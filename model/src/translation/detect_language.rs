@@ -7,7 +7,7 @@ use lingua::{Language, LanguageDetector, LanguageDetectorBuilder};
 pub fn detect_language(text: &str) -> Option<Language> {
     let languages = vec![
         English, French, German, Spanish, Korean, Japanese, Italian, Portuguese, Russian, Chinese,
-        Arabic,
+        Arabic, Hindi, Indonesian, Polish, Dutch, Swedish, Thai, Turkish, Vietnamese
     ];
 
     let detector: LanguageDetector = LanguageDetectorBuilder::from_languages(&languages).build();
