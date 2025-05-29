@@ -80,17 +80,18 @@ jobs:
     - name: Run Black (check only)
       run: |
         black --check . --exclude '(?x)^(
-          docs/.*|
+          docs(/.*)?|
           LICENSE|
           README.md|
-          server/auth_app/migrations/.*|
-          server/translation_app/migrations/.*|
-          server/mongo_migrations/.*|
+          server/auth_app/migrations(/.*)?|
+          server/translation_app/migrations(/.*)?|
+          server/mongo_migrations(/.*)?|
           server/core/settings.py|
-          model/scripts/.*|
-          server/docs/.*|
+          model/scripts(/.*)?|
+          server/docs(/.*)?|
           requirements-dev.txt
         )$'
+
 
     - name: Run Isort (check only, profile=black)
       run: |

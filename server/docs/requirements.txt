@@ -16,3 +16,4 @@ drf-yasg==1.21.10
 sphinx
 sphinx_rtd_theme
 drf_yasg
+myst-parser
