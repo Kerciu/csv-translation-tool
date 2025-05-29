@@ -1,4 +1,3 @@
-// src/translation/translator.rs
 use crate::config::get_model_config;
 use crate::translation::cache::TranslationCache;
 use crate::translation::model::TranslationModel;

@@ -7,7 +7,6 @@ use candle_transformers::models::marian::MTModel;
 use hf_hub::{Repo, RepoType, api::sync::Api};
 use std::path::Path;
 use tokenizers::Tokenizer;
-use std::sync::{Arc, Mutex};
 
 pub fn load_from_candle(
     api: &Api,
