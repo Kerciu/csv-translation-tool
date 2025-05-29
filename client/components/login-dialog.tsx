@@ -14,6 +14,7 @@ import RegisterForm from './register-form';
 import { TabsTrigger } from '@radix-ui/react-tabs';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from './ui/use-toast';
+import { useRouter } from 'next/navigation';
 
 interface LoginDialogProps {
   isOpen: boolean;
@@ -30,6 +31,8 @@ const LoginDialog = ({ isOpen, onOpenChange }: LoginDialogProps) => {
   const { login, register, loginWithProvider, isLoading } = useAuth();
   const { toast } = useToast();
 
+  const router = useRouter();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -42,13 +45,16 @@ const LoginDialog = ({ isOpen, onOpenChange }: LoginDialogProps) => {
           description: 'Successfully logged in, welcome back!',
         });
         onOpenChange(false);
+        setIsSubmitting(false);
+        router.push('/dashboard');
       } else {
-        await login(email, password);
+        await register(username, email, password);
         toast({
           title: 'Registration successful',
           description: 'Registered successfully!',
         });
-        onOpenChange(false);
+        setIsSubmitting(false);
+        setActiveTab('login');
       }
     } catch (error) {
       toast({
@@ -56,8 +62,6 @@ const LoginDialog = ({ isOpen, onOpenChange }: LoginDialogProps) => {
         description: 'Please check your credentials and try again.',
         variant: 'destructive',
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

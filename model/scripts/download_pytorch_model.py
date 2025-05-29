@@ -1,5 +1,6 @@
-import requests
 import os
+
+import requests
 
 
 def build_model_name(model_name):
@@ -11,14 +12,19 @@ def download_file(url, save_path):
 
     if response.status_code == 200:
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
-        with open(save_path, 'wb') as f:
+        with open(save_path, "wb") as f:
             f.write(response.content)
         print(f"Downloaded and saved to {save_path}")
     else:
         print(f"Failed to download from {url}. Status code: {response.status_code}")
 
 
-def download_model(model_name, save_dir, src_lang, tgt_lang,):
+def download_model(
+    model_name,
+    save_dir,
+    src_lang,
+    tgt_lang,
+):
     base_url = f"https://huggingface.co/{build_model_name(model_name)}/resolve/main"
 
     # Original files from Hugging Face

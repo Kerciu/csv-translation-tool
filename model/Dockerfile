@@ -18,3 +18,4 @@ RUN maturin build --release --strip --out /wheels
 FROM alpine:latest AS export
 
 COPY --from=builder /wheels /wheels
+COPY --from=builder /model/scripts /scripts

@@ -20,6 +20,7 @@ interface LanguagePopoverProps {
   operationType: 'Target Language' | 'Source Language';
   operationLanguage: string;
   open: boolean;
+  availableLanguages: string[];
   setOpen: (open: boolean) => void;
   onLanguageChange: (type: LanguageType, language: string) => void;
 }
@@ -28,11 +29,16 @@ const LanguagePopover = ({
   operationType,
   operationLanguage,
   open,
+  availableLanguages,
   setOpen,
   onLanguageChange,
 }: LanguagePopoverProps) => {
   const languageType = operationType.split(' ')[0].toLowerCase() as LanguageType;
   const htmlId = `language-select-${languageType}`;
+
+  const languageList = availableLanguages
+    ? availableLanguages.map(code => getLanguageInfo(code))
+    : languages;
 
   return (
     <div className='space-y-2'>
@@ -68,7 +74,7 @@ const LanguagePopover = ({
             <CommandList>
               <CommandEmpty>No language found.</CommandEmpty>
               <CommandGroup>
-                {languages.map((lang) => (
+                {languageList.map((lang) => (
                   <CommandItem
                     key={lang.value}
                     value={lang.value}

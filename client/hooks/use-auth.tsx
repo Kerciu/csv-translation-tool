@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-
+import axios from 'axios';
 import { useState, createContext, useContext, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -22,11 +22,12 @@ interface AuthContextProps {
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
-
+const API_URL: string = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
+  const [response, setResponse] = useState(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -37,95 +38,94 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
-    return new Promise<void>((resolve, reject) => {
-      setTimeout(() => {
-        try {
-          if (email && password.length >= 6) {
-            const newUser = {
-              id: Math.random().toString(36).substring(2, 9),
-              name: email.split('@')[0],
-              email,
-            };
-            setUser(newUser);
-            localStorage.setItem('user', JSON.stringify(newUser));
-            document.cookie = `user_session=true; path=/; max-age=${60 * 60 * 24 * 7}`;
-            resolve();
-            router.push('/dashboard');
-          } else {
-            reject(new Error('Invalid credentials'));
-          }
-        } catch (error) {
-          reject(error);
-        } finally {
-          setIsLoading(false);
-        }
-      }, 1000);
-    });
+
+    try {
+      console.log('Login failed:', 'any');
+
+      if (!email) {
+        throw new Error('Invalid credentials');
+      }
+      if (password.length < 6) {
+        throw new Error('Too short password');
+      }
+
+      const auth_res = await axios.post(
+        `${API_URL}/authentication/log`,
+        {
+          email: email,
+          password: password,
+        },
+        { withCredentials: true },
+      );
+      const res = await axios.get(`${API_URL}/authentication/user`, {
+        withCredentials: true,
+      });
+      setResponse(res.data);
+      localStorage.setItem('user', JSON.stringify(res.data));
+
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const register = async (name: string, email: string, password: string) => {
     setIsLoading(true);
-    return new Promise<void>((resolve, reject) => {
-      setTimeout(() => {
-        try {
-          if (name && email && password.length >= 6) {
-            const newUser = {
-              id: Math.random().toString(36).substring(2, 9),
-              name,
-              email,
-            };
-            setUser(newUser);
-            localStorage.setItem('user', JSON.stringify(newUser));
-            document.cookie = `user_session=true; path=/; max-age=${60 * 60 * 24 * 7}`;
-            resolve();
-            router.push('/dashboard');
-          } else {
-            reject(new Error('Invalid registration data'));
-          }
-        } catch (error) {
-          reject(error);
-        } finally {
-          setIsLoading(false);
-        }
-      }, 1000);
-    });
+    try {
+      const auth_res = await axios.post(
+        `${API_URL}/authentication/sign`,
+        {
+          email: email,
+          password: password,
+          username: name,
+        },
+        { withCredentials: true },
+      );
+      const res = await axios.get(`${API_URL}/authentication/user`, {
+        withCredentials: true,
+      });
+      setResponse(res.data);
+      localStorage.setItem('user', JSON.stringify(res.data));
+
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const loginWithProvider = async (provider: string) => {
     setIsLoading(true);
-    return new Promise<void>((resolve, reject) => {
-      setTimeout(() => {
-        try {
-          const newUser = {
-            id: Math.random().toString(36).substring(2, 9),
-            name: `User ${Math.floor(Math.random() * 1000)}`,
-            email: `user${Math.floor(Math.random() * 1000)}@example.com`,
-            provider,
-          };
-          setUser(newUser);
-          localStorage.setItem('user', JSON.stringify(newUser));
-          document.cookie = `user_session=true; path=/; max-age=${60 * 60 * 24 * 7}`;
-          resolve();
-          router.push('/dashboard');
-        } catch (error) {
-          reject(error);
-        } finally {
-          setIsLoading(false);
-        }
-      }, 1500);
-    });
+
+    try {
+      const res = await axios.get(`${API_URL}/authentication/${provider}/`);
+      if (res.data.auth_url) {
+        window.location.href = res.data.auth_url;
+      } else {
+        console.error('No auth_url returned');
+        setIsLoading(false);
+      }
+    } catch (err) {
+      console.error('OAuth login error:', err);
+      setIsLoading(false);
+    }
   };
 
-  const logout = () => {
-    setIsLoading(true);
+  const logout = async () => {
+    await axios.post(
+      `${API_URL}/authentication/logout`,
+      {},
+      {
+        withCredentials: true,
+      },
+    );
     setUser(null);
     localStorage.removeItem('user');
-    localStorage.removeItem('savedTranslations');
-    document.cookie = 'user_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    setTimeout(() => {
-      setIsLoading(false);
-      router.push('/');
-    }, 300);
   };
 
   const value: AuthContextProps = {

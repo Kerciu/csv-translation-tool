@@ -3,6 +3,14 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("find_language", views.find_language, name="find language"),
-    path("translate", views.translate, name="translate"),
+    path("upload_csv", views.CSVUploadView.as_view(), name="upload csv"),
+    path("get_user_csv", views.GetUserCSVFiles.as_view(), name="user csv"),
+    path("dowloand_csv", views.DowloandCSVFile.as_view(), name="dowloand csv"),
+    path("translate_cells", views.TranslateCellsView.as_view(), name="translate"),
+    path("revert_cell", views.RevertCellView.as_view(), name="revert cell"),
+    path(
+        "custom_update_cell",
+        views.CustomUserUpdateCellView.as_view(),
+        name="custom cell update",
+    ),
 ]

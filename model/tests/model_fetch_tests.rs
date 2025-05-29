@@ -1,6 +1,7 @@
 #[tokio::test]
 async fn test_model_safetensors_format_exists() {
-    let url = "https://huggingface.co/Helsinki-NLP/opus-mt-tc-big-fr-en/blob/main/model.safetensors";
+    let url =
+        "https://huggingface.co/Helsinki-NLP/opus-mt-tc-big-fr-en/blob/main/model.safetensors";
     let response = reqwest::get(url).await.unwrap();
 
     assert!(
