@@ -20,8 +20,8 @@ from .serializers import (
 from .utils import JWTUserAuthentication
 
 
-def async_update(file_id, column_idx_list, row_idx_list, translated):
-    File.update_cells(file_id, column_idx_list, row_idx_list, translated)
+def async_update(file_id, idx_list, translated):
+    File.update_cells(file_id, idx_list, translated)
 
 
 def async_revert(file_id, column_idx, row_idx):
@@ -95,8 +95,7 @@ class TranslateCellsView(APIView, JWTUserAuthentication):
             args=(
                 file.id,
                 update_serializer.validated_data["column_idx_list"],
-                update_serializer.validated_data["row_idx_list"],
-                update_serializer.validated_data["translated_list"],
+                update_serializer.validated_data["idx_list"],
             ),
             daemon=True,
         ).start()
