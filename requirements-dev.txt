@@ -10,5 +10,5 @@ dotenv
 sphinx
 sphinx_rtd_theme
 drf_yasg
-dajngo
+django
 django-cors-headers
