@@ -2,6 +2,8 @@ from django.core.cache import cache
 from rest_framework import serializers
 from translation_module import detect_lang
 
+from .rust_loader import get_translator
+
 from .const import CANNOT_DETECT_LANGUAGE, CANOOT_TRANSLATE, TEXT_ERROR
 from .models import File
 
@@ -42,6 +44,13 @@ class FileUpdateCellsSerializer(serializers.Serializer):
         target_language = attrs.get("target_language")
         translated_texts = []
         columns_number = file.columns_number
+
+        # translator = get_translator()
+        # translator = translate_batch(
+        #     texts_batch,
+        #     src_lang,
+        #     tgt_lang,
+        # )
 
         for n in range(0, len(column_idx_list)):
             if columns_number < column_idx_list[n]:
