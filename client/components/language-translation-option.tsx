@@ -6,16 +6,23 @@ import { LanguageType } from '@/lib/types';
 interface LanguageTranslationOptionProps {
   sourceLanguage: string;
   targetLanguage: string;
+  translationMap: Result<string, string[]>;
   onLanguageChange: (type: LanguageType, language: string) => void;
 }
 
 const LanguageTranslationOption = ({
   sourceLanguage = 'en',
   targetLanguage = 'en',
+  translationMap,
   onLanguageChange,
 }: LanguageTranslationOptionProps) => {
   const [targetOpen, setTargetOpen] = useState(false);
   const [sourceOpen, setSourceOpen] = useState(false);
+
+  const getAvailableTargets = (src: string) => {
+    if (src === 'auto') return Object.values(translationMap).flat();
+    return translationMap[src] || [];
+  }
 
   return (
     <Card>
@@ -24,6 +31,17 @@ const LanguageTranslationOption = ({
       </CardHeader>
 
       <CardContent>
+      <div className='space-y-4'>
+          <LanguagePopover
+            operationType='Source Language'
+            operationLanguage={sourceLanguage}
+            open={sourceOpen}
+            setOpen={setSourceOpen}
+            onLanguageChange={onLanguageChange}
+            availableLanguages={['auto', ...Object.keys(translationMap)]}
+          />
+        </div>
+
         <div className='space-y-4'>
           <LanguagePopover
             operationType='Target Language'
@@ -31,6 +49,7 @@ const LanguageTranslationOption = ({
             open={targetOpen}
             setOpen={setTargetOpen}
             onLanguageChange={onLanguageChange}
+            availableLanguages={getAvailableTargets(sourceLanguage)}
           />
         </div>
       </CardContent>

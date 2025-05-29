@@ -35,7 +35,9 @@ const Dashboard = () => {
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [rowRange, setRowRange] = useState<[number, number]>([1, 1]);
   const [targetLanguage, setTargetLanguage] = useState('de');
-  const [sourceLanguage, setSourceLanguage] = useState('en');
+  const [sourceLanguage, setSourceLanguage] = useState('auto');
+
+  const [translationMap, setTranslationMap] = useState<Record<string, string[]>();
 
   const [isTranslating, setTranslating] = useState(false);
   const [isTranslated, setTranslated] = useState(false);
@@ -409,6 +411,20 @@ const Dashboard = () => {
   );
 
   useEffect(() => {
+    const fetchTranslationMap = async () => {
+      try {
+        const response = await fetch('/translation_map.json');
+        const data = await response.json();
+        setTranslationMap(data);
+      } catch (error) {
+        console.error('Error loading translation map:', error);
+      }
+    };
+
+    fetchTranslationMap();
+  }, []);
+
+  useEffect(() => {
     const fetchUserCSV = async () => {
       setLoading(true);
 
@@ -504,6 +520,7 @@ const Dashboard = () => {
                     selectedColumns={selectedColumns}
                     sourceLanguage={sourceLanguage}
                     targetLanguage={targetLanguage}
+                    translationMap={translationMap}
                     onColumnToggle={handleColumnToggle}
                     onLanguageChange={handleLanguageChange}
                     onSelectAllColumns={handleSelectAllColumns}
