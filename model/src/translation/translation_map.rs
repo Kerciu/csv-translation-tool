@@ -25,7 +25,6 @@ impl TranslationMap {
         Ok(TranslationMap(map))
     }
 
-    // Dodaj helper do dostępu do wewnętrznej mapy
     pub fn contains_translation(&self, src_lang: &str, tgt_lang: &str) -> bool {
         let normalized_src = src_lang.to_lowercase();
         let normalized_tgt = tgt_lang.to_lowercase();
