@@ -7,6 +7,7 @@ class TranslatorSingleton:
     _instance = None
     _lock = threading.Lock()
 
+    @classmethod
     def instance(cls):
         with cls._lock:
             if not cls._instance:

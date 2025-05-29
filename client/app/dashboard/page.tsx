@@ -38,7 +38,7 @@ const Dashboard = () => {
   const [targetLanguage, setTargetLanguage] = useState('de');
   const [sourceLanguage, setSourceLanguage] = useState('auto');
 
-  const [translationMap, setTranslationMap] = useState<Record<string, string[]>();
+  const [translationMap, setTranslationMap] = useState<Record<string, string[]>>();
 
   const [isTranslating, setTranslating] = useState(false);
   const [isTranslated, setTranslated] = useState(false);
