@@ -30,6 +30,7 @@ import sys
 import django
 from dotenv import load_dotenv
 from pathlib import Path
+from unittest.mock import MagicMock
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -37,6 +38,9 @@ autodoc_mock_imports = ['translation_module']
 
 load_dotenv(os.path.join(BASE_DIR, '..', '..', '.env'))
 sys.path.insert(0, os.path.abspath('../..'))
+MOCK_MODULES = ['translation_module']
+for mod_name in MOCK_MODULES:
+    sys.modules[mod_name] = MagicMock()
 os.environ['DJANGO_SETTINGS_MODULE'] = 'core.settings'
 django.setup()
 
