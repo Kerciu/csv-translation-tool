@@ -4,6 +4,7 @@ from io import StringIO, TextIOWrapper
 from threading import Thread
 
 from django.http import HttpResponse
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.response import Response
@@ -33,6 +34,47 @@ class TranslateCellsView(APIView, JWTUserAuthentication):
         tags=["CSV Operations"],
         request_body=FileUpdateCellsSerializer,
         operation_description="Translate selected cells in a CSV file.",
+        manual_parameters=[
+            openapi.Parameter(
+                "jwt token",
+                openapi.IN_HEADER,
+                description="JWT token from cookie",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "Column idx list",
+                openapi.IN_HEADER,
+                description="Column indexes list of csv file to translate",
+                type=openapi.TYPE_ARRAY,
+                items=openapi.Items(type=openapi.TYPE_INTEGER),
+            ),
+            openapi.Parameter(
+                "Row idx list",
+                openapi.IN_HEADER,
+                description="Row indexes list of csv file to translate",
+                type=openapi.TYPE_ARRAY,
+                items=openapi.Items(type=openapi.TYPE_INTEGER),
+            ),
+            openapi.Parameter(
+                "Source language",
+                openapi.IN_HEADER,
+                description='Source language to translate from to || or "any" language',
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "Target language",
+                openapi.IN_HEADER,
+                description="Target language to translate text to",
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+        responses={
+            201: openapi.Response(
+                description="List of translated data (Text, Source Language)",
+                schema=FileUpdateCellsSerializer,
+            ),
+            400: "Bad request",
+        },
     )
     def post(self, request):
         user = self.get_authenticated_user(request=request)
@@ -69,6 +111,27 @@ class RevertCellView(APIView, JWTUserAuthentication):
         operation_description=(
             "Revert a single translated cell back to its original state."
         ),
+        manual_parameters=[
+            openapi.Parameter(
+                "jwt token",
+                openapi.IN_HEADER,
+                description="JWT token from cookie",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "Column idx",
+                openapi.IN_HEADER,
+                description="Column indexes list of csv file to revert",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "Row idx",
+                openapi.IN_HEADER,
+                description="Row indexes list of csv file to revert",
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+        responses={201: "", 400: "Bad request"},
     )
     def post(self, request):
         user = self.get_authenticated_user(request=request)
@@ -96,6 +159,33 @@ class CustomUserUpdateCellView(APIView, JWTUserAuthentication):
     @swagger_auto_schema(
         tags=["CSV Operations"],
         operation_description="Manually update a specific cell with custom text.",
+        manual_parameters=[
+            openapi.Parameter(
+                "jwt token",
+                openapi.IN_HEADER,
+                description="JWT token from cookie",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "Column idx",
+                openapi.IN_HEADER,
+                description="Column indexes list of csv file to update",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "Row idxt",
+                openapi.IN_HEADER,
+                description="Row indexes list of csv file to update",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "Text",
+                openapi.IN_HEADER,
+                description="Text to update cell",
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+        responses={201: "", 400: "Bad request"},
     )
     def post(self, request):
         user = self.get_authenticated_user(request=request)
@@ -132,6 +222,34 @@ class CSVUploadView(APIView, JWTUserAuthentication):
             "Upload a CSV file, parse it,"
             + "store it in the database and delete from database user's old csv."
         ),
+        manual_parameters=[
+            openapi.Parameter(
+                "jwt token",
+                openapi.IN_HEADER,
+                description="JWT token from cookie",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                ".csv File",
+                openapi.IN_HEADER,
+                description="File to be uploaded",
+                type=openapi.TYPE_FILE,
+            ),
+        ],
+        responses={
+            200: openapi.Response(
+                description="Success response with file data",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "status": openapi.Schema(type=openapi.TYPE_STRING),
+                        "file_title": openapi.Schema(type=openapi.TYPE_STRING),
+                        "file_id": openapi.Schema(type=openapi.TYPE_STRING),
+                    },
+                ),
+            ),
+            400: "Bad request",
+        },
     )
     def post(self, request):
         user = self.get_authenticated_user(request=request)
@@ -205,6 +323,26 @@ class GetUserCSVFiles(APIView, JWTUserAuthentication):
         operation_description=(
             "Get the currently active CSV file for the authenticated user."
         ),
+        manual_parameters=[
+            openapi.Parameter(
+                "jwt token",
+                openapi.IN_HEADER,
+                description="JWT token from cookie",
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+        responses={
+            200: openapi.Response(
+                description="Found user's file as dict",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "file": openapi.Schema(type=openapi.TYPE_STRING),
+                    },
+                ),
+            ),
+            400: "Bad request",
+        },
     )
     def get(self, request):
         user = self.get_authenticated_user(request=request)
@@ -219,6 +357,26 @@ class DowloandCSVFile(APIView, JWTUserAuthentication):
     @swagger_auto_schema(
         tags=["CSV Operations"],
         operation_description="Download the user's CSV file with translated values.",
+        manual_parameters=[
+            openapi.Parameter(
+                "jwt token",
+                openapi.IN_HEADER,
+                description="JWT token from cookie",
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+        responses={
+            200: openapi.Response(
+                description="Success response with attached file",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "attached file": openapi.Schema(type=openapi.TYPE_FILE),
+                    },
+                ),
+            ),
+            400: "Bad request",
+        },
     )
     def post(self, request):
         user = self.get_authenticated_user(request=request)

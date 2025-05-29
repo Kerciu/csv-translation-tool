@@ -5,12 +5,13 @@ import HeroSection from './hero-section';
 import FeaturesSection from './features-section';
 import FAQSection from './faq-section';
 import axios from 'axios';
+const API_URL: string = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
 const LandingPage = () => {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const res = await axios.get('http://localhost:8000/authentication/user', {
+        const res = await axios.get(`${API_URL}/authentication/user`, {
           withCredentials: true,
         });
         localStorage.setItem('user', JSON.stringify(res.data));
