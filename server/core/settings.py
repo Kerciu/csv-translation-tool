@@ -32,6 +32,8 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(",")
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://127.0.0.1:3000").split(",")
+
 AUTH_USER_MODEL = "auth_app.CustomUser"
 
 # Application definition
@@ -61,9 +63,9 @@ MIDDLEWARE = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-]
+CORS_ALLOWED_ORIGINS = ALLOWED_ORIGINS
+print(ALLOWED_HOSTS)
+print(ALLOWED_ORIGINS)
 
 ROOT_URLCONF = "core.urls"
 

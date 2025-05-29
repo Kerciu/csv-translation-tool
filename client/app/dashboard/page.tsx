@@ -25,6 +25,7 @@ import { getLanguageName } from '@/utils/getLanguageName';
 import { FileSpreadsheet, HelpCircle, Loader2, Upload } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
+const API_URL: string = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
 const Dashboard = () => {
   const [csvData, setCsvData] = useState<string[][]>([]);
@@ -59,7 +60,7 @@ const Dashboard = () => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await axios.post('http://localhost:8000/translation/upload_csv', formData, {
+      const response = await axios.post(`${API_URL}/translation/upload_csv`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -134,7 +135,7 @@ const Dashboard = () => {
     const newData = [...translatedData];
     try {
       axios.post(
-        'http://localhost:8000/translation/custom_update_cell',
+        `${API_URL}/translation/custom_update_cell`,
         {
           column_idx: colIndex,
           row_idx: rowIndex,
@@ -247,7 +248,7 @@ const Dashboard = () => {
 
     axios
       .post(
-        'http://localhost:8000/translation/translate_cells',
+        `${API_URL}/translation/translate_cells`,
         {
           column_idx_list: columnIdxList,
           row_idx_list: rowIdxList,
@@ -306,7 +307,7 @@ const Dashboard = () => {
 
     try {
       const response = await axios.post(
-        'http://localhost:8000/translation/dowloand_csv',
+        `${API_URL}/translation/dowloand_csv`,
         { file_id: fileId },
         {
           responseType: 'blob',
@@ -343,7 +344,7 @@ const Dashboard = () => {
   const handleCellRevert = async (rowIndex: number, colIndex: number) => {
     if (csvData.length > 0) {
       const response = await axios.post(
-        'http://localhost:8000/translation/revert_cell',
+        `${API_URL}/translation/revert_cell`,
         {
           column_idx: colIndex,
           row_idx: rowIndex,
@@ -413,7 +414,7 @@ const Dashboard = () => {
       setLoading(true);
 
       try {
-        const res = await axios.get('http://localhost:8000/authentication/user', {
+        const res = await axios.get(`${API_URL}/authentication/user`, {
           withCredentials: true,
         });
         localStorage.setItem('user', JSON.stringify(res.data));
@@ -421,7 +422,7 @@ const Dashboard = () => {
         localStorage.removeItem('user');
       }
       try {
-        const response = await axios.get('http://localhost:8000/translation/get_user_csv', {
+        const response = await axios.get(`${API_URL}/translation/get_user_csv`, {
           withCredentials: true,
         });
 

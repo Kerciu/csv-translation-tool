@@ -1,5 +1,9 @@
+import os
+from pathlib import Path
+
 from django.http import JsonResponse
 from django.shortcuts import redirect
+from dotenv import load_dotenv
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.response import Response
@@ -96,6 +100,12 @@ class GoogleLoginInitView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
+
+CLIENT_REDIRECT_URL = os.getenv("REDIRECT_URL", "http://localhost:3000")
+
+
 class GoogleLoginCallbackView(APIView):
     @swagger_auto_schema(
         tags=["Authentication: Google"],
@@ -109,7 +119,7 @@ class GoogleLoginCallbackView(APIView):
         if serializer.is_valid(raise_exception=True):
             user_data = serializer.save()
             token = user_data["token"]
-            response = redirect("http://localhost:3000/oauth-success")
+            response = redirect(f"{CLIENT_REDIRECT_URL}/oauth-success")
             response.set_cookie(key="jwt", value=token, httponly=True)
             return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -142,7 +152,7 @@ class GithubLoginCallbackView(APIView):
         if serializer.is_valid(raise_exception=True):
             user_data = serializer.save()
             token = user_data["token"]
-            response = redirect("http://localhost:3000/oauth-success")
+            response = redirect(f"{CLIENT_REDIRECT_URL}/oauth-success")
             response.set_cookie(key="jwt", value=token, httponly=True)
             return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
