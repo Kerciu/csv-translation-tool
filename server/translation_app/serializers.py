@@ -2,10 +2,10 @@ from django.core.cache import cache
 from rest_framework import serializers
 from translation_module import detect_lang
 
-from .rust_loader import get_translator
-
 from .const import CANNOT_DETECT_LANGUAGE, CANOOT_TRANSLATE, TEXT_ERROR
 from .models import File
+
+# from .rust_loader import get_translator
 
 # from translation_module import translate as translate_text
 

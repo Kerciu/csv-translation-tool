@@ -13,7 +13,9 @@ jobs:
           python-version: "3.x"
       - run: cd .. && cd ..
       - run: pip install -r requirements-dev.txt
-      - run: cd server/docs && make html
+      - run: cd server
+      - run: pip install -r requirements-dev.txt
+      - run: cd docs && make html
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
