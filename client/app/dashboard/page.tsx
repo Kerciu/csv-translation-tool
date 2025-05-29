@@ -467,7 +467,6 @@ const Dashboard = () => {
           title: `CSV File ${fileData.title} loaded successfully!`,
           description: `${data.length} rows and ${headers.length} columns detected`,
         });
-      } catch (error) {
       } finally {
         setLoading(false);
       }

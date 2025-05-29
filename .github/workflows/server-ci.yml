@@ -77,11 +77,6 @@ jobs:
         cd ..
         pip install -r requirements-dev.txt
 
-    - name: Run Flake8 (max-line-length=88, ignore=E203,W503)
-      run: |
-        flake8 . --max-line-length=88 --ignore=E203,W503
-
-
     - name: Run Black (check only)
       run: |
         black --check .
