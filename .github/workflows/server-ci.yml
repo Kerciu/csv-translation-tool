@@ -77,10 +77,6 @@ jobs:
         cd ..
         pip install -r requirements-dev.txt
 
-    - name: Run Check
-      run: |
-        python manage.py check
-
     - name: Run Tests
       run: |
         python manage.py test
