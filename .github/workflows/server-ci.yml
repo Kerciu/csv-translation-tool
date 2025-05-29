@@ -79,11 +79,31 @@ jobs:
 
     - name: Run Black (check only)
       run: |
-        black --check .
+        black --check . --exclude '(?x)^(
+          docs/.*|
+          LICENSE|
+          README.md|
+          server/auth_app/migrations/.*|
+          server/translation_app/migrations/.*|
+          server/mongo_migrations/.*|
+          server/core/settings.py|
+          model/scripts/.*|
+          server/docs/.*|
+          requirements-dev.txt
+        )$'
 
     - name: Run Isort (check only, profile=black)
       run: |
-        isort . --check-only --profile black
+        isort . --check-only --profile black --skip-glob 'docs/*' \
+          --skip-glob 'LICENSE' \
+          --skip-glob 'README.md' \
+          --skip-glob 'server/auth_app/migrations/*' \
+          --skip-glob 'server/translation_app/migrations/*' \
+          --skip-glob 'server/mongo_migrations/*' \
+          --skip-glob 'server/core/settings.py' \
+          --skip-glob 'model/scripts/*' \
+          --skip-glob 'server/docs/*' \
+          --skip-glob 'requirements-dev.txt'
 
     - name: Run Check
       run: |
