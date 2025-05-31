@@ -414,7 +414,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchTranslationMap = async () => {
       try {
-        const response = await fetch('/translation_map.json');
+        const response = await fetch('/data/translations_map.json');
         const data = await response.json();
         setTranslationMap(data);
       } catch (error) {
