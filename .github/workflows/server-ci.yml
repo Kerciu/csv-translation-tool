@@ -70,6 +70,7 @@ jobs:
         pip install maturin
         maturin build
         pip install target/wheels/*.whl
+        pip install -r ./scripts/requirements.txt
         cp -r ./scripts/* ../server/scripts/
 
     - name: Install Dependencies
