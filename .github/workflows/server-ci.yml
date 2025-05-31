@@ -65,10 +65,12 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y patchelf
+        mkdir scripts
         cd ../model
         pip install maturin
         maturin build
         pip install target/wheels/*.whl
+        cp -r ./scripts/* ../server/scripts/
 
     - name: Install Dependencies
       run: |
