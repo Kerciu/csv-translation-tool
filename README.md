@@ -9,7 +9,7 @@
   - [Prerequisites](#prerequisites)
   - [Quick start](#quick_start)
   - [Linting and formating](#linting_formating)
-  - [Documentation](#documentation)
+  - [Documentation](#documentation) or just go [Here](https://kerciu.github.io/csv-translation-tool/)
   - [Testing](#testing)
   - [Screenshots](#screenshots)
 
@@ -135,8 +135,8 @@
   cargo clippy
 ```
 <a name="documentation"></a>
-## Documentation
-### Python
+## Documentation 
+### Python or just go [Here](https://kerciu.github.io/csv-translation-tool/)
 - **REST API**: ***Swagger*** - you can see it by running the application and going to [here](http://127.0.0.1:8000/swagger/)
 - **Models, Serializers, Utils**: ***docstrings + [Sphinx](https://www.sphinx-doc.org/en/master/)*** - to run:
     1. #### Install all dependencies
