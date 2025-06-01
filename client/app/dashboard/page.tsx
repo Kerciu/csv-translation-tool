@@ -21,6 +21,7 @@ import UploadConfirmationDialog from '@/components/upload-confirmation-dialog';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { LanguageType } from '@/lib/types';
+import { useRouter } from 'next/navigation';
 import { getLanguageName } from '@/utils/getLanguageName';
 import { FileSpreadsheet, HelpCircle, Loader2, Upload } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -49,6 +50,7 @@ const Dashboard = () => {
 
   const [isLoading, setLoading] = useState(false);
   const { user, isLoading: authLoading } = useAuth();
+  const router = useRouter();
 
   const [showUploadConfirmation, setShowUploadConfirmation] = useState(false);
   const { toast } = useToast();
@@ -254,6 +256,7 @@ const Dashboard = () => {
         {
           column_idx_list: columnIdxList,
           row_idx_list: rowIdxList,
+          source_language: sourceLanguage,
           target_language: targetLanguage,
         },
         { withCredentials: true },
@@ -264,11 +267,14 @@ const Dashboard = () => {
         for (let i = 0; i < columnIdxList.length; i++) {
           const row = rowIdxList[i];
           const col = columnIdxList[i];
-          const t = translated[i][0];
-          const d = translated[i][1];
+          const t = translated[i];
 
           if (t !== 'Cannot detect any language' && t !== 'Cannot translate' && t !== 'Error') {
-            newData[row][col] = `${t} (${d} -> ${targetLanguage})`;
+            if (csvData[row][col] != t) {
+              newData[row][col] = `${t} (${sourceLanguage} -> ${targetLanguage})`;
+            } else {
+              newData[row][col] = `${csvData[row][col]} (Cannot translate)`;
+            }
           } else {
             newData[row][col] = `${csvData[row][col]} (${t})`;
           }
@@ -293,6 +299,7 @@ const Dashboard = () => {
           // xx -> yy patern or "(cannot translate)"
           const cleaned = current.replace(/\((?:[a-z]{2}->[a-z]{2}|Cannot translate)\)\s*/gi, '');
           newData[row][col] = `${cleaned} (Cannot translate)`;
+          setTranslating(false);
         }
       });
   };
@@ -435,6 +442,8 @@ const Dashboard = () => {
         });
         localStorage.setItem('user', JSON.stringify(res.data));
       } catch (error) {
+        router.push('/');
+
         localStorage.removeItem('user');
       }
       try {

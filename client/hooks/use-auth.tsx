@@ -19,6 +19,7 @@ interface AuthContextProps {
   register: (name: string, email: string, password: string) => Promise<void>;
   loginWithProvider: (provider: string) => Promise<void>;
   logout: () => void;
+  setUser: (user: User | null) => void;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -62,14 +63,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
       setResponse(res.data);
       localStorage.setItem('user', JSON.stringify(res.data));
+      setUser(res.data);
+      setIsLoading(false);
 
       router.push('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);
       throw error;
-    } finally {
-      setIsLoading(false);
     }
+    setIsLoading(false);
   };
 
   const register = async (name: string, email: string, password: string) => {
@@ -88,15 +90,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         withCredentials: true,
       });
       setResponse(res.data);
+      setUser(res.data);
       localStorage.setItem('user', JSON.stringify(res.data));
+      setIsLoading(false);
 
       router.push('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);
+
       throw error;
-    } finally {
-      setIsLoading(false);
     }
+    setIsLoading(false);
   };
 
   const loginWithProvider = async (provider: string) => {
@@ -124,6 +128,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         withCredentials: true,
       },
     );
+    router.push('/');
     setResponse(axios.response);
     setUser(null);
     localStorage.removeItem('user');
@@ -136,6 +141,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     register,
     loginWithProvider,
     logout,
+    setUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
