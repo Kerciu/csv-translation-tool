@@ -20,7 +20,7 @@
 
 
 
-![](docs/screenshots/TranslationExample.png)
+![](docs/screenshots/TranslationExampleCut.png)
 
 <a name="feature"></a>
 ## Key Features  
@@ -201,19 +201,19 @@ cargo test
 ![](docs/screenshots/HomePage.png)
 
 
-![](docs/screenshots/SignDialog.png)
+![](docs/screenshots/SignDialogCut.png)
 
 
 ![](docs/screenshots/DashboardPage.png)
 
 
-![](docs/screenshots/TipsDialog.png)
+![](docs/screenshots/TipsDialogCut.png)
 
 
-![](docs/screenshots/TranslationExample.png)
+![](docs/screenshots/TranslationExampleCut.png)
 
 
-![](docs/screenshots/RevertCellDialog.png)
+![](docs/screenshots/RevertCellDialogCut.png)
 
 
-![](docs/screenshots/RevertCellDialogAfter.png)
+![](docs/screenshots/RevertCellDialogAfterCut.png)
