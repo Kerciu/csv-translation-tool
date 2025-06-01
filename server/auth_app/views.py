@@ -113,7 +113,9 @@ class UserView(APIView):
         serializer = UserAuthSerializer(data={"token": request.COOKIES.get("jwt")})
         if serializer.is_valid(raise_exception=True):
             user = serializer.validated_data
-            return Response({"email": user.email, "name": user.username})
+            return Response(
+                {"email": user.email, "name": user.username}, status=status.HTTP_200_OK
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

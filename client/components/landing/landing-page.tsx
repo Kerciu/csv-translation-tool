@@ -14,6 +14,10 @@ const LandingPage = () => {
         const res = await axios.get(`${API_URL}/authentication/user`, {
           withCredentials: true,
         });
+        if (!res.ok) {
+          localStorage.removeItem('user');
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         localStorage.setItem('user', JSON.stringify(res.data));
       } catch (error) {
         localStorage.removeItem('user');

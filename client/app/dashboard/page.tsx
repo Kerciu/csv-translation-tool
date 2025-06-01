@@ -273,14 +273,12 @@ const Dashboard = () => {
           if (s == true) {
             if (t != '') {
               newData[row][col] = `${t} (${d} -> ${targetLanguage})`;
-            } else {
-              newData[row][col] = `${csvData[row][col]} (Cannot detect language)`;
             }
           } else {
-            if (csvData[row][col] != t) {
-              newData[row][col] = `${csvData[row][col]} (Cannot detect language)`;
-            } else {
+            if (csvData[row][col] != t || t == '') {
               newData[row][col] = `${csvData[row][col]} (Cannot translate)`;
+            } else {
+              newData[row][col] = `${csvData[row][col]} (Cannot detect language)`;
             }
           }
         }
