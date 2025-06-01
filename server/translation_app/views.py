@@ -70,7 +70,7 @@ class TranslateCellsView(APIView, JWTUserAuthentication):
         ],
         responses={
             201: openapi.Response(
-                description="List of translated data (Text, Source Language)",
+                description="List of translated data",
                 schema=FileUpdateCellsSerializer,
             ),
             400: "Bad request",
