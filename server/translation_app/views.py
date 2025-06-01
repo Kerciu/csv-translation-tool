@@ -94,8 +94,8 @@ class TranslateCellsView(APIView, JWTUserAuthentication):
             target=async_update,
             args=(
                 file.id,
-                update_serializer.validated_data["column_idx_list"],
                 update_serializer.validated_data["idx_list"],
+                update_serializer.validated_data["translated_list"],
             ),
             daemon=True,
         ).start()
@@ -137,10 +137,10 @@ class RevertCellView(APIView, JWTUserAuthentication):
         serializer = FindCSVFileSerializer(data=request.data, context={"user": user})
         if not serializer.is_valid(raise_exception=True):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        idx_serializer = UpdateCellSerializer(data=request.data, context={"user": user})
+        file = serializer.validated_data["file"]
+        idx_serializer = UpdateCellSerializer(data=request.data, context={"file": file})
         if not idx_serializer.is_valid(raise_exception=True):
             return Response(idx_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        file = serializer.validated_data["file"]
         Thread(
             target=async_revert,
             args=(
@@ -192,7 +192,7 @@ class CustomUserUpdateCellView(APIView, JWTUserAuthentication):
         if not serializer.is_valid(raise_exception=True):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         file = serializer.validated_data["file"]
-        idx_serializer = UpdateCellSerializer(data=request.data, context={"user": user})
+        idx_serializer = UpdateCellSerializer(data=request.data, context={"file": file})
         if not idx_serializer.is_valid(raise_exception=True):
             return Response(idx_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         Thread(
@@ -263,11 +263,18 @@ class CSVUploadView(APIView, JWTUserAuthentication):
         reader = csv.reader(TextIOWrapper(uploaded_file.file, encoding="utf-8"))
         all_rows = list(reader)
 
-        columns_data = all_rows[0][0].split(";")
+        splitter = ";"
+        if ";" in all_rows[0][0]:
+            splitter = ";"
+        else:
+            splitter = ","
+
+        columns_data = all_rows[0][0].split(splitter)
+
         cells_data = [[] for _ in columns_data]
         for row in all_rows[1:]:
             if len(row) != 0:
-                for cell_idx, cell in enumerate(row[0].split(";")):
+                for cell_idx, cell in enumerate(row[0].split(splitter)):
                     cells_data[cell_idx].append(cell)
 
         columns_list = []

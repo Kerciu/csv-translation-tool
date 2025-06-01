@@ -122,22 +122,23 @@ class File(models.Model):
 
         Args:
             file_id: ID of the file to update.
-            col_numbers: List of column indices.
-            row_numbers: List of row indices.
-            text_list (List[Tuple[str, str]]): Translated text and detected language.
+            idx_list: (List[Tuple[int, int]])List with indexes of translated texts
+            text_list (List[Tuple[str, str, bool]]):
+            Translated text and detected language and status.
         """
         with transaction.atomic():
             file = cls.objects.select_for_update().get(id=file_id)
             columns = list(file.columns)
             for n in range(0, len(idx_list)):
-                update_data = {
-                    "text": text_list[n][0],
-                    "is_translated": True,
-                    "detected_language": text_list[n][1],
-                }
-                cells = list(columns[idx_list[n][0]].cells)
-                cells[idx_list[n][1]].update(update_data)
-                columns[idx_list[n][0]].cells = cells
+                if text_list[n][2]:
+                    update_data = {
+                        "text": text_list[n][0],
+                        "is_translated": True,
+                        "detected_language": text_list[n][1],
+                    }
+                    cells = list(columns[idx_list[n][0]].cells)
+                    cells[idx_list[n][1]].update(update_data)
+                    columns[idx_list[n][0]].cells = cells
 
             file.columns = [column.to_dict() for column in columns]
 

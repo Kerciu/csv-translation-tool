@@ -267,16 +267,21 @@ const Dashboard = () => {
         for (let i = 0; i < columnIdxList.length; i++) {
           const row = rowIdxList[i];
           const col = columnIdxList[i];
-          const t = translated[i];
-
-          if (t !== 'Cannot detect any language' && t !== 'Cannot translate' && t !== 'Error') {
+          const t = translated[i][0];
+          const d = translated[i][1];
+          const s = translated[i][2];
+          if (s == true) {
+            if (t != '') {
+              newData[row][col] = `${t} (${d} -> ${targetLanguage})`;
+            } else {
+              newData[row][col] = `${csvData[row][col]} (Cannot detect language)`;
+            }
+          } else {
             if (csvData[row][col] != t) {
-              newData[row][col] = `${t} (${sourceLanguage} -> ${targetLanguage})`;
+              newData[row][col] = `${csvData[row][col]} (Cannot detect language)`;
             } else {
               newData[row][col] = `${csvData[row][col]} (Cannot translate)`;
             }
-          } else {
-            newData[row][col] = `${csvData[row][col]} (${t})`;
           }
         }
 
