@@ -177,7 +177,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 GOOGLE_CLIENT_ID = os.getenv("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY")
 GOOGLE_CLIENT_SECRET = os.getenv("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET")
-REDIRECT_URI = "http://localhost:8000/authentication/google/callback/"
+REDIRECT_URI = os.getenv("REDIRECT_URL", "http://localhost:8000")
+
+GOOGLE_REDIRECT_URI = f"{REDIRECT_URI}/authentication/google/callback/"
 
 
 class GoogleAuthInitSerializer(serializers.Serializer):
@@ -193,7 +195,8 @@ class GoogleAuthInitSerializer(serializers.Serializer):
         """
         session = OAuth2Session(GOOGLE_CLIENT_ID, scope="openid email profile")
         uri, state = session.create_authorization_url(
-            "https://accounts.google.com/o/oauth2/auth", redirect_uri=REDIRECT_URI
+            "https://accounts.google.com/o/oauth2/auth",
+            redirect_uri=GOOGLE_REDIRECT_URI,
         )
         return {"auth_url": uri, "state": state}
 
@@ -217,7 +220,9 @@ class GoogleAuthCallbackSerializer(serializers.Serializer):
         Verifies OAuth2Session and sign up/in user and returns JWT token
         """
         session = OAuth2Session(
-            GOOGLE_CLIENT_ID, state=validated_data["state"], redirect_uri=REDIRECT_URI
+            GOOGLE_CLIENT_ID,
+            state=validated_data["state"],
+            redirect_uri=GOOGLE_REDIRECT_URI,
         )
 
         session.fetch_token(
@@ -252,7 +257,8 @@ class GoogleAuthCallbackSerializer(serializers.Serializer):
 
 GITHUB_CLIENT_ID = os.getenv("SOCIAL_AUTH_GITHUB_KEY")
 GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
-GITHUB_REDIRECT_URI = "http://localhost:8000/authentication/github/callback/"
+
+GITHUB_REDIRECT_URI = f"{REDIRECT_URI}/authentication/github/callback/"
 
 
 class GitHubAuthInitSerializer(serializers.Serializer):

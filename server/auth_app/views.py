@@ -1,5 +1,10 @@
+import os
+from pathlib import Path
+
 from django.http import JsonResponse
 from django.shortcuts import redirect
+from dotenv import load_dotenv
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.response import Response
@@ -28,6 +33,16 @@ class SignUpView(APIView):
         request_body=UserSignUpSerializer,
         tags=["Authentication"],
         operation_description="Register a new user and return a JWT token.",
+        responses={
+            200: openapi.Response(
+                description="JWT token response",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={"jwt": openapi.Schema(type=openapi.TYPE_STRING)},
+                ),
+            ),
+            400: "Bad Request",
+        },
     )
     def post(self, request):
         user_data = request.data
@@ -46,6 +61,16 @@ class LogInView(APIView):
         request_body=UserLogInSerializer,
         tags=["Authentication"],
         operation_description="Log in user and return a JWT token.",
+        responses={
+            200: openapi.Response(
+                description="JWT token response",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={"jwt": openapi.Schema(type=openapi.TYPE_STRING)},
+                ),
+            ),
+            400: "Bad Request",
+        },
     )
     def post(self, request):
         user_data = request.data
@@ -62,6 +87,27 @@ class UserView(APIView):
     @swagger_auto_schema(
         tags=["Authentication"],
         operation_description="Get user's profile using JWT from cookie.",
+        manual_parameters=[
+            openapi.Parameter(
+                "jwt token",
+                openapi.IN_HEADER,
+                description="JWT token from cookie",
+                type=openapi.TYPE_STRING,
+            )
+        ],
+        responses={
+            200: openapi.Response(
+                description="User data response",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "email": openapi.Schema(type=openapi.TYPE_STRING),
+                        "username": openapi.Schema(type=openapi.TYPE_STRING),
+                    },
+                ),
+            ),
+            400: "Bad request",
+        },
     )
     def get(self, request):
         serializer = UserAuthSerializer(data={"token": request.COOKIES.get("jwt")})
@@ -75,9 +121,10 @@ class LogOutView(APIView):
     @swagger_auto_schema(
         tags=["Authentication"],
         operation_description="Log out user by deleting the JWT cookie.",
+        responses={100: "Success"},
     )
     def post(self, request):
-        response = Response({"message": "success"})
+        response = Response({"message": "success"}, status=status.HTTP_100_CONTINUE)
         response.delete_cookie("jwt")
         return response
 
@@ -86,6 +133,19 @@ class GoogleLoginInitView(APIView):
     @swagger_auto_schema(
         tags=["Authentication: Google"],
         operation_description="Start Google OAuth login and return authorization URL.",
+        responses={
+            200: openapi.Response(
+                description="Google url response",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "url": openapi.Schema(type=openapi.TYPE_STRING),
+                        "state": openapi.Schema(type=openapi.TYPE_STRING),
+                    },
+                ),
+            ),
+            400: "Bad request",
+        },
     )
     def get(self, request):
         serializer = GoogleAuthInitSerializer(data={})
@@ -96,10 +156,28 @@ class GoogleLoginInitView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
+
+CLIENT_REDIRECT_URL = os.getenv("REDIRECT_URL", "http://localhost:3000")
+
+
 class GoogleLoginCallbackView(APIView):
     @swagger_auto_schema(
         tags=["Authentication: Google"],
         operation_description="Handle Google OAuth callback and set JWT cookie.",
+        responses={
+            200: openapi.Response(
+                description="Jwt token",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "jwt": openapi.Schema(type=openapi.TYPE_STRING),
+                    },
+                ),
+            ),
+            400: "Bad request",
+        },
     )
     def get(self, request):
         code = request.GET.get("code")
@@ -109,7 +187,7 @@ class GoogleLoginCallbackView(APIView):
         if serializer.is_valid(raise_exception=True):
             user_data = serializer.save()
             token = user_data["token"]
-            response = redirect("http://localhost:3000/oauth-success")
+            response = redirect(f"{CLIENT_REDIRECT_URL}/oauth-success")
             response.set_cookie(key="jwt", value=token, httponly=True)
             return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -119,6 +197,19 @@ class GithubLoginInitView(APIView):
     @swagger_auto_schema(
         tags=["Authentication: GitHub"],
         operation_description="Start GitHub OAuth login and return authorization URL.",
+        responses={
+            200: openapi.Response(
+                description="Github url response",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "url": openapi.Schema(type=openapi.TYPE_STRING),
+                        "state": openapi.Schema(type=openapi.TYPE_STRING),
+                    },
+                ),
+            ),
+            400: "Bad request",
+        },
     )
     def get(self, request):
         serializer = GitHubAuthInitSerializer(data={})
@@ -133,6 +224,18 @@ class GithubLoginCallbackView(APIView):
     @swagger_auto_schema(
         tags=["Authentication: GitHub"],
         operation_description="Handle GitHub OAuth callback and set JWT cookie.",
+        responses={
+            200: openapi.Response(
+                description="Jwt token",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "jwt": openapi.Schema(type=openapi.TYPE_STRING),
+                    },
+                ),
+            ),
+            400: "Bad request",
+        },
     )
     def get(self, request):
         code = request.GET.get("code")
@@ -142,7 +245,7 @@ class GithubLoginCallbackView(APIView):
         if serializer.is_valid(raise_exception=True):
             user_data = serializer.save()
             token = user_data["token"]
-            response = redirect("http://localhost:3000/oauth-success")
+            response = redirect(f"{CLIENT_REDIRECT_URL}/oauth-success")
             response.set_cookie(key="jwt", value=token, httponly=True)
             return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

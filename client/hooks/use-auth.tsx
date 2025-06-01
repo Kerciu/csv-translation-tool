@@ -22,7 +22,7 @@ interface AuthContextProps {
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
-
+const API_URL: string = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -40,6 +40,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(true);
 
     try {
+      console.log('Login failed:', 'any');
+
       if (!email) {
         throw new Error('Invalid credentials');
       }
@@ -48,14 +50,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       const auth_res = await axios.post(
-        'http://localhost:8000/authentication/log',
+        `${API_URL}/authentication/log`,
         {
           email: email,
           password: password,
         },
         { withCredentials: true },
       );
-      const res = await axios.get('http://localhost:8000/authentication/user', {
+      const res = await axios.get(`${API_URL}/authentication/user`, {
         withCredentials: true,
       });
       setResponse(res.data);
@@ -74,7 +76,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(true);
     try {
       const auth_res = await axios.post(
-        'http://localhost:8000/authentication/sign',
+        `${API_URL}/authentication/sign`,
         {
           email: email,
           password: password,
@@ -82,7 +84,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         },
         { withCredentials: true },
       );
-      const res = await axios.get('http://localhost:8000/authentication/user', {
+      const res = await axios.get(`${API_URL}/authentication/user`, {
         withCredentials: true,
       });
       setResponse(res.data);
@@ -101,7 +103,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(true);
 
     try {
-      const res = await axios.get(`http://localhost:8000/authentication/${provider}/`);
+      const res = await axios.get(`${API_URL}/authentication/${provider}/`);
       if (res.data.auth_url) {
         window.location.href = res.data.auth_url;
       } else {
@@ -116,7 +118,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = async () => {
     await axios.post(
-      'http://localhost:8000/authentication/logout',
+      `${API_URL}/authentication/logout`,
       {},
       {
         withCredentials: true,

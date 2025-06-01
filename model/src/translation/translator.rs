@@ -5,14 +5,15 @@ use crate::translation::model::TranslationModel;
 use pyo3::exceptions::PyRuntimeError;
 use pyo3::prelude::*;
 use std::sync::Arc;
-use tokio::runtime::Runtime;
+use tokio::runtime::{Handle, Runtime};
+use once_cell::sync::Lazy;
 
 use crate::translation::detect_language::{detect_language, map_language_to_code};
 
 #[pyclass]
 pub struct Translator {
     cache: Arc<TranslationCache>,
-    rt: Runtime,
+    rt_handle: Handle,
 }
 
 impl Translator {
@@ -22,7 +23,7 @@ impl Translator {
         texts: &[String],
         tgt_lang: &str,
     ) -> PyResult<Vec<String>> {
-        self.rt.block_on(async move {
+        self.rt_handle.block_on(async move {
             let mut results = vec![String::new(); texts.len()];
             let mut uncached_indices = Vec::new();
             let mut uncached_texts = Vec::new();
@@ -65,16 +66,19 @@ impl Translator {
 #[pymethods]
 impl Translator {
     #[new]
-    fn new(redis_url: String, cache_ttl: u64) -> PyResult<Self> {
-        let cache = TranslationCache::new(&redis_url, cache_ttl);
-        let rt = Runtime::new().map_err(|e| PyRuntimeError::new_err(e.to_string()))?;
+    pub fn new(redis_url: String, cache_ttl: u64) -> PyResult<Self> {
+        static RUNTIME: Lazy<Runtime> = Lazy::new(|| {
+            Runtime::new().expect("Failed to create Tokio runtime")
+        });
+        
+        let cache = Arc::new(TranslationCache::new(&redis_url, cache_ttl));
         Ok(Self {
-            cache: Arc::new(cache),
-            rt,
+            cache,
+            rt_handle: RUNTIME.handle().clone(),
         })
     }
 
-    fn translate_batch(
+    pub fn translate_batch(
         &self,
         texts: Vec<String>,
         mut src_lang: String,

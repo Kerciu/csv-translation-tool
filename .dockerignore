@@ -30,6 +30,9 @@ pnpm-store/
 client/node_modules/
 client/.next/
 client/pnpm-store/
+dist/
+build/
+*.log
 
 # IDE & system files
 .vscode/

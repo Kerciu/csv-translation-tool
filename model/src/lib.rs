@@ -1,9 +1,10 @@
 pub mod config;
 pub mod translation;
-use crate::translation::detect_language::detect_language;
 use clap::builder::Str;
 use config::get_model_config;
 use pyo3::prelude::*;
+use translation::model::TranslationModel;
+
 
 use crate::translation::{
     detect_language::detect_language,
