@@ -22,6 +22,9 @@ RUN pip install --no-cache-dir -r scripts/requirements.txt
 COPY . .
 
 COPY entrypoint.sh /entrypoint.sh
+
+RUN sed -i 's/\r$//' /entrypoint.sh
+
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 

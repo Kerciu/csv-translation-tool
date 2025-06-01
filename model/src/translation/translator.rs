@@ -70,7 +70,7 @@ impl Translator {
         static RUNTIME: Lazy<Runtime> = Lazy::new(|| {
             Runtime::new().expect("Failed to create Tokio runtime")
         });
-        
+
         let cache = Arc::new(TranslationCache::new(&redis_url, cache_ttl));
         Ok(Self {
             cache,

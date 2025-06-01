@@ -121,10 +121,10 @@ class LogOutView(APIView):
     @swagger_auto_schema(
         tags=["Authentication"],
         operation_description="Log out user by deleting the JWT cookie.",
-        responses={100: "Success"},
+        responses={200: "Success"},
     )
     def post(self, request):
-        response = Response({"message": "success"}, status=status.HTTP_100_CONTINUE)
+        response = Response({"message": "success"}, status=status.HTTP_200_OK)
         response.delete_cookie("jwt")
         return response
 

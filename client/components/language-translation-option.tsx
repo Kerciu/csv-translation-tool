@@ -22,7 +22,7 @@ const LanguageTranslationOption = ({
   const getAvailableTargets = (src: string) => {
     if (src === 'auto') return Object.values(translationMap).flat();
     return translationMap[src] || [];
-  }
+  };
 
   return (
     <Card>
@@ -31,7 +31,7 @@ const LanguageTranslationOption = ({
       </CardHeader>
 
       <CardContent>
-      <div className='space-y-4'>
+        <div className='space-y-4'>
           <LanguagePopover
             operationType='Source Language'
             operationLanguage={sourceLanguage}

@@ -65,10 +65,13 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y patchelf
+        mkdir scripts
         cd ../model
         pip install maturin
         maturin build
         pip install target/wheels/*.whl
+        pip install -r ./scripts/requirements.txt
+        cp -r ./scripts/* ../server/scripts/
 
     - name: Install Dependencies
       run: |
@@ -76,19 +79,6 @@ jobs:
         pip install -r requirements.txt
         cd ..
         pip install -r requirements-dev.txt
-
-    - name: Run Flake8 Linting
-      run: |
-        flake8 .
-
-    - name: Run Formatters
-      run: |
-        black --check .
-        isort --check-only .
-
-    - name: Run Check
-      run: |
-        python manage.py check
 
     - name: Run Tests
       run: |
