@@ -13,6 +13,15 @@
   - [Testing](#testing)
   - [Screenshots](#screenshots)
 
+
+
+![](docs/screenshots/HomePage.png)
+
+
+
+
+![](docs/screenshots/TranslationExample.png)
+
 <a name="feature"></a>
 ## Key Features  
 
@@ -114,17 +123,17 @@
   - ***rust***:  clippy, fmt
 ### To run
   #### Python-react
-  ```bash
+```bash
   pip install -r requirements-dev.txt
   pre-commit install
   pre-commit run --all-files
-  ```
+```
   #### Rust
-  ```bash
+```bash
   cd model
   cargo fmt
   cargo clippy
-  ```
+```
 <a name="documentation"></a>
 ## Documentation
 ### Python
@@ -189,3 +198,22 @@ cargo test
 
 ## Screenshots
 
+![](docs/screenshots/HomePage.png)
+
+
+![](docs/screenshots/SignDialog.png)
+
+
+![](docs/screenshots/DashboardPage.png)
+
+
+![](docs/screenshots/TipsDialog.png)
+
+
+![](docs/screenshots/TranslationExample.png)
+
+
+![](docs/screenshots/RevertCellDialog.png)
+
+
+![](docs/screenshots/RevertCellDialogAfter.png)

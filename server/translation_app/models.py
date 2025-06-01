@@ -130,7 +130,7 @@ class File(models.Model):
             file = cls.objects.select_for_update().get(id=file_id)
             columns = list(file.columns)
             for n in range(0, len(idx_list)):
-                if text_list[n][2]:
+                if text_list[n][2] and text_list[n][0] != "":
                     update_data = {
                         "text": text_list[n][0],
                         "is_translated": True,
