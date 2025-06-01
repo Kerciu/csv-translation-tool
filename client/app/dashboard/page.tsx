@@ -21,6 +21,7 @@ import UploadConfirmationDialog from '@/components/upload-confirmation-dialog';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { LanguageType } from '@/lib/types';
+import { useRouter } from 'next/navigation';
 import { getLanguageName } from '@/utils/getLanguageName';
 import { FileSpreadsheet, HelpCircle, Loader2, Upload } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -49,6 +50,7 @@ const Dashboard = () => {
 
   const [isLoading, setLoading] = useState(false);
   const { user, isLoading: authLoading } = useAuth();
+  const router = useRouter();
 
   const [showUploadConfirmation, setShowUploadConfirmation] = useState(false);
   const { toast } = useToast();
@@ -254,6 +256,7 @@ const Dashboard = () => {
         {
           column_idx_list: columnIdxList,
           row_idx_list: rowIdxList,
+          source_language: sourceLanguage,
           target_language: targetLanguage,
         },
         { withCredentials: true },
@@ -266,11 +269,19 @@ const Dashboard = () => {
           const col = columnIdxList[i];
           const t = translated[i][0];
           const d = translated[i][1];
-
-          if (t !== 'Cannot detect any language' && t !== 'Cannot translate' && t !== 'Error') {
-            newData[row][col] = `${t} (${d} -> ${targetLanguage})`;
+          const s = translated[i][2];
+          if (s == true) {
+            if (t != '') {
+              newData[row][col] = `${t} (${d} -> ${targetLanguage})`;
+            } else {
+              newData[row][col] = `${csvData[row][col]} (Cannot detect language)`;
+            }
           } else {
-            newData[row][col] = `${csvData[row][col]} (${t})`;
+            if (csvData[row][col] != t) {
+              newData[row][col] = `${csvData[row][col]} (Cannot detect language)`;
+            } else {
+              newData[row][col] = `${csvData[row][col]} (Cannot translate)`;
+            }
           }
         }
 
@@ -293,6 +304,7 @@ const Dashboard = () => {
           // xx -> yy patern or "(cannot translate)"
           const cleaned = current.replace(/\((?:[a-z]{2}->[a-z]{2}|Cannot translate)\)\s*/gi, '');
           newData[row][col] = `${cleaned} (Cannot translate)`;
+          setTranslating(false);
         }
       });
   };
@@ -414,7 +426,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchTranslationMap = async () => {
       try {
-        const response = await fetch('/translation_map.json');
+        const response = await fetch('/data/translations_map.json');
         const data = await response.json();
         setTranslationMap(data);
       } catch (error) {
@@ -435,6 +447,8 @@ const Dashboard = () => {
         });
         localStorage.setItem('user', JSON.stringify(res.data));
       } catch (error) {
+        router.push('/');
+
         localStorage.removeItem('user');
       }
       try {
@@ -467,7 +481,6 @@ const Dashboard = () => {
           title: `CSV File ${fileData.title} loaded successfully!`,
           description: `${data.length} rows and ${headers.length} columns detected`,
         });
-      } catch (error) {
       } finally {
         setLoading(false);
       }

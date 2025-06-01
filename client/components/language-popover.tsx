@@ -37,7 +37,7 @@ const LanguagePopover = ({
   const htmlId = `language-select-${languageType}`;
 
   const languageList = availableLanguages
-    ? availableLanguages.map(code => getLanguageInfo(code))
+    ? availableLanguages.map((code) => getLanguageInfo(code))
     : languages;
 
   return (

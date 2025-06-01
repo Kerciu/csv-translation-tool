@@ -2,3 +2,5 @@ torch
 optree
 safetensors
 transformers
+sentencepiece
+protobuf
