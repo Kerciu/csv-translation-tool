@@ -1,4 +1,3 @@
----
 swagger: '2.0'
 info:
   title: CSV Translation Tool Rest API
@@ -9,7 +8,7 @@ info:
 host: localhost:8000
 schemes:
 - http
-basePath: "/"
+basePath: /
 consumes:
 - application/json
 produces:
@@ -20,51 +19,83 @@ securityDefinitions:
 security:
 - Basic: []
 paths:
-  "/authentication/github/":
+  /authentication/github/:
     get:
       operationId: authentication_github_list
       description: Start GitHub OAuth login and return authorization URL.
       parameters: []
       responses:
         '200':
-          description: ''
+          description: Github url response
+          schema:
+            type: object
+            properties:
+              url:
+                type: string
+              state:
+                type: string
+        '400':
+          description: Bad request
       tags:
       - 'Authentication: GitHub'
     parameters: []
-  "/authentication/github/callback/":
+  /authentication/github/callback/:
     get:
       operationId: authentication_github_callback_list
       description: Handle GitHub OAuth callback and set JWT cookie.
       parameters: []
       responses:
         '200':
-          description: ''
+          description: Jwt token
+          schema:
+            type: object
+            properties:
+              jwt:
+                type: string
+        '400':
+          description: Bad request
       tags:
       - 'Authentication: GitHub'
     parameters: []
-  "/authentication/google/":
+  /authentication/google/:
     get:
       operationId: authentication_google_list
       description: Start Google OAuth login and return authorization URL.
       parameters: []
       responses:
         '200':
-          description: ''
+          description: Google url response
+          schema:
+            type: object
+            properties:
+              url:
+                type: string
+              state:
+                type: string
+        '400':
+          description: Bad request
       tags:
       - 'Authentication: Google'
     parameters: []
-  "/authentication/google/callback/":
+  /authentication/google/callback/:
     get:
       operationId: authentication_google_callback_list
       description: Handle Google OAuth callback and set JWT cookie.
       parameters: []
       responses:
         '200':
-          description: ''
+          description: Jwt token
+          schema:
+            type: object
+            properties:
+              jwt:
+                type: string
+        '400':
+          description: Bad request
       tags:
       - 'Authentication: Google'
     parameters: []
-  "/authentication/log":
+  /authentication/log:
     post:
       operationId: authentication_log_create
       description: Log in user and return a JWT token.
@@ -73,27 +104,32 @@ paths:
         in: body
         required: true
         schema:
-          "$ref": "#/definitions/UserLogIn"
+          $ref: '#/definitions/UserLogIn'
       responses:
-        '201':
-          description: ''
+        '200':
+          description: JWT token response
           schema:
-            "$ref": "#/definitions/UserLogIn"
+            type: object
+            properties:
+              jwt:
+                type: string
+        '400':
+          description: Bad Request
       tags:
       - Authentication
     parameters: []
-  "/authentication/logout":
+  /authentication/logout:
     post:
       operationId: authentication_logout_create
       description: Log out user by deleting the JWT cookie.
       parameters: []
       responses:
-        '201':
-          description: ''
+        '200':
+          description: Success
       tags:
       - Authentication
     parameters: []
-  "/authentication/sign":
+  /authentication/sign:
     post:
       operationId: authentication_sign_create
       description: Register a new user and return a JWT token.
@@ -102,60 +138,118 @@ paths:
         in: body
         required: true
         schema:
-          "$ref": "#/definitions/UserSignUp"
+          $ref: '#/definitions/UserSignUp'
       responses:
-        '201':
-          description: ''
+        '200':
+          description: JWT token response
           schema:
-            "$ref": "#/definitions/UserSignUp"
+            type: object
+            properties:
+              jwt:
+                type: string
+        '400':
+          description: Bad Request
       tags:
       - Authentication
     parameters: []
-  "/authentication/user":
+  /authentication/user:
     get:
       operationId: authentication_user_list
       description: Get user's profile using JWT from cookie.
-      parameters: []
+      parameters:
+      - name: jwt token
+        in: header
+        description: JWT token from cookie
+        type: string
       responses:
         '200':
-          description: ''
+          description: User data response
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              username:
+                type: string
+        '400':
+          description: Bad request
       tags:
       - Authentication
     parameters: []
-  "/translation/custom_update_cell":
+  /translation/custom_update_cell:
     post:
       operationId: translation_custom_update_cell_create
       description: Manually update a specific cell with custom text.
-      parameters: []
+      parameters:
+      - name: jwt token
+        in: header
+        description: JWT token from cookie
+        type: string
+      - name: Column idx
+        in: header
+        description: Column indexes list of csv file to update
+        type: string
+      - name: Row idxt
+        in: header
+        description: Row indexes list of csv file to update
+        type: string
+      - name: Text
+        in: header
+        description: Text to update cell
+        type: string
       responses:
         '201':
           description: ''
+        '400':
+          description: Bad request
       tags:
       - CSV Operations
     parameters: []
-  "/translation/dowloand_csv":
+  /translation/dowloand_csv:
     post:
       operationId: translation_dowloand_csv_create
       description: Download the user's CSV file with translated values.
-      parameters: []
+      parameters:
+      - name: jwt token
+        in: header
+        description: JWT token from cookie
+        type: string
       responses:
-        '201':
-          description: ''
+        '200':
+          description: Success response with attached file
+          schema:
+            type: object
+            properties:
+              attached file:
+                type: file
+        '400':
+          description: Bad request
       tags:
       - CSV Operations
     parameters: []
-  "/translation/get_user_csv":
+  /translation/get_user_csv:
     get:
       operationId: translation_get_user_csv_list
       description: Get the currently active CSV file for the authenticated user.
-      parameters: []
+      parameters:
+      - name: jwt token
+        in: header
+        description: JWT token from cookie
+        type: string
       responses:
         '200':
-          description: ''
+          description: Found user's file as dict
+          schema:
+            type: object
+            properties:
+              file:
+                type: string
+        '400':
+          description: Bad request
       tags:
       - CSV Operations
     parameters: []
-  "/translation/revert_cell":
+  /translation/revert_cell:
     post:
       operationId: translation_revert_cell_create
       description: Revert a single translated cell back to its original state.
@@ -164,16 +258,28 @@ paths:
         in: body
         required: true
         schema:
-          "$ref": "#/definitions/UpdateCell"
+          $ref: '#/definitions/UpdateCell'
+      - name: jwt token
+        in: header
+        description: JWT token from cookie
+        type: string
+      - name: Column idx
+        in: header
+        description: Column indexes list of csv file to revert
+        type: string
+      - name: Row idx
+        in: header
+        description: Row indexes list of csv file to revert
+        type: string
       responses:
         '201':
           description: ''
-          schema:
-            "$ref": "#/definitions/UpdateCell"
+        '400':
+          description: Bad request
       tags:
       - CSV Operations
     parameters: []
-  "/translation/translate_cells":
+  /translation/translate_cells:
     post:
       operationId: translation_translate_cells_create
       description: Translate selected cells in a CSV file.
@@ -182,16 +288,42 @@ paths:
         in: body
         required: true
         schema:
-          "$ref": "#/definitions/FileUpdateCells"
+          $ref: '#/definitions/FileUpdateCells'
+      - name: jwt token
+        in: header
+        description: JWT token from cookie
+        type: string
+      - name: Column idx list
+        in: header
+        description: Column indexes list of csv file to translate
+        type: array
+        items:
+          type: integer
+      - name: Row idx list
+        in: header
+        description: Row indexes list of csv file to translate
+        type: array
+        items:
+          type: integer
+      - name: Source language
+        in: header
+        description: Source language to translate from to || or "any" language
+        type: string
+      - name: Target language
+        in: header
+        description: Target language to translate text to
+        type: string
       responses:
         '201':
-          description: ''
+          description: List of translated data
           schema:
-            "$ref": "#/definitions/FileUpdateCells"
+            $ref: '#/definitions/FileUpdateCells'
+        '400':
+          description: Bad request
       tags:
       - CSV Operations
     parameters: []
-  "/translation/upload_csv":
+  /translation/upload_csv:
     post:
       operationId: translation_upload_csv_create
       description: Upload a CSV file, parse it,store it in the database and delete
@@ -201,12 +333,29 @@ paths:
         in: body
         required: true
         schema:
-          "$ref": "#/definitions/CSVFile"
+          $ref: '#/definitions/CSVFile'
+      - name: jwt token
+        in: header
+        description: JWT token from cookie
+        type: string
+      - name: .csv File
+        in: header
+        description: File to be uploaded
+        type: file
       responses:
-        '201':
-          description: ''
+        '200':
+          description: Success response with file data
           schema:
-            "$ref": "#/definitions/CSVFile"
+            type: object
+            properties:
+              status:
+                type: string
+              file_title:
+                type: string
+              file_id:
+                type: string
+        '400':
+          description: Bad request
       tags:
       - CSV Operations
     parameters: []
@@ -264,6 +413,7 @@ definitions:
     - column_idx_list
     - row_idx_list
     - target_language
+    - source_language
     type: object
     properties:
       column_idx_list:
@@ -276,6 +426,10 @@ definitions:
           type: integer
       target_language:
         title: Target language
+        type: string
+        minLength: 1
+      source_language:
+        title: Source language
         type: string
         minLength: 1
   CSVFile:
