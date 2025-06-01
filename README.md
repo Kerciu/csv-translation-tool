@@ -179,7 +179,7 @@ docker-compose up
 ```
 2. **Start translator-model container's bash**
 ```bash
-  docker exec -it translator-model bash
+  docker exec -it translator-server bash
 ```
 3. **Run tests**
 ```bash
