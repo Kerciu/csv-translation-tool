@@ -199,9 +199,13 @@ class CustomUserUpdateCellView(APIView, JWTUserAuthentication):
             target=async_update,
             args=(
                 file.id,
-                [idx_serializer.validated_data["column_idx"]],
-                [idx_serializer.validated_data["row_idx"]],
-                [(request.data["custom_text"], "custom")],
+                [
+                    (
+                        idx_serializer.validated_data["column_idx"],
+                        idx_serializer.validated_data["row_idx"],
+                    )
+                ],
+                [(request.data["custom_text"], "", True)],
             ),
             daemon=True,
         ).start()

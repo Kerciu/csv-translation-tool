@@ -79,7 +79,12 @@ jobs:
         pip install -r requirements.txt
         cd ..
         pip install -r requirements-dev.txt
-
+    - name: Wait for MongoDB
+      run: |
+        until mongosh "mongodb://root:${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}@localhost:27017" --eval "db.adminCommand('ping')" >/dev/null 2>&1; do
+          echo "Waiting for MongoDB to be ready..."
+          sleep 2
+        done
     - name: Run Tests
       run: |
         python manage.py test

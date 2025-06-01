@@ -4,7 +4,6 @@ from auth_app.models import CustomUser
 from bson import ObjectId
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
-from translation_app.const import TEXT_ERROR
 from translation_app.models import Cell, Column, File
 from translation_app.serializers import (
     CSVFileSerializer,
@@ -44,10 +43,15 @@ class FileUpdateCellsSerializerTest(TestCase):
         self.file = build_file()
 
     def test_invalid_column_index(self):
-        data = {"column_idx_list": [5], "row_idx_list": [0], "target_language": "en"}
+        data = {
+            "column_idx_list": [5],
+            "row_idx_list": [0],
+            "target_language": "en",
+            "source_language": "de",
+        }
         s = FileUpdateCellsSerializer(data=data, context={"file": self.file})
         self.assertTrue(s.is_valid(), s.errors)
-        self.assertIn(TEXT_ERROR, s.validated_data["translated_list"][0])
+        self.assertEqual(0, len(s.validated_data["translated_list"]))
 
 
 class CSVFileSerializerTest(TestCase):
