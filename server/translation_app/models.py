@@ -123,8 +123,8 @@ class File(models.Model):
         Args:
             file_id: ID of the file to update.
             idx_list: (List[Tuple[int, int]])List with indexes of translated texts
-            text_list (List[Tuple[str, str, bool]]):
-            Translated text and detected language and status.
+            text_list:
+            List[Tuple[str, str, bool] Translated text and detected language and status.
         """
         with transaction.atomic():
             file = cls.objects.select_for_update().get(id=file_id)
