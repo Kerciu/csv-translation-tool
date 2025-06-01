@@ -24,19 +24,21 @@ jobs:
           MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
           MONGO_INITDB_DATABASE: ${{ secrets.MONGO_INITDB_DATABASE }}
         options: >-
-          --health-cmd "mongosh --username root --password example --eval 'db.adminCommand(\"ping\")'"
-          --health-interval 30s
-          --health-timeout 10s
-          --health-retries 5
+          --health-cmd="mongosh --username ${{ secrets.MONGO_INITDB_ROOT_USERNAME }} --password ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }} --eval 'db.adminCommand(\"ping\")'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
       redis:
         image: redis:alpine
         ports:
           - 6379:6379
         options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 30s
-          --health-timeout 10s
-          --health-retries 5
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     env:
       MONGO_URL: ${{ secrets.MONGO_URL }}
       REDIS_URL: ${{ secrets.REDIS_URL }}
@@ -61,6 +63,7 @@ jobs:
 
     - name: Install Rust
       uses: actions-rust-lang/setup-rust-toolchain@v1
+
     - name: Preinstall Rust Module
       run: |
         sudo apt-get update
@@ -79,12 +82,18 @@ jobs:
         pip install -r requirements.txt
         cd ..
         pip install -r requirements-dev.txt
+
     - name: Wait for MongoDB
       run: |
-        until mongosh "mongodb://root:${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}@db:27017" --eval "db.adminCommand('ping')" >/dev/null 2>&1; do
-          echo "Waiting for MongoDB to be ready..."
+        echo "Waiting for MongoDB to be ready..."
+        until mongosh "mongodb://${{ secrets.MONGO_INITDB_ROOT_USERNAME }}:${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}@db:27017" --eval "db.adminCommand('ping')" >/dev/null 2>&1; do
           sleep 2
         done
+
     - name: Run Tests
       run: |
         python manage.py test
+
+    - name: Print MongoDB logs on failure
+      if: failure()
+      run: docker logs $(docker ps -q --filter ancestor=mongo:6.0)
