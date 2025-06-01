@@ -4,7 +4,11 @@ use crate::translation::detect_language::detect_language;
 use clap::builder::Str;
 use config::get_model_config;
 use pyo3::prelude::*;
-use translation::model::TranslationModel;
+
+use crate::translation::{
+    detect_language::detect_language,
+    translator::Translator,
+};
 
 #[pyfunction]
 #[allow(unsafe_op_in_unsafe_fn)]
@@ -32,5 +36,6 @@ fn detect_lang(text: &str) -> PyResult<(String)> {
 fn translation_module(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(translate, m)?)?;
     m.add_function(wrap_pyfunction!(detect_lang, m)?)?;
+    m.add_class::<Translator>()?;
     Ok(())
 }

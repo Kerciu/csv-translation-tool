@@ -7,6 +7,7 @@ use candle_transformers::models::marian::MTModel;
 use hf_hub::{Repo, RepoType, api::sync::Api};
 use std::path::Path;
 use tokenizers::Tokenizer;
+use std::sync::{Arc, Mutex};
 
 pub fn load_from_candle(
     api: &Api,
@@ -86,9 +87,12 @@ pub fn load_from_candle(
     let model = MTModel::new(&config, vb)?;
 
     Ok(TranslationModel {
-        model,
-        tokenizer,
-        tokenizer_dec,
+        // model: Arc::new(Mutex::new(model)),
+        // tokenizer: Arc::new(tokenizer),
+        // tokenizer_dec: Arc::new(tokenizer_dec),
+        model: model,
+        tokenizer: tokenizer,
+        tokenizer_dec: tokenizer_dec,
         config: model_config,
         device,
     })
@@ -111,7 +115,9 @@ pub fn convert_and_load(model_config: ModelConfig, device: Device) -> Result<Tra
     print!("Converting model from Hugging Face to Candle format...");
     let config = model_config.to_marian_config();
 
-    let models_dir = Path::new("scripts").join("converted_models");
+    let models_dir = Path::new("scripts")
+        .join("converted_models")
+        .join(format!("{}-{}", src_lang, tgt_lang));
 
     let tokenizer = {
         let path = models_dir.join(format!(
@@ -160,9 +166,12 @@ pub fn convert_and_load(model_config: ModelConfig, device: Device) -> Result<Tra
     println!("Successfully converted model from Hugging Face to safetensors Candle format.");
 
     Ok(TranslationModel {
-        model,
-        tokenizer,
-        tokenizer_dec,
+        // model: Arc::new(Mutex::new(model)),
+        // tokenizer: Arc::new(tokenizer),
+        // tokenizer_dec: Arc::new(tokenizer_dec),
+        model: model,
+        tokenizer: tokenizer,
+        tokenizer_dec: tokenizer_dec,
         config: model_config,
         device,
     })

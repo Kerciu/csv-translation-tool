@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     src_lang = sys.argv[1]
     tgt_lang = sys.argv[2]
-    models_dir = os.path.join(script_dir, "converted_models")
+    models_dir = os.path.join(script_dir, f"converted_models/{src_lang}-{tgt_lang}")
 
     # Only clean directory if it exists with invalid files
     if os.path.exists(models_dir):
