@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use serde::Deserialize;
+use std::collections::HashMap;
 use std::path::PathBuf;
 
 #[derive(Debug, Deserialize)]
@@ -13,7 +13,10 @@ impl TranslationMap {
         eprintln!("Loading translation map from: {}", json_path.display());
 
         Self::load_from_json(json_path.to_str().unwrap()).unwrap_or_else(|e| {
-            eprintln!("Failed to load translation map, using empty map. Error: {}", e);
+            eprintln!(
+                "Failed to load translation map, using empty map. Error: {}",
+                e
+            );
             TranslationMap(HashMap::new())
         })
     }
@@ -29,7 +32,8 @@ impl TranslationMap {
         let normalized_src = src_lang.to_lowercase();
         let normalized_tgt = tgt_lang.to_lowercase();
 
-        self.0.get(&normalized_src)
+        self.0
+            .get(&normalized_src)
             .map_or(false, |targets| targets.contains(&normalized_tgt))
     }
 }

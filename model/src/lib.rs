@@ -4,11 +4,7 @@ use config::get_model_config;
 use pyo3::prelude::*;
 use translation::model::TranslationModel;
 
-
-use crate::translation::{
-    detect_language::detect_language,
-    translator::Translator,
-};
+use crate::translation::{detect_language::detect_language, translator::Translator};
 
 #[pyfunction]
 #[allow(unsafe_op_in_unsafe_fn)]

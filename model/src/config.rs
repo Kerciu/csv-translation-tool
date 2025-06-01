@@ -108,7 +108,6 @@ impl ModelConfig {
     }
 }
 
-
 impl Default for ModelConfig {
     fn default() -> Self {
         Self {
@@ -125,7 +124,9 @@ impl Default for ModelConfig {
     }
 }
 
-const SUPPORTED_LANGUAGES: &[&str] = &["en", "es", "fr", "de", "it", "pt", "ru", "zh", "ja", "ko", "ar"];
+const SUPPORTED_LANGUAGES: &[&str] = &[
+    "en", "es", "fr", "de", "it", "pt", "ru", "zh", "ja", "ko", "ar",
+];
 
 pub fn validate_language(lang: &str) -> Result<()> {
     if !SUPPORTED_LANGUAGES.contains(&lang) {
@@ -178,8 +179,8 @@ pub fn check_model_exists(model_id: &str) -> Result<()> {
 }
 
 fn conversion_files_exist(src_lang: &str, tgt_lang: &str) -> Result<bool> {
-    let models_dir = Path::new("scripts/converted_models")
-        .join(format!("{}-{}", src_lang, tgt_lang));
+    let models_dir =
+        Path::new("scripts/converted_models").join(format!("{}-{}", src_lang, tgt_lang));
 
     let config_path = models_dir.join(format!("config-{}-{}.json", src_lang, tgt_lang));
     let model_path = models_dir.join(format!("model-{}-{}.safetensors", src_lang, tgt_lang));

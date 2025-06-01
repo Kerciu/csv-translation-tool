@@ -1,10 +1,10 @@
 use anyhow::{Error, Result};
 use candle::{Device, Tensor};
-use candle_transformers::generation::LogitsProcessor;
-use clap::ValueEnum;
 use candle_examples::token_output_stream::TokenOutputStream;
-use hf_hub::api::sync::Api;
+use candle_transformers::generation::LogitsProcessor;
 use candle_transformers::models::marian::MTModel;
+use clap::ValueEnum;
+use hf_hub::api::sync::Api;
 use tokenizers::Tokenizer;
 
 use crate::{
@@ -71,14 +71,15 @@ impl TranslationModel {
         println!("[CONFIG] Device: {:?}", self.device);
 
         // Tokenize input with EOS
-        let mut tokens = self.tokenizer.encode(text, true)
+        let mut tokens = self
+            .tokenizer
+            .encode(text, true)
             .map_err(|e| Error::msg(format!("Encoding error: {}", e)))?
             .get_ids()
             .to_vec();
         tokens.push(self.config.eos_token_id);
 
-        let tokens_tensor = Tensor::new(tokens.as_slice(), &self.device)?
-            .unsqueeze(0)?;
+        let tokens_tensor = Tensor::new(tokens.as_slice(), &self.device)?.unsqueeze(0)?;
 
         println!("[DEBUG] Input tensor shape: {:?}", tokens_tensor.dims());
 
@@ -92,13 +93,10 @@ impl TranslationModel {
         let mut logits_processor = LogitsProcessor::new(299792458, None, None);
         let mut output_string = String::new();
 
-
         for index in 0..self.config.max_position_embeddings {
             let context_size = if index >= 1 { 1 } else { token_ids.len() };
             let start_pos = token_ids.len().saturating_sub(context_size);
-            let input_ids = Tensor::new(&token_ids[start_pos..], &self.device)?
-                .unsqueeze(0)?;
-
+            let input_ids = Tensor::new(&token_ids[start_pos..], &self.device)?.unsqueeze(0)?;
 
             // Run decoder
             let logits = self.model.decode(&input_ids, &encoder_output, start_pos)?;
@@ -119,26 +117,19 @@ impl TranslationModel {
             }
         }
 
-
         // Finalize output
         if let Some(rest) = tokenizer_dec.decode_rest()? {
             output_string.push_str(&rest);
         }
 
         println!("[RAW DECODED] '{}'", output_string);
-        let cleaned = output_string
-            .replace("<NIL>", "")
-            .trim()
-            .to_string();
+        let cleaned = output_string.replace("<NIL>", "").trim().to_string();
 
         println!("[CLEANED RESULT] '{}'", cleaned);
         Ok(cleaned)
     }
 
-
     pub fn translate_batch_simple(&mut self, texts: &[&str]) -> Result<Vec<String>> {
-        texts.iter()
-            .map(|text| self.translate(text))
-            .collect()
+        texts.iter().map(|text| self.translate(text)).collect()
     }
 }

@@ -1,15 +1,15 @@
 use crate::config::get_model_config;
 use crate::translation::cache::TranslationCache;
 use crate::translation::model::TranslationModel;
+use futures_util::future::join_all;
+use once_cell::sync::Lazy;
 use pyo3::exceptions::PyRuntimeError;
 use pyo3::prelude::*;
 use std::sync::Arc;
 use tokio::runtime::{Handle, Runtime};
-use once_cell::sync::Lazy;
-use futures_util::future::join_all;
 
-use crate::translation::detect_language::{detect_language, map_language_to_code};
 use super::translation_map::TranslationMap;
+use crate::translation::detect_language::{detect_language, map_language_to_code};
 
 #[pyclass]
 pub struct Translator {
@@ -61,11 +61,7 @@ impl Translator {
         Ok(results)
     }
 
-    async fn translate_single_auto(
-        &self,
-        text: &str,
-        tgt_lang: &str,
-    ) -> (String, String, bool) {
+    async fn translate_single_auto(&self, text: &str, tgt_lang: &str) -> (String, String, bool) {
         // try to get cached language
         let detected_src_lang = match self.cache.get_cached_language(text).await {
             Some(lang) => lang,
@@ -84,12 +80,18 @@ impl Translator {
             return (text.to_string(), "auto".to_string(), false);
         }
 
-        if !self.translation_map.contains_translation(&detected_src_lang, tgt_lang) {
+        if !self
+            .translation_map
+            .contains_translation(&detected_src_lang, tgt_lang)
+        {
             return (text.to_string(), detected_src_lang, false);
         }
 
         // translate using batch of one
-        match self.translate_batch_async_inner(&detected_src_lang, &[text.to_string()], tgt_lang).await {
+        match self
+            .translate_batch_async_inner(&detected_src_lang, &[text.to_string()], tgt_lang)
+            .await
+        {
             Ok(mut translations) => {
                 let translation = translations.pop().unwrap_or_default();
                 (translation, detected_src_lang, true)
@@ -103,9 +105,8 @@ impl Translator {
 impl Translator {
     #[new]
     pub fn new(redis_url: String, cache_ttl: u64) -> PyResult<Self> {
-        static RUNTIME: Lazy<Runtime> = Lazy::new(|| {
-            Runtime::new().expect("Failed to create Tokio runtime")
-        });
+        static RUNTIME: Lazy<Runtime> =
+            Lazy::new(|| Runtime::new().expect("Failed to create Tokio runtime"));
 
         let cache = Arc::new(TranslationCache::new(&redis_url, cache_ttl));
         let translation_map = Arc::new(TranslationMap::new());
@@ -125,23 +126,30 @@ impl Translator {
     ) -> PyResult<Vec<(String, String, bool)>> {
         if src_lang != "auto" && !src_lang.is_empty() {
             // fixed source language
-            if !self.translation_map.contains_translation(&src_lang, &tgt_lang) {
-                return Ok(texts.into_iter()
+            if !self
+                .translation_map
+                .contains_translation(&src_lang, &tgt_lang)
+            {
+                return Ok(texts
+                    .into_iter()
                     .map(|_| (String::new(), src_lang.clone(), false))
                     .collect());
             }
 
-            match self.rt_handle.block_on(
-                self.translate_batch_async_inner(&src_lang, &texts, &tgt_lang)
-            ) {
+            match self
+                .rt_handle
+                .block_on(self.translate_batch_async_inner(&src_lang, &texts, &tgt_lang))
+            {
                 Ok(translations) => {
-                    let results = translations.into_iter()
+                    let results = translations
+                        .into_iter()
                         .map(|t| (t, src_lang.clone(), true))
                         .collect();
                     Ok(results)
                 }
                 Err(_) => {
-                    let results = texts.into_iter()
+                    let results = texts
+                        .into_iter()
                         .map(|_| (String::new(), src_lang.clone(), false))
                         .collect();
                     Ok(results)
@@ -150,9 +158,9 @@ impl Translator {
         } else {
             // auto mode: per-text language detection
             let results = self.rt_handle.block_on(async {
-                let futures = texts.iter().map(|text|
-                    self.translate_single_auto(text, &tgt_lang)
-                );
+                let futures = texts
+                    .iter()
+                    .map(|text| self.translate_single_auto(text, &tgt_lang));
                 join_all(futures).await
             });
             Ok(results)

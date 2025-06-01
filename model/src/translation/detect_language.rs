@@ -1,20 +1,19 @@
 pub use lingua::Language::{
-    Arabic, Chinese, English, French, German, Italian, Japanese, Korean, Portuguese, Russian,
-    Spanish, Hindi, Indonesian, Polish, Dutch, Swedish, Thai, Turkish, Vietnamese
+    Arabic, Chinese, Dutch, English, French, German, Hindi, Indonesian, Italian, Japanese, Korean,
+    Polish, Portuguese, Russian, Spanish, Swedish, Thai, Turkish, Vietnamese,
 };
 use lingua::{Language, LanguageDetector, LanguageDetectorBuilder};
 
 pub fn detect_language(text: &str) -> Option<Language> {
     let languages = vec![
         English, French, German, Spanish, Korean, Japanese, Italian, Portuguese, Russian, Chinese,
-        Arabic, Hindi, Indonesian, Polish, Dutch, Swedish, Thai, Turkish, Vietnamese
+        Arabic, Hindi, Indonesian, Polish, Dutch, Swedish, Thai, Turkish, Vietnamese,
     ];
 
     let detector: LanguageDetector = LanguageDetectorBuilder::from_languages(&languages).build();
 
     detector.detect_language_of(text)
 }
-
 
 pub fn map_language_to_code(language: Language) -> String {
     match language {

@@ -35,7 +35,9 @@ impl TranslationCache {
     }
 
     pub async fn set_cached(&self, src_lang: &str, tgt_lang: &str, text: &str, translation: &str) {
-        let Ok(mut conn) = self.client.get_multiplexed_async_connection().await else { return };
+        let Ok(mut conn) = self.client.get_multiplexed_async_connection().await else {
+            return;
+        };
         let key = self.cache_key(src_lang, tgt_lang, text);
         let _: Result<(), _> = conn.set_ex(&key, translation, self.ttl.as_secs()).await;
     }
@@ -47,7 +49,9 @@ impl TranslationCache {
     }
 
     pub async fn set_cached_language(&self, text: &str, language: &str) {
-        let Ok(mut conn) = self.client.get_multiplexed_async_connection().await else { return };
+        let Ok(mut conn) = self.client.get_multiplexed_async_connection().await else {
+            return;
+        };
         let key = self.language_cache_key(text);
         let _: Result<(), _> = conn.set_ex(&key, language, self.ttl.as_secs()).await;
     }

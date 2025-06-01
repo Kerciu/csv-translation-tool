@@ -64,8 +64,6 @@ class FileUpdateCellsSerializer(serializers.Serializer):
             source_language,
             target_language,
         )
-        # temporary solution to simulate translated_list
-        translated_list = [(t, source_language, True) for t in translated_list]
         attrs["translated_list"] = translated_list
         print(translated_list)
         print(idx_list)
