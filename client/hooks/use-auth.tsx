@@ -124,6 +124,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         withCredentials: true,
       },
     );
+    setResponse(axios.response);
     setUser(null);
     localStorage.removeItem('user');
   };
