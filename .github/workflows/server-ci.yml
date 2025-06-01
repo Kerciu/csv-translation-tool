@@ -24,10 +24,11 @@ jobs:
           MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
           MONGO_INITDB_DATABASE: ${{ secrets.MONGO_INITDB_DATABASE }}
         options: >-
-          --health-cmd="mongosh --username ${{ secrets.MONGO_INITDB_ROOT_USERNAME }} --password ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }} --eval 'db.adminCommand(\"ping\")'"
+          --health-cmd="mongosh --username $MONGO_INITDB_ROOT_USERNAME --password $MONGO_INITDB_ROOT_PASSWORD --eval 'db.adminCommand(\"ping\")'"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
+
 
       redis:
         image: redis:alpine
@@ -55,7 +56,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
+    - name: Debug ENV
+      run: |
+        echo "MONGO_URL=${MONGO_URL}"
+      env:
+        MONGO_URL: ${{ secrets.MONGO_URL }}
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
