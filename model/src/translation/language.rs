@@ -1,6 +1,5 @@
 use clap::ValueEnum;
 use super::translation_map::TranslationMap;
-use anyhow::Context;
 
 #[derive(Clone, Debug, Copy, PartialEq, Eq, ValueEnum)]
 pub enum LanguagePair {
