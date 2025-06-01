@@ -24,4 +24,3 @@ class TranslationAppConfig(AppConfig):
             "en",
             "es",
         )
-

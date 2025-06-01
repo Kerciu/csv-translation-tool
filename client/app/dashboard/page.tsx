@@ -38,7 +38,7 @@ const Dashboard = () => {
   const [targetLanguage, setTargetLanguage] = useState('de');
   const [sourceLanguage, setSourceLanguage] = useState('auto');
 
-  const [translationMap, setTranslationMap] = useState<Record<string, string[]>();
+  const [translationMap, setTranslationMap] = useState<Record<string, string[]>>();
 
   const [isTranslating, setTranslating] = useState(false);
   const [isTranslated, setTranslated] = useState(false);
@@ -414,7 +414,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchTranslationMap = async () => {
       try {
-        const response = await fetch('/translation_map.json');
+        const response = await fetch('/data/translations_map.json');
         const data = await response.json();
         setTranslationMap(data);
       } catch (error) {
@@ -467,7 +467,6 @@ const Dashboard = () => {
           title: `CSV File ${fileData.title} loaded successfully!`,
           description: `${data.length} rows and ${headers.length} columns detected`,
         });
-      } catch (error) {
       } finally {
         setLoading(false);
       }

@@ -3,6 +3,8 @@ from rest_framework import serializers
 from .models import File
 from .rust_loader import get_translator
 
+# from .rust_loader import get_translator
+
 # from translation_module import translate as translate_text
 
 

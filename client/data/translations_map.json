@@ -1,161 +1,20 @@
 {
-    "ar": [
-        "de",
-        "en",
-        "es",
-        "fr",
-        "it",
-        "pl",
-        "ru",
-        "tr"
-    ],
-    "en": [
-        "ar",
-        "de",
-        "es",
-        "fr",
-        "hi",
-        "id",
-        "it",
-        "nl",
-        "ru",
-        "sv",
-        "vi",
-        "zh"
-    ],
-    "ja": [
-        "ar",
-        "de",
-        "en",
-        "es",
-        "fr",
-        "it",
-        "nl",
-        "pl",
-        "pt",
-        "ru",
-        "sv",
-        "tr",
-        "vi"
-    ],
-    "ko": [
-        "de",
-        "en",
-        "es",
-        "fr",
-        "ru",
-        "sv"
-    ],
-    "de": [
-        "ar",
-        "de",
-        "en",
-        "es",
-        "fr",
-        "it",
-        "nl",
-        "pl",
-        "vi"
-    ],
-    "es": [
-        "ar",
-        "de",
-        "en",
-        "es",
-        "fr",
-        "id",
-        "it",
-        "nl",
-        "pl",
-        "ru",
-        "vi"
-    ],
-    "fr": [
-        "ar",
-        "de",
-        "en",
-        "es",
-        "id",
-        "pl",
-        "ru",
-        "sv",
-        "vi"
-    ],
-    "hi": [
-        "en"
-    ],
-    "id": [
-        "en",
-        "es",
-        "fr",
-        "sv"
-    ],
-    "it": [
-        "ar",
-        "de",
-        "en",
-        "es",
-        "fr",
-        "sv",
-        "vi"
-    ],
-    "nl": [
-        "en",
-        "es",
-        "fr",
-        "sv"
-    ],
-    "pl": [
-        "ar",
-        "de",
-        "en",
-        "es",
-        "fr",
-        "sv"
-    ],
-    "ru": [
-        "ar",
-        "en",
-        "es",
-        "fr",
-        "sv",
-        "vi"
-    ],
-    "sv": [
-        "en",
-        "es",
-        "fr",
-        "id",
-        "nl",
-        "ru",
-        "sv",
-        "th"
-    ],
-    "th": [
-        "en",
-        "fr"
-    ],
-    "tr": [
-        "ar",
-        "en",
-        "es",
-        "fr",
-        "sv"
-    ],
-    "vi": [
-        "de",
-        "en",
-        "es",
-        "fr",
-        "it",
-        "ru"
-    ],
-    "zh": [
-        "de",
-        "en",
-        "it",
-        "nl",
-        "sv",
-        "vi"
-    ]
+  "ar": ["de", "en", "es", "fr", "it", "pl", "ru", "tr"],
+  "en": ["ar", "de", "es", "fr", "hi", "id", "it", "nl", "ru", "sv", "vi", "zh"],
+  "ja": ["ar", "de", "en", "es", "fr", "it", "nl", "pl", "pt", "ru", "sv", "tr", "vi"],
+  "ko": ["de", "en", "es", "fr", "ru", "sv"],
+  "de": ["ar", "de", "en", "es", "fr", "it", "nl", "pl", "vi"],
+  "es": ["ar", "de", "en", "es", "fr", "id", "it", "nl", "pl", "ru", "vi"],
+  "fr": ["ar", "de", "en", "es", "id", "pl", "ru", "sv", "vi"],
+  "hi": ["en"],
+  "id": ["en", "es", "fr", "sv"],
+  "it": ["ar", "de", "en", "es", "fr", "sv", "vi"],
+  "nl": ["en", "es", "fr", "sv"],
+  "pl": ["ar", "de", "en", "es", "fr", "sv"],
+  "ru": ["ar", "en", "es", "fr", "sv", "vi"],
+  "sv": ["en", "es", "fr", "id", "nl", "ru", "sv", "th"],
+  "th": ["en", "fr"],
+  "tr": ["ar", "en", "es", "fr", "sv"],
+  "vi": ["de", "en", "es", "fr", "it", "ru"],
+  "zh": ["de", "en", "it", "nl", "sv", "vi"]
 }
