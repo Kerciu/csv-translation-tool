@@ -58,9 +58,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Debug ENV
       run: |
-        echo "MONGO_URL=${MONGO_URL}"
-      env:
-        MONGO_URL: ${{ secrets.MONGO_URL }}
+        echo "MONGO_URL=\"$MONGO_URL\""
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
