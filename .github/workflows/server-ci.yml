@@ -110,11 +110,10 @@ jobs:
         cd ..
         pip install -r requirements-dev.txt
 
-    - name: Create auth_app migrations
+    - name: Create migrations
       run: |
-        mkdir -p auth_app/migrations
-        touch auth_app/migrations/__init__.py
-        python manage.py makemigrations auth_app
+        python manage.py makemigrations
+        python manage.py migrate
 
     - name: Run Tests
       run: |
