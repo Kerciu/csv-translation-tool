@@ -1,3 +1,5 @@
+#![allow(warnings)]
+
 pub mod config;
 pub mod translation;
 use config::get_model_config;
