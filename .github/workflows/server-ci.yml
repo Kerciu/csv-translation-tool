@@ -42,10 +42,10 @@ jobs:
           --health-retries=5
 
     env:
-      MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
-      MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
-      MONGO_INITDB_DATABASE: ${{ secrets.MONGO_INITDB_DATABASE }}
-      MONGO_URL: "mongodb://${{ secrets.MONGO_INITDB_ROOT_USERNAME }}:${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}@db:27017"
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: translator
+      MONGO_URL: "mongodb://root:example@db:27017/translator?authSource=admin"
       REDIS_URL: ${{ secrets.REDIS_URL }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       DEBUG: ${{ secrets.DEBUG }}
@@ -93,7 +93,7 @@ jobs:
     - name: Wait for MongoDB
       run: |
         echo "Waiting for MongoDB to be ready..."
-        until mongosh "mongodb://${{ secrets.MONGO_INITDB_ROOT_USERNAME }}:${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}@db:27017" --eval "db.adminCommand('ping')" >/dev/null 2>&1; do
+        until mongosh "mongodb://root:example@db:27017/translator?authSource=admin" --eval "db.adminCommand('ping')" >/dev/null 2>&1; do
           sleep 2
         done
 
