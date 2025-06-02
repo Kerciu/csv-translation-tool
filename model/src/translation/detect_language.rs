@@ -36,7 +36,5 @@ pub fn map_language_to_code(language: Language) -> String {
         Thai => "th".to_string(),
         Turkish => "tr".to_string(),
         Vietnamese => "vi".to_string(),
-
-        _ => "unknown".to_string(),
     }
 }
