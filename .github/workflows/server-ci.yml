@@ -69,10 +69,17 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Install mongosh
+      run: |
+        curl -fsSL https://pgp.mongodb.com/server-6.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-6.0.gpg
+        echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+        sudo apt-get update
+        sudo apt-get install -y mongodb-mongosh
+
     - name: Wait for MongoDB (max 1 min)
       run: |
         for i in {1..30}; do
-          if mongosh "$MONGO_URL" --eval "db.adminCommand('ping')"; then
+          if mongo "$MONGO_URL" --eval "db.adminCommand('ping')"; then
             echo "MongoDB is ready!"
             exit 0
           fi
