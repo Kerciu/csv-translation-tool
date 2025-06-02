@@ -45,7 +45,7 @@ jobs:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
       MONGO_INITDB_DATABASE: translator
-      MONGO_URL: "mongodb://root:example@db:27017/translator?authSource=admin"
+      MONGO_URL: "mongodb://root:example@localhost:27017/translator?authSource=admin"
       REDIS_URL: ${{ secrets.REDIS_URL }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       DEBUG: ${{ secrets.DEBUG }}
