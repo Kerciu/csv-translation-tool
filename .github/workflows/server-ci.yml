@@ -79,7 +79,7 @@ jobs:
     - name: Wait for MongoDB (max 1 min)
       run: |
         for i in {1..30}; do
-          if mongo "$MONGO_URL" --eval "db.adminCommand('ping')"; then
+          if mongosh "$MONGO_URL" --eval "db.adminCommand('ping')"; then
             echo "MongoDB is ready!"
             exit 0
           fi
