@@ -23,6 +23,7 @@ jobs:
           MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
           MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
           MONGO_INITDB_DATABASE: ${{ secrets.MONGO_INITDB_DATABASE }}
+          MONGO_URL: "mongodb://${{ secrets.MONGO_INITDB_ROOT_USERNAME }}:${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}@db:27017"
         options: >-
           --health-cmd="mongosh --username $MONGO_INITDB_ROOT_USERNAME --password $MONGO_INITDB_ROOT_PASSWORD --eval 'db.adminCommand(\"ping\")'"
           --health-interval=10s
@@ -41,7 +42,10 @@ jobs:
           --health-retries=5
 
     env:
-      MONGO_URL: ${{ secrets.MONGO_URL }}
+      MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+      MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+      MONGO_INITDB_DATABASE: ${{ secrets.MONGO_INITDB_DATABASE }}
+      MONGO_URL: "mongodb://${{ secrets.MONGO_INITDB_ROOT_USERNAME }}:${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}@db:27017"
       REDIS_URL: ${{ secrets.REDIS_URL }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       DEBUG: ${{ secrets.DEBUG }}
