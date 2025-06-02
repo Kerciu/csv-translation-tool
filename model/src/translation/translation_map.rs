@@ -5,6 +5,12 @@ use std::path::PathBuf;
 #[derive(Debug, Deserialize)]
 pub struct TranslationMap(HashMap<String, Vec<String>>);
 
+impl Default for TranslationMap {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl TranslationMap {
     pub fn new() -> Self {
         let json_path = PathBuf::from("scripts")
@@ -33,7 +39,6 @@ impl TranslationMap {
         let normalized_tgt = tgt_lang.to_lowercase();
 
         self.0
-            .get(&normalized_src)
-            .map_or(false, |targets| targets.contains(&normalized_tgt))
+            .get(&normalized_src).is_some_and(|targets| targets.contains(&normalized_tgt))
     }
 }
