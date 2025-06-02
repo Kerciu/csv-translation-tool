@@ -12,6 +12,17 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: translator
+      MONGO_URL: "mongodb://root:example@localhost:27017/translator?authSource=admin"
+      REDIS_URL: "redis://redis:6379/1"
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DEBUG: ${{ secrets.DEBUG }}
+      ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+      PYTHONPATH: "${{ github.workspace }}/server"
+      RUSTFLAGS: "-A warnings"
     steps:
     - uses: actions/checkout@v4
 
@@ -40,7 +51,7 @@ jobs:
 
     - name: Check client service is running
       run: |
-        if [ $(docker compose ps -q translator-client | wc -l) -eq 0 ]; then
+        if [ $(docker compose ps -q client | wc -l) -eq 0 ]; then
           echo "Client service is not running"
           docker compose logs translator-client
           exit 1
@@ -48,7 +59,7 @@ jobs:
 
     - name: Check server service is running
       run: |
-        if [ $(docker compose ps -q translator-server | wc -l) -eq 0 ]; then
+        if [ $(docker compose ps -q server | wc -l) -eq 0 ]; then
         echo "Server service is not running"
           docker compose logs translator-server
           exit 1
@@ -56,7 +67,7 @@ jobs:
 
     - name: Check database service is running
       run: |
-        if [ $(docker compose ps -q translator-db | wc -l) -eq 0 ]; then
+        if [ $(docker compose ps -q db | wc -l) -eq 0 ]; then
           echo "Database service is not running"
           docker compose logs translator-db
           exit 1
@@ -64,7 +75,7 @@ jobs:
 
     - name: Check redis service is running
       run: |
-        if [ $(docker compose ps -q translator-redis | wc -l) -eq 0 ]; then
+        if [ $(docker compose ps -q redis | wc -l) -eq 0 ]; then
           echo "Redis service is not running"
           docker compose logs translator-redis
           exit 1
