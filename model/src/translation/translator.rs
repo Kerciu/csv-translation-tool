@@ -1,3 +1,5 @@
+#![allow(warnings)]
+
 use crate::config::get_model_config;
 use crate::translation::cache::TranslationCache;
 use crate::translation::model::TranslationModel;

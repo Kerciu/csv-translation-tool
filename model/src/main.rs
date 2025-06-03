@@ -9,7 +9,7 @@ fn main() {
     println!("Detected source language: {}", src_lang);
 
     let tgt_lang = "it";
-    let config = get_model_config(&src_lang, &tgt_lang).unwrap();
+    let config = get_model_config(&src_lang, tgt_lang).unwrap();
     println!("Using model config: {:?}", config);
 
     let mut model = TranslationModel::new(config).expect("Failed to create TranslationModel");

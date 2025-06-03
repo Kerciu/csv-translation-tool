@@ -86,9 +86,6 @@ pub fn load_from_candle(
     let model = MTModel::new(&config, vb)?;
 
     Ok(TranslationModel {
-        // model: Arc::new(Mutex::new(model)),
-        // tokenizer: Arc::new(tokenizer),
-        // tokenizer_dec: Arc::new(tokenizer_dec),
         model,
         tokenizer,
         tokenizer_dec,
@@ -165,9 +162,6 @@ pub fn convert_and_load(model_config: ModelConfig, device: Device) -> Result<Tra
     println!("Successfully converted model from Hugging Face to safetensors Candle format.");
 
     Ok(TranslationModel {
-        // model: Arc::new(Mutex::new(model)),
-        // tokenizer: Arc::new(tokenizer),
-        // tokenizer_dec: Arc::new(tokenizer_dec),
         model,
         tokenizer,
         tokenizer_dec,
