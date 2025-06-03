@@ -1,6 +1,7 @@
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::ops::Deref;
 
 #[derive(Debug, Deserialize)]
 pub struct TranslationMap(HashMap<String, Vec<String>>);
@@ -40,5 +41,12 @@ impl TranslationMap {
 
         self.0
             .get(&normalized_src).is_some_and(|targets| targets.contains(&normalized_tgt))
+    }
+}
+
+impl Deref for TranslationMap {
+    type Target = HashMap<String, Vec<String>>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
