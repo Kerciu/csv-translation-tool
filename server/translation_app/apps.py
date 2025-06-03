@@ -1,9 +1,13 @@
 from django.apps import AppConfig
 
+isBusy = False
+
 
 class TranslationAppConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "translation_app"
+
+    isBusy = False
 
     def ready(self):
         from .rust_loader import get_translator
@@ -24,3 +28,11 @@ class TranslationAppConfig(AppConfig):
             "en",
             "es",
         )
+
+
+def get_is_busy():
+    return isBusy
+
+
+def set_busy(isBusy: bool):
+    isBusy = isBusy

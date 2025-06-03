@@ -7,7 +7,7 @@ use serde_json;
 use std::path::Path;
 use std::process::Command;
 
-use crate::translation::language::is_in_translations_map;
+use crate::translation::translation_map::is_in_translations_map;
 
 pub const SUPPORTED_LANGUAGES: &[&str] = &[
     "en", "es", "fr", "de", "it", "pt", "ru", "zh", "ja", "ko", "ar", "hi", "id", "pl", "nl", "sv",

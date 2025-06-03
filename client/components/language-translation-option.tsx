@@ -20,7 +20,13 @@ const LanguageTranslationOption = ({
   const [sourceOpen, setSourceOpen] = useState(false);
 
   const getAvailableTargets = (src: string) => {
-    if (src === 'auto') return Object.values(translationMap).flat();
+    if (!translationMap) return [];
+    
+    if (src === 'auto') {
+      const allTargets = Object.values(translationMap).flat();
+      return [...new Set(allTargets)];
+    }
+    
     return translationMap[src] || [];
   };
 
