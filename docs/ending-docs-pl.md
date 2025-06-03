@@ -4,9 +4,9 @@
 ## Dane statystyczne
 
 
-### Ilość lini kodu - (7134: Typescript, 2507: Python, 1220: Rust)
-### Liczba testów - 25 (Rust), 62 (Python)
-### Procentowe pokrycie kodu testami - 96% (python)
+### Ilość lini kodu - 10861
+### Liczba testów - 87
+### Procentowe pokrycie kodu testami - 96%
 
 
 
