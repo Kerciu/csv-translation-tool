@@ -2,10 +2,7 @@ from rest_framework import serializers
 
 from .models import File
 from .rust_loader import get_translator
-
-# from .rust_loader import get_translator
-
-# from translation_module import translate as translate_text
+from .utils import is_valid_language_code
 
 
 class FileUpdateCellsSerializer(serializers.Serializer):
@@ -43,16 +40,21 @@ class FileUpdateCellsSerializer(serializers.Serializer):
         row_idx_list = attrs.get("row_idx_list")
         target_language = attrs.get("target_language")
         source_language = attrs.get("source_language")
+        if not is_valid_language_code(target_language):
+            raise serializers.ValidationError({"Language": "Invalid Target language."})
+        if not is_valid_language_code(source_language) and source_language != "auto":
+            raise serializers.ValidationError({"Language": "Invalid Source language."})
+
         idx_list = []
         texts = []
         columns_number = file.columns_number
         for n in range(0, len(column_idx_list)):
-            if columns_number < column_idx_list[n]:
+            if columns_number <= column_idx_list[n] or column_idx_list[n] < 0:
                 continue
 
             rows_number = file.columns[column_idx_list[n]].rows_number
 
-            if rows_number < row_idx_list[n]:
+            if rows_number <= row_idx_list[n] or row_idx_list[n] < 0:
                 continue
 
             text = file.columns[column_idx_list[n]].cells[row_idx_list[n]]["text"]
@@ -97,12 +99,12 @@ class UpdateCellSerializer(serializers.Serializer):
         file = self.context["file"]
         column_idx = attrs.get("column_idx")
 
-        if file.columns_number < column_idx:
+        if file.columns_number <= column_idx or column_idx < 0:
             raise serializers.ValidationError({"file": "Invalid column number."})
 
         rows_number = file.columns[column_idx].rows_number
 
-        if rows_number < attrs.get("row_idx"):
+        if rows_number <= attrs.get("row_idx") or attrs.get("row_idx") < 0:
             raise serializers.ValidationError({"file": "Invalid row number."})
 
         return attrs

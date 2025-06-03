@@ -172,7 +172,7 @@ class CustomUserUpdateCellView(APIView, JWTUserAuthentication):
                 type=openapi.TYPE_STRING,
             ),
             openapi.Parameter(
-                "Row idxt",
+                "Row idx",
                 openapi.IN_HEADER,
                 description="Row indexes list of csv file to update",
                 type=openapi.TYPE_STRING,
@@ -266,21 +266,22 @@ class CSVUploadView(APIView, JWTUserAuthentication):
 
         reader = csv.reader(TextIOWrapper(uploaded_file.file, encoding="utf-8"))
         all_rows = list(reader)
-
-        splitter = ";"
         if ";" in all_rows[0][0]:
-            splitter = ";"
+            columns_data = all_rows[0][0].split(";")
+
+            cells_data = [[] for _ in columns_data]
+            for row in all_rows[1:]:
+                if len(row) != 0:
+                    for cell_idx, cell in enumerate(row[0].split(";")):
+                        cells_data[cell_idx].append(cell)
         else:
-            splitter = ","
+            columns_data = all_rows[0]
 
-        columns_data = all_rows[0][0].split(splitter)
-
-        cells_data = [[] for _ in columns_data]
-        for row in all_rows[1:]:
-            if len(row) != 0:
-                for cell_idx, cell in enumerate(row[0].split(splitter)):
-                    cells_data[cell_idx].append(cell)
-
+            cells_data = [[] for _ in columns_data]
+            for row in all_rows[1:]:
+                if len(row) != 0:
+                    for cell_idx, cell in enumerate(row):
+                        cells_data[cell_idx].append(cell)
         columns_list = []
         for col_idx, column_name in enumerate(columns_data):
             cell_objs = [
@@ -301,7 +302,6 @@ class CSVUploadView(APIView, JWTUserAuthentication):
                     cells=cell_objs,
                 ).to_dict()
             )
-
         file_obj = File.objects.create(
             title=file_name,
             upload_time=datetime.now(),

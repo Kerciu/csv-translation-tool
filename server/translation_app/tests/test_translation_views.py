@@ -61,6 +61,34 @@ class TranslateCellsViewTest(BaseSetup, APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         self.assertIn("translated_list", resp.data)
 
+    @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
+    def test_invalid_target_language(self, mock_auth):
+        mock_auth.return_value = self.user
+        data = {
+            "file_id": str(self.file.id),
+            "column_idx_list": [0],
+            "row_idx_list": [0],
+            "target_language": "invalid",
+            "source_language": "de",
+        }
+
+        resp = self.client.post(self.url, data, format="json")
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
+    def test_invalid_source_language(self, mock_auth):
+        mock_auth.return_value = self.user
+        data = {
+            "file_id": str(self.file.id),
+            "column_idx_list": [0],
+            "row_idx_list": [0],
+            "target_language": "en",
+            "source_language": "invalid",
+        }
+
+        resp = self.client.post(self.url, data, format="json")
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class CSVUploadViewTest(BaseSetup, APITestCase):
     def setUp(self):
@@ -108,6 +136,12 @@ class GetUserCSVFilesViewTest(BaseSetup, APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(resp.data["file"]["title"], "mine")
 
+    @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
+    def test_no_users_files(self, mock_auth):
+        mock_auth.return_value = self._create_user()
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class DownloadCSVFileViewTest(BaseSetup, APITestCase):
     def setUp(self):
@@ -146,6 +180,13 @@ class DownloadCSVFileViewTest(BaseSetup, APITestCase):
         self.assertEqual(rows[0], ["A", "B"])
         self.assertEqual(rows[1], ["a1", "a1"])
 
+    @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
+    def test_not_owner_csv_downloand(self, mock_auth):
+        mock_auth.return_value = self._create_user()
+        data = {"file_id": str(self.file.id)}
+        resp = self.client.post(self.url, data)
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class RevertCellViewTest(BaseSetup, APITestCase):
     def setUp(self):
@@ -169,6 +210,34 @@ class RevertCellViewTest(BaseSetup, APITestCase):
         data = {"file_id": str(self.file.id), "column_idx": 0, "row_idx": 0}
         response = self.client.post(self.url, data, format="json")
         self.assertEqual(response.status_code, 201)
+
+    @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
+    def test_invalid_column(self, mock_auth):
+        mock_auth.return_value = self.user
+        data = {"file_id": str(self.file.id), "column_idx": 25, "row_idx": 0}
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, 400)
+
+    @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
+    def test_negative_column(self, mock_auth):
+        mock_auth.return_value = self.user
+        data = {"file_id": str(self.file.id), "column_idx": -25, "row_idx": 0}
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, 400)
+
+    @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
+    def test_invalid_row(self, mock_auth):
+        mock_auth.return_value = self.user
+        data = {"file_id": str(self.file.id), "column_idx": 0, "row_idx": 5432}
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, 400)
+
+    @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
+    def test_negative_row(self, mock_auth):
+        mock_auth.return_value = self.user
+        data = {"file_id": str(self.file.id), "column_idx": 0, "row_idx": -1}
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, 400)
 
 
 class CustomUserUpdateCellViewTest(BaseSetup, APITestCase):
@@ -198,3 +267,51 @@ class CustomUserUpdateCellViewTest(BaseSetup, APITestCase):
         }
         response = self.client.post(self.url, data, format="json")
         self.assertEqual(response.status_code, 201)
+
+    @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
+    def test_invalid_column(self, mock_auth):
+        mock_auth.return_value = self.user
+        data = {
+            "file_id": str(self.file.id),
+            "column_idx": 4,
+            "row_idx": 0,
+            "custom_text": "Bonjour",
+        }
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, 400)
+
+    @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
+    def test_negative_column(self, mock_auth):
+        mock_auth.return_value = self.user
+        data = {
+            "file_id": str(self.file.id),
+            "column_idx": -2,
+            "row_idx": 0,
+            "custom_text": "Bonjour",
+        }
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, 400)
+
+    @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
+    def test_invalid_row(self, mock_auth):
+        mock_auth.return_value = self.user
+        data = {
+            "file_id": str(self.file.id),
+            "column_idx": 0,
+            "row_idx": 423,
+            "custom_text": "Bonjour",
+        }
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, 400)
+
+    @patch("translation_app.views.JWTUserAuthentication.get_authenticated_user")
+    def test_negative_row(self, mock_auth):
+        mock_auth.return_value = self.user
+        data = {
+            "file_id": str(self.file.id),
+            "column_idx": 0,
+            "row_idx": -1,
+            "custom_text": "Bonjour",
+        }
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, 400)
