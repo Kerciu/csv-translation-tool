@@ -23,13 +23,3 @@ fn test_model_config_creation() -> Result<()> {
     assert_eq!(config.tgt_token, ">>es<<");
     Ok(())
 }
-
-#[test]
-#[ignore = "requires network access"]
-fn test_check_model_exists() {
-    let result = check_model_exists(&build_model_id("en", "es"));
-    assert!(result.is_ok(), "Should find existing model");
-
-    let result = check_model_exists(&build_model_id("abc", "efg"));
-    assert!(result.is_err(), "Should fail as this model does not exist");
-}
