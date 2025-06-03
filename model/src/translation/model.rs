@@ -8,15 +8,12 @@ use rayon::prelude::*;
 use candle_transformers::models::marian::MTModel;
 use tokenizers::Tokenizer;
 
-
-
-// use std::sync::{Arc, Mutex};
-
 use crate::{
     config::ModelConfig, translation::loader::convert_and_load,
     translation::loader::load_from_candle,
 };
 
+#[derive(Debug)]
 pub struct TranslationModel {
     pub model: MTModel,
     pub tokenizer: Tokenizer,
