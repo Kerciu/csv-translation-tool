@@ -1,9 +1,9 @@
 #[cfg(test)]
 mod tests {
     use redis::AsyncCommands;
-    use translation_module::translation::cache::TranslationCache;
     use std::time::Duration;
     use tokio;
+    use translation_module::translation::cache::TranslationCache;
 
     fn test_cache() -> TranslationCache {
         TranslationCache::new("redis://redis:6379/1", 60)
@@ -37,7 +37,9 @@ mod tests {
     #[tokio::test]
     async fn test_get_set_translation() {
         let cache = test_cache();
-        if !redis_available().await { return; }
+        if !redis_available().await {
+            return;
+        }
 
         let text = "Bonjour";
         let key = cache.cache_key("fr", "en", text);
@@ -56,7 +58,9 @@ mod tests {
     #[tokio::test]
     async fn test_get_set_language() {
         let cache = test_cache();
-        if !redis_available().await { return; }
+        if !redis_available().await {
+            return;
+        }
 
         let text = "Bonjour";
         let key = cache.language_cache_key(text);
@@ -81,15 +85,17 @@ mod tests {
     #[tokio::test]
     async fn test_cache_expiry() {
         let cache = TranslationCache::new("redis://redis:6379/1", 1);
-        if !redis_available().await { return; }
+        if !redis_available().await {
+            return;
+        }
 
         let text = "Hola";
         let key = cache.cache_key("en", "es", text);
         delete_key(&cache, &key).await;
-        
+
         cache.set_cached("en", "es", text, "Hello").await;
         tokio::time::sleep(Duration::from_secs(2)).await;
-        
+
         assert!(cache.get_cached("en", "es", text).await.is_none());
         delete_key(&cache, &key).await;
     }
@@ -97,7 +103,9 @@ mod tests {
     #[tokio::test]
     async fn test_empty_input() {
         let cache = test_cache();
-        if !redis_available().await { return; }
+        if !redis_available().await {
+            return;
+        }
 
         let key = cache.cache_key("", "", "");
         delete_key(&cache, &key).await;

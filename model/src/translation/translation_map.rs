@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use std::collections::HashMap;
-use std::path::PathBuf;
 use std::ops::Deref;
+use std::path::PathBuf;
 
 #[derive(Debug, Deserialize)]
 pub struct TranslationMap(HashMap<String, Vec<String>>);
@@ -40,7 +40,8 @@ impl TranslationMap {
         let normalized_tgt = tgt_lang.to_lowercase();
 
         self.0
-            .get(&normalized_src).is_some_and(|targets| targets.contains(&normalized_tgt))
+            .get(&normalized_src)
+            .is_some_and(|targets| targets.contains(&normalized_tgt))
     }
 }
 

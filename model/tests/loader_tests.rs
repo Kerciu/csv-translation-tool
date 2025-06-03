@@ -12,10 +12,16 @@ mod tests {
             tgt_token: ">>en<<".to_string(),
             ..Default::default()
         };
-        
-        let src = config.src_token.trim_start_matches(">>").trim_end_matches("<<");
-        let tgt = config.tgt_token.trim_start_matches(">>").trim_end_matches("<<");
-        
+
+        let src = config
+            .src_token
+            .trim_start_matches(">>")
+            .trim_end_matches("<<");
+        let tgt = config
+            .tgt_token
+            .trim_start_matches(">>")
+            .trim_end_matches("<<");
+
         assert_eq!(src, "fr");
         assert_eq!(tgt, "en");
     }
@@ -27,7 +33,7 @@ mod tests {
             tgt_token: ">>yy<<".to_string(),
             ..Default::default()
         };
-        
+
         let result = load_from_candle(&Api::new().unwrap(), config, Device::Cpu);
         assert!(result.is_err());
         assert!(result.unwrap_err().to_string().contains("Unsupported"));
@@ -40,8 +46,8 @@ mod tests {
             tgt_token: ">>en<<".to_string(),
             ..Default::default()
         };
-        
+
         let result = load_from_candle(&Api::new().unwrap(), config, Device::Cpu);
-        assert!(result.is_err());  // should fail earlier in validation
+        assert!(result.is_err()); // should fail earlier in validation
     }
 }

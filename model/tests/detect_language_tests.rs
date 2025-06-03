@@ -1,10 +1,7 @@
 #[cfg(test)]
 mod tests {
     use lingua::Language;
-    use translation_module::translation::detect_language::{
-        detect_language,
-        map_language_to_code,
-    };
+    use translation_module::translation::detect_language::{detect_language, map_language_to_code};
 
     #[test]
     fn test_map_language_to_code() {
@@ -69,7 +66,7 @@ mod tests {
     #[test]
     fn test_detect_language_edge_cases() {
         assert_eq!(detect_language(""), None);
-        
+
         let swahili_text = "Habari yako?";
         let detected = detect_language(&swahili_text);
         assert!(
@@ -77,21 +74,15 @@ mod tests {
             "Expected None or unrelated language, got: {:?}",
             detected
         );
-        
+
         assert_eq!(
             detect_language("Hello world and Bonjour"),
             Some(Language::English)
         );
-        
-        assert_eq!(
-            detect_language("Bonjour"),
-            Some(Language::French)
-        );
-        
-        assert_eq!(
-            detect_language("123"),
-            None
-        );
+
+        assert_eq!(detect_language("Bonjour"), Some(Language::French));
+
+        assert_eq!(detect_language("123"), None);
     }
 
     #[test]

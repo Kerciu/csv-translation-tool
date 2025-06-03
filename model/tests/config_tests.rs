@@ -1,12 +1,12 @@
 #[cfg(test)]
 mod tests {
-    use std::fs::{self, File};
-    use translation_module::config::*;
-    use candle_transformers::models::marian;
     use candle_nn::Activation;
-    use std::path::Path;
+    use candle_transformers::models::marian;
     use std::env;
+    use std::fs::{self, File};
+    use std::path::Path;
     use tempfile::tempdir;
+    use translation_module::config::*;
 
     #[test]
     fn test_validate_language() {
@@ -20,22 +20,10 @@ mod tests {
 
     #[test]
     fn test_build_model_id() {
-        assert_eq!(
-            build_model_id("en", "es"),
-            "Helsinki-NLP/opus-mt-en-es"
-        );
-        assert_eq!(
-            build_model_id("pl", "en"),
-            "Helsinki-NLP/opus-mt-pl-en"
-        );
-        assert_eq!(
-            build_model_id("ja", "ko"),
-            "Helsinki-NLP/opus-mt-ja-ko"
-        );
-        assert_eq!(
-            build_model_id("ar", "ru"),
-            "Helsinki-NLP/opus-mt-ar-ru"
-        );
+        assert_eq!(build_model_id("en", "es"), "Helsinki-NLP/opus-mt-en-es");
+        assert_eq!(build_model_id("pl", "en"), "Helsinki-NLP/opus-mt-pl-en");
+        assert_eq!(build_model_id("ja", "ko"), "Helsinki-NLP/opus-mt-ja-ko");
+        assert_eq!(build_model_id("ar", "ru"), "Helsinki-NLP/opus-mt-ar-ru");
     }
 
     #[test]
@@ -44,7 +32,7 @@ mod tests {
         assert_eq!(activation_from_str("gelu").unwrap(), Activation::Gelu);
         assert_eq!(activation_from_str("relu").unwrap(), Activation::Relu);
         assert_eq!(activation_from_str("sigmoid").unwrap(), Activation::Sigmoid);
-        
+
         assert!(activation_from_str("invalid").is_err());
         assert!(activation_from_str("").is_err());
     }
@@ -129,7 +117,7 @@ mod tests {
         let dir = tempdir().unwrap();
         let config_path = dir.path().join("config.json");
         fs::write(config_path, "invalid json").unwrap();
-        
+
         let result = construct_model_config_from_json("en", "fr");
         assert!(result.is_err());
     }
