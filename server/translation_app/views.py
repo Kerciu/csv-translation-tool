@@ -10,6 +10,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .apps import get_is_busy, set_busy
 from .models import Cell, Column, File
 from .serializers import (
     CSVFileSerializer,
@@ -82,13 +83,16 @@ class TranslateCellsView(APIView, JWTUserAuthentication):
         if not serializer.is_valid(raise_exception=True):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         file = serializer.validated_data["file"]
+        set_busy(True)
         update_serializer = FileUpdateCellsSerializer(
             data=request.data, context={"file": file}
         )
         if not update_serializer.is_valid(raise_exception=True):
+            set_busy(False)
             return Response(
                 update_serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
+        set_busy(False)
 
         Thread(
             target=async_update,
@@ -259,6 +263,9 @@ class CSVUploadView(APIView, JWTUserAuthentication):
 
         csv_serializer = CSVFileSerializer(data=request.data)
         if not csv_serializer.is_valid():
+            return Response(csv_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        if get_is_busy():
             return Response(csv_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         uploaded_file = csv_serializer.validated_data["file"]

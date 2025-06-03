@@ -187,6 +187,14 @@ const Dashboard = () => {
   };
 
   const clearDashboard = () => {
+    if (isTranslating) {
+      toast({
+        title: 'Translation in progress',
+        description: 'Cannot clear the dashboard while translating the file',
+        variant: 'destructive',
+      });
+      return;
+    }
     setCsvData([]);
     setHeaders([]);
     setSelectedColumns([]);
@@ -316,6 +324,16 @@ const Dashboard = () => {
       toast({
         title: 'No data to download',
         description: 'There is no data available to download',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (isTranslating) {
+      toast({
+        title: 'Translation in progress',
+        description:
+          'Cannot dowloand while translating the file. Better to white a few seconds after translating',
         variant: 'destructive',
       });
       return;
