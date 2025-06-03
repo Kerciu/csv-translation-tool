@@ -103,7 +103,12 @@ impl TranslationModel {
         }
 
         println!("[RAW DECODED] '{}'", output_string);
-        let cleaned = output_string.replace("<NIL>", "").trim().to_string();
+        let cleaned = output_string
+            .replace("<NIL>", "")
+            .replace("</s>", "")
+            .replace("</p>", "")
+            .trim()
+            .to_string();
 
         println!("[CLEANED RESULT] '{}'", cleaned);
         Ok(cleaned)

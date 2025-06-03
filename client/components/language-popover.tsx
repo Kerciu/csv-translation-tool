@@ -37,8 +37,10 @@ const LanguagePopover = ({
   const htmlId = `language-select-${languageType}`;
 
   const languageList = availableLanguages
-    ? availableLanguages.map((code) => getLanguageInfo(code))
-    : languages;
+  ? [...new Set(availableLanguages)]
+    .map((code) => getLanguageInfo(code))
+    .sort((a, b) => a.label.localeCompare(b.label))
+  : languages;
 
   return (
     <div className='space-y-2'>
