@@ -280,11 +280,10 @@ const Dashboard = () => {
           const t = translated[i][0];
           const d = translated[i][1];
           const s = translated[i][2];
-          if (s == true) {
-              newData[row][col] = `${t} (${d} -> ${targetLanguage})`;
-          } 
-          else {
-            setTranslationErrors(...[{row, col}]);
+          if (s == true && t && t !== '') {
+            newData[row][col] = `${t} (${d} -> ${targetLanguage})`;
+          } else {
+            newErrors.push({ row, col });
           }
         }
 
@@ -494,11 +493,12 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!translationMap) return;
-  
-    const availableTargets = sourceLanguage === 'auto' 
-      ? [...new Set(Object.values(translationMap).flat())] 
-      : translationMap[sourceLanguage] || [];
-  
+
+    const availableTargets =
+      sourceLanguage === 'auto'
+        ? [...new Set(Object.values(translationMap).flat())]
+        : translationMap[sourceLanguage] || [];
+
     if (!availableTargets.includes(targetLanguage)) {
       setTargetLanguage(availableTargets[0] || 'en');
     }
