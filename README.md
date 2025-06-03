@@ -96,8 +96,8 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://gitlab-stud.elka.pw.edu.pl/kgorski1/zpr_25l
-   cd zpr_25l
+   git clone https://github.com/Kerciu/csv-translation-tool.git
+   cd csv-translation-tool
 
 2. **Open installed docker's desktop application**
 
