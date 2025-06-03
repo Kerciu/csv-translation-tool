@@ -9,7 +9,7 @@ use std::process::Command;
 
 use crate::translation::language::is_in_translations_map;
 
-const SUPPORTED_LANGUAGES: &[&str] = &[
+pub const SUPPORTED_LANGUAGES: &[&str] = &[
     "en", "es", "fr", "de", "it", "pt", "ru", "zh", "ja", "ko", "ar",
     "hi", "id", "pl", "nl", "sv", "th", "tr", "vi",
     "auto",
@@ -29,29 +29,29 @@ pub struct ModelConfig {
 }
 
 #[derive(Debug, Deserialize)]
-struct HuggingFaceConfig {
-    vocab_size: usize,
+pub struct HuggingFaceConfig {
+    pub vocab_size: usize,
     #[serde(default)]
-    decoder_vocab_size: Option<usize>,
-    max_position_embeddings: usize,
-    encoder_layers: usize,
-    encoder_ffn_dim: usize,
-    encoder_attention_heads: usize,
-    decoder_layers: usize,
-    decoder_ffn_dim: usize,
-    decoder_attention_heads: usize,
-    use_cache: bool,
-    is_encoder_decoder: bool,
-    activation_function: String,
-    d_model: usize,
-    decoder_start_token_id: u32,
+    pub decoder_vocab_size: Option<usize>,
+    pub max_position_embeddings: usize,
+    pub encoder_layers: usize,
+    pub encoder_ffn_dim: usize,
+    pub encoder_attention_heads: usize,
+    pub decoder_layers: usize,
+    pub decoder_ffn_dim: usize,
+    pub decoder_attention_heads: usize,
+    pub use_cache: bool,
+    pub is_encoder_decoder: bool,
+    pub activation_function: String,
+    pub d_model: usize,
+    pub decoder_start_token_id: u32,
     #[serde(default = "default_scale_embedding")]
-    scale_embedding: bool,
-    pad_token_id: u32,
-    eos_token_id: u32,
-    forced_eos_token_id: u32,
+    pub scale_embedding: bool,
+    pub pad_token_id: u32,
+    pub eos_token_id: u32,
+    pub forced_eos_token_id: u32,
     #[serde(default = "default_share_embeddings")]
-    share_encoder_decoder_embeddings: bool,
+    pub share_encoder_decoder_embeddings: bool,
 }
 
 fn default_share_embeddings() -> bool {
@@ -117,7 +117,7 @@ impl Default for ModelConfig {
     }
 }
 
-fn activation_from_str(s: &str) -> Result<Activation> {
+pub fn activation_from_str(s: &str) -> Result<Activation> {
     match s.to_lowercase().as_str() {
         "swish" => Ok(Activation::Swish),
         "gelu" => Ok(Activation::Gelu),
@@ -141,7 +141,7 @@ pub fn build_model_id(src_lang: &str, tgt_lang: &str) -> String {
     format!("Helsinki-NLP/opus-mt-{}-{}", src_lang, tgt_lang)
 }
 
-fn conversion_files_exist(src_lang: &str, tgt_lang: &str) -> Result<bool> {
+pub fn conversion_files_exist(src_lang: &str, tgt_lang: &str) -> Result<bool> {
     let models_dir =
         Path::new("scripts/converted_models").join(format!("{}-{}", src_lang, tgt_lang));
 
@@ -162,7 +162,7 @@ fn conversion_files_exist(src_lang: &str, tgt_lang: &str) -> Result<bool> {
         && tgt_tokenizer.exists())
 }
 
-fn construct_model_config_from_json(src_lang: &str, tgt_lang: &str) -> Result<marian::Config> {
+pub fn construct_model_config_from_json(src_lang: &str, tgt_lang: &str) -> Result<marian::Config> {
     if !conversion_files_exist(src_lang, tgt_lang)? {
         print!(
             "Generating preparation files for {}->{} conversion... ",
