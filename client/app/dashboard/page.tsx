@@ -26,6 +26,7 @@ import { getLanguageName } from '@/utils/getLanguageName';
 import { FileSpreadsheet, HelpCircle, Loader2, Upload } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
+import { isSameLanguage } from '@/utils/isSameLanguage';
 const API_URL: string = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
 const Dashboard = () => {
@@ -228,6 +229,15 @@ const Dashboard = () => {
       return;
     }
 
+    if (isSameLanguage(sourceLanguage, targetLanguage)) {
+      toast({
+        title: 'Invalid language selection',
+        description: 'Source and target languages cannot be the same',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setTranslating(true);
     setTranslationErrors([]);
 
@@ -271,15 +281,10 @@ const Dashboard = () => {
           const d = translated[i][1];
           const s = translated[i][2];
           if (s == true) {
-            if (t != '') {
               newData[row][col] = `${t} (${d} -> ${targetLanguage})`;
-            }
-          } else {
-            if (csvData[row][col] != t || t == '') {
-              newData[row][col] = `${csvData[row][col]} (Cannot translate)`;
-            } else {
-              newData[row][col] = `${csvData[row][col]} (Cannot detect language)`;
-            }
+          } 
+          else {
+            setTranslationErrors(...[{row, col}]);
           }
         }
 
@@ -486,6 +491,18 @@ const Dashboard = () => {
 
     fetchUserCSV();
   }, []);
+
+  useEffect(() => {
+    if (!translationMap) return;
+  
+    const availableTargets = sourceLanguage === 'auto' 
+      ? [...new Set(Object.values(translationMap).flat())] 
+      : translationMap[sourceLanguage] || [];
+  
+    if (!availableTargets.includes(targetLanguage)) {
+      setTargetLanguage(availableTargets[0] || 'en');
+    }
+  }, [sourceLanguage, translationMap, targetLanguage]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
