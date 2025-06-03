@@ -12,7 +12,6 @@ use crate::translation::language::is_in_translations_map;
 pub const SUPPORTED_LANGUAGES: &[&str] = &[
     "en", "es", "fr", "de", "it", "pt", "ru", "zh", "ja", "ko", "ar",
     "hi", "id", "pl", "nl", "sv", "th", "tr", "vi",
-    "auto",
 ];
 
 #[derive(Debug, Clone)]
