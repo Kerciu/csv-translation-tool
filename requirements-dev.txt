@@ -6,9 +6,5 @@ flake8-docstrings
 flake8-import-order
 pre-commit
 myst-parser
-dotenv
 sphinx
 sphinx_rtd_theme
-drf_yasg
-django
-django-cors-headers
