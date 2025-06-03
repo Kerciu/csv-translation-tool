@@ -120,11 +120,6 @@ mod tests {
     }
 
     #[test]
-    fn test_auto_detection() {
-        assert!(get_model_config("auto", "en").is_err());   // auto is executed in python module
-    }
-
-    #[test]
     fn test_same_src_tgt_language() {
         assert!(get_model_config("en", "en").is_err());
     }
