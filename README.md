@@ -12,6 +12,7 @@
   - [Documentation](#documentation) or just go [Here](https://kerciu.github.io/csv-translation-tool/)
   - [Testing](#testing)
   - [Screenshots](#screenshots)
+  - [Contact](#contanct)
 
 ![](docs/screenshots/HomePage.png)
 
@@ -192,7 +193,7 @@ cd model
 ```bash
 cargo test
 ```
-
+<a name="screenshots"></a>
 ## Screenshots
 
 <p align="center">
@@ -220,9 +221,10 @@ cargo test
   <em>Translation Example</em>
 </p>
 
+<a name="contact"></a>
 ## Contact
 For questions, feedback, or support:
 - **Authors**: Kacper Górski, Szymon Kamiński
-- **LinkedIn**: [Kacper Górski](https://www.linkedin.com/in/kacper-gorski-se), [Szymon Kamiński](https://www.linkedin.com/in/kacper-gorski-se)
-- **GitHub**: [Kerciu](https://github.com/Kerciu), [Szymon](https://github.com/Kerciu)
-- **Email**: [kacper.gorski.contact@gmail.com](mailto:kacper.gorski.contact@gmail.com), [kacper.gorski.contact@gmail.com](mailto:kacper.gorski.contact@gmail.com)
+- **LinkedIn**: [Kacper Górski](https://www.linkedin.com/in/kacper-gorski-se), [Szymon Kamiński](https://www.linkedin.com/in/szymon-kami%C5%84ski-575230344/)
+- **GitHub**: [Kerciu](https://github.com/Kerciu), [Szymon](https://github.com/RudyKarpus)
+- **Email**: [kacper.gorski.contact@gmail.com](mailto:kacper.gorski.contact@gmail.com), [szymon.kaminkk@gmail.com](mailto:szymon.kaminkk@gmail.com])
