@@ -113,7 +113,9 @@ class UserView(APIView):
         serializer = UserAuthSerializer(data={"token": request.COOKIES.get("jwt")})
         if serializer.is_valid(raise_exception=True):
             user = serializer.validated_data
-            return Response({"email": user.email, "name": user.username})
+            return Response(
+                {"email": user.email, "name": user.username}, status=status.HTTP_200_OK
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -121,10 +123,10 @@ class LogOutView(APIView):
     @swagger_auto_schema(
         tags=["Authentication"],
         operation_description="Log out user by deleting the JWT cookie.",
-        responses={100: "Success"},
+        responses={200: "Success"},
     )
     def post(self, request):
-        response = Response({"message": "success"}, status=status.HTTP_100_CONTINUE)
+        response = Response({"message": "success"}, status=status.HTTP_200_OK)
         response.delete_cookie("jwt")
         return response
 

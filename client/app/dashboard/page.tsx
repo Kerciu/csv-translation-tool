@@ -21,10 +21,12 @@ import UploadConfirmationDialog from '@/components/upload-confirmation-dialog';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { LanguageType } from '@/lib/types';
+import { useRouter } from 'next/navigation';
 import { getLanguageName } from '@/utils/getLanguageName';
 import { FileSpreadsheet, HelpCircle, Loader2, Upload } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
+import { isSameLanguage } from '@/utils/isSameLanguage';
 const API_URL: string = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
 const Dashboard = () => {
@@ -49,6 +51,7 @@ const Dashboard = () => {
 
   const [isLoading, setLoading] = useState(false);
   const { user, isLoading: authLoading } = useAuth();
+  const router = useRouter();
 
   const [showUploadConfirmation, setShowUploadConfirmation] = useState(false);
   const { toast } = useToast();
@@ -226,6 +229,15 @@ const Dashboard = () => {
       return;
     }
 
+    if (isSameLanguage(sourceLanguage, targetLanguage)) {
+      toast({
+        title: 'Invalid language selection',
+        description: 'Source and target languages cannot be the same',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setTranslating(true);
     setTranslationErrors([]);
 
@@ -254,6 +266,7 @@ const Dashboard = () => {
         {
           column_idx_list: columnIdxList,
           row_idx_list: rowIdxList,
+          source_language: sourceLanguage,
           target_language: targetLanguage,
         },
         { withCredentials: true },
@@ -266,11 +279,11 @@ const Dashboard = () => {
           const col = columnIdxList[i];
           const t = translated[i][0];
           const d = translated[i][1];
-
-          if (t !== 'Cannot detect any language' && t !== 'Cannot translate' && t !== 'Error') {
+          const s = translated[i][2];
+          if (s == true && t && t !== '') {
             newData[row][col] = `${t} (${d} -> ${targetLanguage})`;
           } else {
-            newData[row][col] = `${csvData[row][col]} (${t})`;
+            newErrors.push({ row, col });
           }
         }
 
@@ -293,6 +306,7 @@ const Dashboard = () => {
           // xx -> yy patern or "(cannot translate)"
           const cleaned = current.replace(/\((?:[a-z]{2}->[a-z]{2}|Cannot translate)\)\s*/gi, '');
           newData[row][col] = `${cleaned} (Cannot translate)`;
+          setTranslating(false);
         }
       });
   };
@@ -435,6 +449,8 @@ const Dashboard = () => {
         });
         localStorage.setItem('user', JSON.stringify(res.data));
       } catch (error) {
+        router.push('/');
+
         localStorage.removeItem('user');
       }
       try {
@@ -474,6 +490,19 @@ const Dashboard = () => {
 
     fetchUserCSV();
   }, []);
+
+  useEffect(() => {
+    if (!translationMap) return;
+
+    const availableTargets =
+      sourceLanguage === 'auto'
+        ? [...new Set(Object.values(translationMap).flat())]
+        : translationMap[sourceLanguage] || [];
+
+    if (!availableTargets.includes(targetLanguage)) {
+      setTargetLanguage(availableTargets[0] || 'en');
+    }
+  }, [sourceLanguage, translationMap, targetLanguage]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);

@@ -20,8 +20,8 @@ from .serializers import (
 from .utils import JWTUserAuthentication
 
 
-def async_update(file_id, column_idx_list, row_idx_list, translated):
-    File.update_cells(file_id, column_idx_list, row_idx_list, translated)
+def async_update(file_id, idx_list, translated):
+    File.update_cells(file_id, idx_list, translated)
 
 
 def async_revert(file_id, column_idx, row_idx):
@@ -70,7 +70,7 @@ class TranslateCellsView(APIView, JWTUserAuthentication):
         ],
         responses={
             201: openapi.Response(
-                description="List of translated data (Text, Source Language)",
+                description="List of translated data",
                 schema=FileUpdateCellsSerializer,
             ),
             400: "Bad request",
@@ -94,8 +94,7 @@ class TranslateCellsView(APIView, JWTUserAuthentication):
             target=async_update,
             args=(
                 file.id,
-                update_serializer.validated_data["column_idx_list"],
-                update_serializer.validated_data["row_idx_list"],
+                update_serializer.validated_data["idx_list"],
                 update_serializer.validated_data["translated_list"],
             ),
             daemon=True,
@@ -138,10 +137,10 @@ class RevertCellView(APIView, JWTUserAuthentication):
         serializer = FindCSVFileSerializer(data=request.data, context={"user": user})
         if not serializer.is_valid(raise_exception=True):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        idx_serializer = UpdateCellSerializer(data=request.data, context={"user": user})
+        file = serializer.validated_data["file"]
+        idx_serializer = UpdateCellSerializer(data=request.data, context={"file": file})
         if not idx_serializer.is_valid(raise_exception=True):
             return Response(idx_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        file = serializer.validated_data["file"]
         Thread(
             target=async_revert,
             args=(
@@ -173,7 +172,7 @@ class CustomUserUpdateCellView(APIView, JWTUserAuthentication):
                 type=openapi.TYPE_STRING,
             ),
             openapi.Parameter(
-                "Row idxt",
+                "Row idx",
                 openapi.IN_HEADER,
                 description="Row indexes list of csv file to update",
                 type=openapi.TYPE_STRING,
@@ -193,16 +192,20 @@ class CustomUserUpdateCellView(APIView, JWTUserAuthentication):
         if not serializer.is_valid(raise_exception=True):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         file = serializer.validated_data["file"]
-        idx_serializer = UpdateCellSerializer(data=request.data, context={"user": user})
+        idx_serializer = UpdateCellSerializer(data=request.data, context={"file": file})
         if not idx_serializer.is_valid(raise_exception=True):
             return Response(idx_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         Thread(
             target=async_update,
             args=(
                 file.id,
-                [idx_serializer.validated_data["column_idx"]],
-                [idx_serializer.validated_data["row_idx"]],
-                [(request.data["custom_text"], "custom")],
+                [
+                    (
+                        idx_serializer.validated_data["column_idx"],
+                        idx_serializer.validated_data["row_idx"],
+                    )
+                ],
+                [(request.data["custom_text"], "", True)],
             ),
             daemon=True,
         ).start()
@@ -263,14 +266,22 @@ class CSVUploadView(APIView, JWTUserAuthentication):
 
         reader = csv.reader(TextIOWrapper(uploaded_file.file, encoding="utf-8"))
         all_rows = list(reader)
+        if ";" in all_rows[0][0]:
+            columns_data = all_rows[0][0].split(";")
 
-        columns_data = all_rows[0][0].split(";")
-        cells_data = [[] for _ in columns_data]
-        for row in all_rows[1:]:
-            if len(row) != 0:
-                for cell_idx, cell in enumerate(row[0].split(";")):
-                    cells_data[cell_idx].append(cell)
+            cells_data = [[] for _ in columns_data]
+            for row in all_rows[1:]:
+                if len(row) != 0:
+                    for cell_idx, cell in enumerate(row[0].split(";")):
+                        cells_data[cell_idx].append(cell)
+        else:
+            columns_data = all_rows[0]
 
+            cells_data = [[] for _ in columns_data]
+            for row in all_rows[1:]:
+                if len(row) != 0:
+                    for cell_idx, cell in enumerate(row):
+                        cells_data[cell_idx].append(cell)
         columns_list = []
         for col_idx, column_name in enumerate(columns_data):
             cell_objs = [
@@ -291,7 +302,6 @@ class CSVUploadView(APIView, JWTUserAuthentication):
                     cells=cell_objs,
                 ).to_dict()
             )
-
         file_obj = File.objects.create(
             title=file_name,
             upload_time=datetime.now(),

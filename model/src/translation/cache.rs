@@ -1,4 +1,3 @@
-// src/translation/cache.rs
 use md5;
 use redis::AsyncCommands;
 use redis::Client;
@@ -24,6 +23,11 @@ impl TranslationCache {
         format!("translation:{}:{}:{}", src_lang, tgt_lang, hash)
     }
 
+    pub fn language_cache_key(&self, text: &str) -> String {
+        let hash = format!("{:x}", md5::compute(text));
+        format!("lang_detect:{}", hash)
+    }
+
     pub async fn get_cached(&self, src_lang: &str, tgt_lang: &str, text: &str) -> Option<String> {
         let mut conn = self.client.get_multiplexed_async_connection().await.ok()?;
         let key = self.cache_key(src_lang, tgt_lang, text);
@@ -31,8 +35,24 @@ impl TranslationCache {
     }
 
     pub async fn set_cached(&self, src_lang: &str, tgt_lang: &str, text: &str, translation: &str) {
-        let Ok(mut conn) = self.client.get_multiplexed_async_connection().await else { return };
+        let Ok(mut conn) = self.client.get_multiplexed_async_connection().await else {
+            return;
+        };
         let key = self.cache_key(src_lang, tgt_lang, text);
         let _: Result<(), _> = conn.set_ex(&key, translation, self.ttl.as_secs()).await;
+    }
+
+    pub async fn get_cached_language(&self, text: &str) -> Option<String> {
+        let mut conn = self.client.get_multiplexed_async_connection().await.ok()?;
+        let key = self.language_cache_key(text);
+        conn.get(&key).await.ok()?
+    }
+
+    pub async fn set_cached_language(&self, text: &str, language: &str) {
+        let Ok(mut conn) = self.client.get_multiplexed_async_connection().await else {
+            return;
+        };
+        let key = self.language_cache_key(text);
+        let _: Result<(), _> = conn.set_ex(&key, language, self.ttl.as_secs()).await;
     }
 }

@@ -3,7 +3,26 @@
 🌍 **Web app** for semi-automatic CSV translation | **AI-assisted** (MarianMT) + **human validation**  
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)  
+## Table of contents
+  - [Features](#feature)
+  - [Tech Stack](#tech_stack)
+  - [Prerequisites](#prerequisites)
+  - [Quick start](#quick_start)
+  - [Linting and formating](#linting_formating)
+  - [Documentation](#documentation) or just go [Here](https://kerciu.github.io/csv-translation-tool/)
+  - [Testing](#testing)
+  - [Screenshots](#screenshots)
 
+
+
+![](docs/screenshots/HomePage.png)
+
+
+
+
+![](docs/screenshots/TranslationExampleCut.png)
+
+<a name="feature"></a>
 ## Key Features  
 
 | Feature | Description |  
@@ -13,6 +32,7 @@
 | **🔒 User Auth** | JWT/OAuth2 login with session persistence (MongoDB) |  
 | **🚀 Export** | Download translated files |  
 
+<a name="tech_stack"></a>
 ## Tech Stack
 
 <table>
@@ -63,7 +83,7 @@
     </td>
   </tr>
 </table>
-
+<a name="prerequisites"></a>
 ## Prerequisites
   - [Python](https://www.python.org/downloads/) (<13v, 12v recommended)
   - [Docker](https://www.docker.com/) (latest stable version)
@@ -71,7 +91,7 @@
   - [Node.js](https://nodejs.org/) (v16+ recommended)
   - [npm](https://www.npmjs.com/) (comes with Node.js)
 
-
+<a name="quick_start"></a>
 ## Quick Start
 
 1. **Clone the repository**
@@ -90,9 +110,12 @@
    ```bash
     docker-compose up
    ```
+5. **Go to site**
+   You can now go to http://localhost:3000 and enjoy our app.
+   Try uploading from test_data catalog example.csv to test it yourself!
 
 
-
+<a name="linting_formating"></a>
 ## Linting and formating
   - [pre-commit](https://pre-commit.com) for automatic coding style verification and formating
   - ***python***: flake8, black, isort
@@ -100,20 +123,20 @@
   - ***rust***:  clippy, fmt
 ### To run
   #### Python-react
-  ```bash
+```bash
   pip install -r requirements-dev.txt
   pre-commit install
   pre-commit run --all-files
-  ```
+```
   #### Rust
-  ```bash
+```bash
   cd model
   cargo fmt
   cargo clippy
-  ```
-
-## Documentation
-### Python
+```
+<a name="documentation"></a>
+## Documentation 
+### Python or just go [Here](https://kerciu.github.io/csv-translation-tool/)
 - **REST API**: ***Swagger*** - you can see it by running the application and going to [here](http://127.0.0.1:8000/swagger/)
 - **Models, Serializers, Utils**: ***docstrings + [Sphinx](https://www.sphinx-doc.org/en/master/)*** - to run:
     1. #### Install all dependencies
@@ -146,7 +169,7 @@
     cd .\build\html\
     Start-Process index.html
     ```
-
+<a name="testing"></a>
 ## Testing
 
 ### Python
@@ -156,7 +179,7 @@ docker-compose up
 ```
 2. **Start translator-model container's bash**
 ```bash
-  docker exec -it translator-model bash
+  docker exec -it translator-server bash
 ```
 3. **Run tests**
 ```bash
@@ -173,3 +196,24 @@ cd model
 cargo test
 ```
 
+## Screenshots
+
+![](docs/screenshots/HomePage.png)
+
+
+![](docs/screenshots/SignDialogCut.png)
+
+
+![](docs/screenshots/DashboardPage.png)
+
+
+![](docs/screenshots/TipsDialogCut.png)
+
+
+![](docs/screenshots/TranslationExampleCut.png)
+
+
+![](docs/screenshots/RevertCellDialogCut.png)
+
+
+![](docs/screenshots/RevertCellDialogAfterCut.png)

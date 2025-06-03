@@ -12,6 +12,17 @@ jobs:
     strategy:
       matrix:
         rust-version: ["1.85"]
+    
+    services:
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
       - name: Checkout code
@@ -30,32 +41,32 @@ jobs:
         env:
           RUSTFLAGS: "--cap-lints allow"
 
-#  test:
-#    name: cargo test
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v4
-#      - uses: actions-rust-lang/setup-rust-toolchain@v1
-#      - run: cargo test # --verbose
-#        working-directory: model
+  test:
+    name: cargo test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - run: RUSTFLAGS="-A unsafe-op-in-unsafe-fn" cargo test
+        working-directory: model
 
-#  lint:
-#    name: cargo clippy
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v4
-#      - uses: actions-rust-lang/setup-rust-toolchain@v1
-#      - run: cargo clippy # -- -D warnings
-#        working-directory: model
+  lint:
+    name: cargo clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - run: cargo clippy -- -A warnings
+        working-directory: model
 
-#  formatting:
-#    name: cargo fmt
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v4
-#      - uses: actions-rust-lang/setup-rust-toolchain@v1
-#        with:
-#          components: rustfmt
-#      - name: Rustfmt Check
-#        run: cargo fmt --check
-#        working-directory: model
+  formatting:
+    name: cargo fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt
+      - name: Rustfmt Check
+        run: cargo fmt --check
+        working-directory: model

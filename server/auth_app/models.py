@@ -22,7 +22,7 @@ class CustomUser(AbstractUser):
     password = models.CharField(max_length=200)
 
     date_joined = models.DateTimeField("join_date")
-    file = models.CharField(max_length=100)
+    file = models.CharField(max_length=100, null=True)
 
     class Meta:
         db_table = "users"

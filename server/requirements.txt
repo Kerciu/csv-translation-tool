@@ -12,8 +12,8 @@ django-cors-headers==4.7.0
 authlib==1.5.2
 argon2-cffi==23.1.0
 redis==4.5.4
-pre-commit==4.2.0
 drf-yasg==1.21.10
+pycountry==24.6.1
 # torch==2.3.1
 # tokenizers==0.21.1
 # huggingface-hub==0.30.2

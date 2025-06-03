@@ -1,10 +1,10 @@
 from datetime import datetime
+from unittest.mock import patch
 
 from auth_app.models import CustomUser
 from bson import ObjectId
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
-from translation_app.const import TEXT_ERROR
 from translation_app.models import Cell, Column, File
 from translation_app.serializers import (
     CSVFileSerializer,
@@ -43,11 +43,44 @@ class FileUpdateCellsSerializerTest(TestCase):
     def setUp(self):
         self.file = build_file()
 
-    def test_invalid_column_index(self):
-        data = {"column_idx_list": [5], "row_idx_list": [0], "target_language": "en"}
-        s = FileUpdateCellsSerializer(data=data, context={"file": self.file})
-        self.assertTrue(s.is_valid(), s.errors)
-        self.assertIn(TEXT_ERROR, s.validated_data["translated_list"][0])
+    @patch("translation_app.rust_loader.get_translator")
+    def test_invalid_column_index(self, mock_get_translator):
+        data = {
+            "column_idx_list": [5],
+            "row_idx_list": [0],
+            "target_language": "en",
+            "source_language": "de",
+        }
+        mock_get_translator.return_value.translate_batch.return_value = []
+
+        serializer = FileUpdateCellsSerializer(data=data, context={"file": self.file})
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        self.assertEqual(len(serializer.validated_data["translated_list"]), 0)
+
+    def test_invalid_language_codes(self):
+        data = {
+            "column_idx_list": [0],
+            "row_idx_list": [0],
+            "target_language": "invalid",
+            "source_language": "de",
+        }
+        serializer = FileUpdateCellsSerializer(data=data, context={"file": self.file})
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("Language", serializer.errors)
+
+    @patch("translation_app.rust_loader.get_translator")
+    def test_empty_input_lists(self, mock_get_translator):
+        data = {
+            "column_idx_list": [],
+            "row_idx_list": [],
+            "target_language": "en",
+            "source_language": "de",
+        }
+        mock_get_translator.return_value.translate_batch.return_value = []
+
+        serializer = FileUpdateCellsSerializer(data=data, context={"file": self.file})
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        self.assertEqual(serializer.validated_data["translated_list"], [])
 
 
 class CSVFileSerializerTest(TestCase):

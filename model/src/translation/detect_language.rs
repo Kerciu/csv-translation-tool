@@ -1,20 +1,32 @@
 pub use lingua::Language::{
-    Arabic, Chinese, English, French, German, Italian, Japanese, Korean, Portuguese, Russian,
-    Spanish, Hindi, Indonesian, Polish, Dutch, Swedish, Thai, Turkish, Vietnamese
+    Arabic, Chinese, Dutch, English, French, German, Hindi, Indonesian, Italian, Japanese, Korean,
+    Polish, Portuguese, Russian, Spanish, Swedish, Thai, Turkish, Vietnamese,
 };
 use lingua::{Language, LanguageDetector, LanguageDetectorBuilder};
 
 pub fn detect_language(text: &str) -> Option<Language> {
+    if text.trim().len() < 5 {
+        return None;
+    }
+
     let languages = vec![
         English, French, German, Spanish, Korean, Japanese, Italian, Portuguese, Russian, Chinese,
-        Arabic,
+        Arabic, Hindi, Indonesian, Polish, Dutch, Swedish, Thai, Turkish, Vietnamese,
     ];
 
     let detector: LanguageDetector = LanguageDetectorBuilder::from_languages(&languages).build();
 
-    detector.detect_language_of(text)
-}
+    let mut results = detector.compute_language_confidence_values(text);
+    results.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
 
+    let (language, confidence) = results.first()?;
+
+    if *confidence < 0.20 {
+        return None;
+    }
+
+    Some(*language)
+}
 
 pub fn map_language_to_code(language: Language) -> String {
     match language {
@@ -37,7 +49,5 @@ pub fn map_language_to_code(language: Language) -> String {
         Thai => "th".to_string(),
         Turkish => "tr".to_string(),
         Vietnamese => "vi".to_string(),
-
-        _ => "unknown".to_string(),
     }
 }

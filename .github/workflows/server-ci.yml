@@ -23,23 +23,30 @@ jobs:
           MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
           MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
           MONGO_INITDB_DATABASE: ${{ secrets.MONGO_INITDB_DATABASE }}
+
         options: >-
-          --health-cmd "mongosh --username root --password example --eval 'db.adminCommand(\"ping\")'"
-          --health-interval 30s
-          --health-timeout 10s
-          --health-retries 5
+          --health-cmd="mongosh --username $MONGO_INITDB_ROOT_USERNAME --password $MONGO_INITDB_ROOT_PASSWORD --eval 'db.adminCommand(\"ping\")'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+
       redis:
         image: redis:alpine
         ports:
           - 6379:6379
         options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 30s
-          --health-timeout 10s
-          --health-retries 5
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     env:
-      MONGO_URL: ${{ secrets.MONGO_URL }}
-      REDIS_URL: ${{ secrets.REDIS_URL }}
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: translator
+      MONGO_URL: "mongodb://root:example@localhost:27017/translator?authSource=admin"
+      REDIS_URL: "redis://localhost:6379/1"
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       DEBUG: ${{ secrets.DEBUG }}
       ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
@@ -53,14 +60,37 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Debug ENV
+      run: |
+        echo "MONGO_URL=\"$MONGO_URL\""
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Install mongosh
+      run: |
+        curl -fsSL https://pgp.mongodb.com/server-6.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-6.0.gpg
+        echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+        sudo apt-get update
+        sudo apt-get install -y mongodb-mongosh
+
+    - name: Wait for MongoDB (max 1 min)
+      run: |
+        for i in {1..30}; do
+          if mongosh "$MONGO_URL" --eval "db.adminCommand('ping')"; then
+            echo "MongoDB is ready!"
+            exit 0
+          fi
+          sleep 2
+        done
+        echo "MongoDB did not start in time"
+        exit 1
+
     - name: Install Rust
       uses: actions-rust-lang/setup-rust-toolchain@v1
+
     - name: Preinstall Rust Module
       run: |
         sudo apt-get update
@@ -80,6 +110,15 @@ jobs:
         cd ..
         pip install -r requirements-dev.txt
 
+    - name: Create migrations
+      run: |
+        python manage.py makemigrations
+        python manage.py migrate
+
     - name: Run Tests
       run: |
         python manage.py test
+
+    - name: Print MongoDB logs on failure
+      if: failure()
+      run: docker logs $(docker ps -q --filter ancestor=mongo:6.0)

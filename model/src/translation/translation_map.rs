@@ -1,9 +1,16 @@
-use std::collections::HashMap;
 use serde::Deserialize;
+use std::collections::HashMap;
+use std::ops::Deref;
 use std::path::PathBuf;
 
 #[derive(Debug, Deserialize)]
 pub struct TranslationMap(HashMap<String, Vec<String>>);
+
+impl Default for TranslationMap {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 impl TranslationMap {
     pub fn new() -> Self {
@@ -13,7 +20,10 @@ impl TranslationMap {
         eprintln!("Loading translation map from: {}", json_path.display());
 
         Self::load_from_json(json_path.to_str().unwrap()).unwrap_or_else(|e| {
-            eprintln!("Failed to load translation map, using empty map. Error: {}", e);
+            eprintln!(
+                "Failed to load translation map, using empty map. Error: {}",
+                e
+            );
             TranslationMap(HashMap::new())
         })
     }
@@ -25,12 +35,19 @@ impl TranslationMap {
         Ok(TranslationMap(map))
     }
 
-    // Dodaj helper do dostępu do wewnętrznej mapy
     pub fn contains_translation(&self, src_lang: &str, tgt_lang: &str) -> bool {
         let normalized_src = src_lang.to_lowercase();
         let normalized_tgt = tgt_lang.to_lowercase();
 
-        self.0.get(&normalized_src)
-            .map_or(false, |targets| targets.contains(&normalized_tgt))
+        self.0
+            .get(&normalized_src)
+            .is_some_and(|targets| targets.contains(&normalized_tgt))
+    }
+}
+
+impl Deref for TranslationMap {
+    type Target = HashMap<String, Vec<String>>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }

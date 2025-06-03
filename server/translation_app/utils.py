@@ -1,3 +1,4 @@
+import pycountry
 from auth_app.serializers import UserAuthSerializer
 from rest_framework import status
 from rest_framework.response import Response
@@ -22,3 +23,15 @@ class JWTUserAuthentication:
         if not serializer.is_valid(raise_exception=True):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return serializer.validated_data
+
+
+def is_valid_language_code(code):
+    """Utils method for checking whether parsed string is ISO 639-1 standard
+
+    Args:
+        code: string
+
+    Returns:
+        True or False
+    """
+    return pycountry.languages.get(alpha_2=code)

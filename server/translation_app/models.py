@@ -6,8 +6,6 @@ from django_mongodb_backend.fields import (
 )
 from django_mongodb_backend.models import EmbeddedModel
 
-from .const import CANNOT_DETECT_LANGUAGE, CANOOT_TRANSLATE, TEXT_ERROR
-
 
 class Cell(EmbeddedModel):
     """Represents a single cell in a column.
@@ -119,32 +117,28 @@ class File(models.Model):
 
     @classmethod
     @transaction.atomic
-    def update_cells(cls, file_id, col_numbers, row_numbers, text_list):
+    def update_cells(cls, file_id, idx_list, text_list):
         """Atomic transaction updating multiple cells within the file.
 
         Args:
             file_id: ID of the file to update.
-            col_numbers: List of column indices.
-            row_numbers: List of row indices.
-            text_list (List[Tuple[str, str]]): Translated text and detected language.
+            idx_list: (List[Tuple[int, int]])List with indexes of translated texts
+            text_list:
+            List[Tuple[str, str, bool] Translated text and detected language and status.
         """
         with transaction.atomic():
             file = cls.objects.select_for_update().get(id=file_id)
             columns = list(file.columns)
-            for n in range(0, len(col_numbers)):
-                if (
-                    text_list[n][0] != CANOOT_TRANSLATE
-                    and text_list[n][0] != TEXT_ERROR
-                    and text_list[n][0] != CANNOT_DETECT_LANGUAGE
-                ):
+            for n in range(0, len(idx_list)):
+                if text_list[n][2] and text_list[n][0] != "":
                     update_data = {
                         "text": text_list[n][0],
                         "is_translated": True,
                         "detected_language": text_list[n][1],
                     }
-                    cells = list(columns[col_numbers[n]].cells)
-                    cells[row_numbers[n]].update(update_data)
-                    columns[col_numbers[n]].cells = cells
+                    cells = list(columns[idx_list[n][0]].cells)
+                    cells[idx_list[n][1]].update(update_data)
+                    columns[idx_list[n][0]].cells = cells
 
             file.columns = [column.to_dict() for column in columns]
 
