@@ -9,6 +9,12 @@ use std::process::Command;
 
 use crate::translation::language::is_in_translations_map;
 
+const SUPPORTED_LANGUAGES: &[&str] = &[
+    "en", "es", "fr", "de", "it", "pt", "ru", "zh", "ja", "ko", "ar",
+    "hi", "id", "pl", "nl", "sv", "th", "tr", "vi",
+    "auto",
+];
+
 #[derive(Debug, Clone)]
 pub struct ModelConfig {
     pub model_id: String,
@@ -89,19 +95,6 @@ impl TryFrom<HuggingFaceConfig> for marian::Config {
     }
 }
 
-fn activation_from_str(s: &str) -> Result<Activation> {
-    match s.to_lowercase().as_str() {
-        "swish" => Ok(Activation::Swish),
-        "gelu" => Ok(Activation::Gelu),
-        "relu" => Ok(Activation::Relu),
-        "sigmoid" => Ok(Activation::Sigmoid),
-        _ => Err(Error::msg(format!(
-            "Unsupported activation function: {}",
-            s
-        ))),
-    }
-}
-
 impl ModelConfig {
     pub fn to_marian_config(&self) -> candle_transformers::models::marian::Config {
         self.marian_config.clone()
@@ -124,9 +117,18 @@ impl Default for ModelConfig {
     }
 }
 
-const SUPPORTED_LANGUAGES: &[&str] = &[
-    "en", "es", "fr", "de", "it", "pt", "ru", "zh", "ja", "ko", "ar",
-];
+fn activation_from_str(s: &str) -> Result<Activation> {
+    match s.to_lowercase().as_str() {
+        "swish" => Ok(Activation::Swish),
+        "gelu" => Ok(Activation::Gelu),
+        "relu" => Ok(Activation::Relu),
+        "sigmoid" => Ok(Activation::Sigmoid),
+        _ => Err(Error::msg(format!(
+            "Unsupported activation function: {}",
+            s
+        ))),
+    }
+}
 
 pub fn validate_language(lang: &str) -> Result<()> {
     if !SUPPORTED_LANGUAGES.contains(&lang) {
@@ -137,45 +139,6 @@ pub fn validate_language(lang: &str) -> Result<()> {
 
 pub fn build_model_id(src_lang: &str, tgt_lang: &str) -> String {
     format!("Helsinki-NLP/opus-mt-{}-{}", src_lang, tgt_lang)
-}
-
-pub fn check_model_exists(model_id: &str) -> Result<()> {
-    let api = Api::new()?;
-
-    let model = api.model(model_id.to_string());
-
-    match model.get("model.safetensors") {
-        Ok(path) => {
-            println!("Found safetensors at: {:?}", path);
-            return Ok(());
-        }
-        Err(err) => {
-            println!("model.safetensors not found: {}", err);
-        }
-    }
-
-    let bin_path = match api.model(model_id.to_string()).get("pytorch_model.bin") {
-        Ok(path) => path,
-        Err(_) => return Err(Error::msg("Neither safetensors nor pytorch model found")),
-    };
-
-    let script_path = "scripts/convert-to-safetensors.py";
-    let output = Command::new("python")
-        .arg(script_path)
-        .arg("--src_dir")
-        .arg(bin_path.parent().unwrap())
-        .arg("--dest_dir")
-        .arg(bin_path.parent().unwrap())
-        .output()?;
-
-    if !output.status.success() {
-        return Err(Error::msg(format!(
-            "Conversion failed: {}",
-            String::from_utf8_lossy(&output.stderr)
-        )));
-    }
-
-    Ok(())
 }
 
 fn conversion_files_exist(src_lang: &str, tgt_lang: &str) -> Result<bool> {
@@ -232,10 +195,10 @@ fn construct_model_config_from_json(src_lang: &str, tgt_lang: &str) -> Result<ma
         is_encoder_decoder: hf_config.is_encoder_decoder,
         activation_function: activation_from_str(&hf_config.activation_function)?,
         d_model: hf_config.d_model,
-        decoder_start_token_id: hf_config.decoder_start_token_id, // Direct from config
+        decoder_start_token_id: hf_config.decoder_start_token_id, // direct from config
         scale_embedding: hf_config.scale_embedding,
-        pad_token_id: hf_config.pad_token_id, // Direct from config
-        eos_token_id: hf_config.eos_token_id, // Direct from config
+        pad_token_id: hf_config.pad_token_id, // direct from config
+        eos_token_id: hf_config.eos_token_id, // direct from config
         forced_eos_token_id: hf_config.forced_eos_token_id,
         share_encoder_decoder_embeddings: hf_config.share_encoder_decoder_embeddings,
     })
@@ -263,7 +226,6 @@ pub fn get_model_config(src_lang: &str, tgt_lang: &str) -> Result<ModelConfig> {
     validate_language(tgt_lang)?;
 
     let model_id = build_model_id(src_lang, tgt_lang);
-    // check_model_exists(&model_id)?;
 
     if !is_in_translations_map(src_lang, tgt_lang) {
         return Err(Error::msg(format!(
