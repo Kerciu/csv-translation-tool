@@ -1,0 +1,11 @@
+Sentence,Topic,Tense,Sentiment
+The cat sat on the windowsill,Animals,Past,Neutral
+She will travel to Japan next summer,Travel,Future,Positive
+I am eating lunch at my desk,Daily Routine,Present Continuous,Neutral
+They watched a movie last night,Entertainment,Past,Positive
+We are working on a new project,Work,Present Continuous,Positive
+He forgot his keys again,Daily Life,Past,Negative
+The sun rises in the east,Nature,Present Simple,Neutral
+I will never forgive him,Relationships,Future,Negative
+Children play in the park every evening,Lifestyle,Present Simple,Positive
+My laptop crashed during the meeting,Technology,Past,Negative
