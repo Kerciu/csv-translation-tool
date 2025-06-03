@@ -1,24 +1,24 @@
-#[tokio::test]
-async fn test_model_safetensors_format_exists() {
-    let url =
-        "https://huggingface.co/Helsinki-NLP/opus-mt-tc-big-fr-en/blob/main/model.safetensors";
-    let response = reqwest::get(url).await.unwrap();
-
-    assert!(
-        response.status().is_success(),
-        "model.safetensors not found, status = {}",
-        response.status()
-    );
-}
+use translation_module::translation::translation_map::TranslationMap;
 
 #[tokio::test]
-async fn test_repo_url_exists() {
-    let url = "https://huggingface.co/Helsinki-NLP/opus-mt-tc-big-en-es/";
-    let response = reqwest::get(url).await.unwrap();
+async fn test_translations_map_repo_url_exists() {
+    let translation_map = TranslationMap::new();
 
-    assert!(
-        response.status().is_success(),
-        "Repo URL not accessible (status: {})",
-        response.status()
-    );
+    for (src, targets) in &*translation_map {
+        for tgt in targets {
+            let url = format!(
+                "https://huggingface.co/Helsinki-NLP/opus-mt-{}-{}/",
+                src, tgt
+            );
+            let response = reqwest::get(&url).await.unwrap();
+
+            assert!(
+                response.status().is_success(),
+                "Repo URL for Helsinki-NLP/opus-mt-{}-{} not accessible (status: {})",
+                src,
+                tgt,
+                response.status()
+            );
+        }
+    }
 }
