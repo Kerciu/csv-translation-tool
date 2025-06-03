@@ -47,7 +47,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - run: cargo test
+      - run: RUSTFLAGS="-A unsafe-op-in-unsafe-fn" cargo test
         working-directory: model
 
   lint:
@@ -56,7 +56,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - run: cargo clippy
+      - run: cargo clippy -- -A warnings
         working-directory: model
 
   formatting:

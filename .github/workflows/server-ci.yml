@@ -23,7 +23,7 @@ jobs:
           MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
           MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
           MONGO_INITDB_DATABASE: ${{ secrets.MONGO_INITDB_DATABASE }}
-          
+
         options: >-
           --health-cmd="mongosh --username $MONGO_INITDB_ROOT_USERNAME --password $MONGO_INITDB_ROOT_PASSWORD --eval 'db.adminCommand(\"ping\")'"
           --health-interval=10s
@@ -46,7 +46,7 @@ jobs:
       MONGO_INITDB_ROOT_PASSWORD: example
       MONGO_INITDB_DATABASE: translator
       MONGO_URL: "mongodb://root:example@localhost:27017/translator?authSource=admin"
-      REDIS_URL: ${{ secrets.REDIS_URL }}
+      REDIS_URL: "redis://localhost:6379/1"
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       DEBUG: ${{ secrets.DEBUG }}
       ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
@@ -63,7 +63,7 @@ jobs:
     - name: Debug ENV
       run: |
         echo "MONGO_URL=\"$MONGO_URL\""
-        
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
