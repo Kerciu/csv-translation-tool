@@ -48,3 +48,4 @@ sqlite3.db
 candle/
 tokenizer*.json
 *.safetensors
+dump.rdb

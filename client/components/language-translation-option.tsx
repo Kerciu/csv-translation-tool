@@ -12,7 +12,7 @@ interface LanguageTranslationOptionProps {
 
 const LanguageTranslationOption = ({
   sourceLanguage = 'en',
-  targetLanguage = 'en',
+  targetLanguage = 'de',
   translationMap,
   onLanguageChange,
 }: LanguageTranslationOptionProps) => {
@@ -37,7 +37,10 @@ const LanguageTranslationOption = ({
             operationLanguage={sourceLanguage}
             open={sourceOpen}
             setOpen={setSourceOpen}
-            onLanguageChange={onLanguageChange}
+            onLanguageChange={(type, lang) => {
+              onLanguageChange(type, lang);
+              if (type === 'source') setTargetOpen(false);
+            }}
             availableLanguages={['auto', ...Object.keys(translationMap)]}
           />
         </div>
@@ -49,7 +52,8 @@ const LanguageTranslationOption = ({
             open={targetOpen}
             setOpen={setTargetOpen}
             onLanguageChange={onLanguageChange}
-            availableLanguages={getAvailableTargets(sourceLanguage)}
+            availableLanguages={getAvailableTargets(sourceLanguage)
+              .filter(lang => lang !== sourceLanguage)}
           />
         </div>
       </CardContent>
