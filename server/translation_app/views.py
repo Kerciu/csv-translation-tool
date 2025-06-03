@@ -172,7 +172,7 @@ class CustomUserUpdateCellView(APIView, JWTUserAuthentication):
                 type=openapi.TYPE_STRING,
             ),
             openapi.Parameter(
-                "Row idxt",
+                "Row idx",
                 openapi.IN_HEADER,
                 description="Row indexes list of csv file to update",
                 type=openapi.TYPE_STRING,
