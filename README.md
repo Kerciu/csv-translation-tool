@@ -188,7 +188,7 @@ docker-compose up
 ```bash
 cd model
 ```
-2. **Run tests**
+2. **Run tests (keep in mind you should have Redis server working on port 6379)**
 ```bash
 cargo test
 ```
