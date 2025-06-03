@@ -493,12 +493,11 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!translationMap) return;
-
-    const availableTargets =
-      sourceLanguage === 'auto'
-        ? [...new Set(Object.values(translationMap).flat())]
-        : translationMap[sourceLanguage] || [];
-
+    
+    const availableTargets = sourceLanguage === 'auto' 
+      ? [...new Set(Object.values(translationMap).flat())]
+      : translationMap[sourceLanguage] || [];
+    
     if (!availableTargets.includes(targetLanguage)) {
       setTargetLanguage(availableTargets[0] || 'en');
     }
