@@ -1,7 +1,6 @@
 pub mod detect_language;
 
 pub mod cache;
-pub mod language;
 pub mod loader;
 pub mod model;
 pub mod translation_map;
