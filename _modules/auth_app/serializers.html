@@ -1,0 +1,500 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>auth_app.serializers &mdash; CSV Translation Tool 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CSV Translation Tool
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auth_app_serializers.html">Auth App serializers documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auth_app_model.html">Auth App models documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../translation_app_serializers.html">Translation App serializers documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../translation_app_model.html">Translation App models documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../translation_app_utils.html">Translation App utils documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CSV Translation Tool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">auth_app.serializers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for auth_app.serializers</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">jwt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">argon2</span><span class="w"> </span><span class="kn">import</span> <span class="n">PasswordHasher</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">argon2.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">InvalidHashError</span><span class="p">,</span> <span class="n">VerifyMismatchError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">authlib.integrations.requests_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">OAuth2Session</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dotenv</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dotenv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework</span><span class="w"> </span><span class="kn">import</span> <span class="n">serializers</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomUser</span>
+
+<span class="n">ph</span> <span class="o">=</span> <span class="n">PasswordHasher</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="UserSerializer">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.UserSerializer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serializer for representing a user</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        id: Stringified Id.</span>
+<span class="sd">        username: User&#39;s username.</span>
+<span class="sd">        email: Email of the user.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if successful, False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
+
+<div class="viewcode-block" id="UserSerializer.Meta">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.UserSerializer.Meta">[docs]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">CustomUser</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;email&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="UserSerializer.get_id">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.UserSerializer.get_id">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="UserSignUpSerializer">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.UserSignUpSerializer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserSignUpSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serializer for user sign up.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        username: Desired username.</span>
+<span class="sd">        email: Desired user&#39;s email address.</span>
+<span class="sd">        password: User&#39;s plain text password (write-only)/</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        New user instance with JWT token attached</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">password</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">write_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="UserSignUpSerializer.Meta">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.UserSignUpSerializer.Meta">[docs]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">CustomUser</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="UserSignUpSerializer.validate">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.UserSignUpSerializer.validate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates email, and uniqness of it and username</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">email</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;@&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">email</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">({</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid email&quot;</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">CustomUser</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">({</span><span class="s2">&quot;emaill&quot;</span><span class="p">:</span> <span class="s2">&quot;Email already occupied&quot;</span><span class="p">})</span>
+
+        <span class="n">username</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CustomUser</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Username occupied&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">attrs</span></div>
+
+
+<div class="viewcode-block" id="UserSignUpSerializer.create">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.UserSignUpSerializer.create">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validated_data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates new user and returns token</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="n">validated_data</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span>
+        <span class="n">email</span> <span class="o">=</span> <span class="n">validated_data</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span>
+        <span class="n">raw_password</span> <span class="o">=</span> <span class="n">validated_data</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span>
+
+        <span class="n">hashed_password</span> <span class="o">=</span> <span class="n">ph</span><span class="o">.</span><span class="n">hash</span><span class="p">(</span><span class="n">raw_password</span><span class="p">)</span>
+
+        <span class="n">user</span> <span class="o">=</span> <span class="n">CustomUser</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
+            <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span>
+            <span class="n">password</span><span class="o">=</span><span class="n">hashed_password</span><span class="p">,</span>
+            <span class="n">date_joined</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+            <span class="s2">&quot;exp&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span>
+            <span class="s2">&quot;iat&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+        <span class="p">}</span>
+
+        <span class="n">token</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="s2">&quot;secret&quot;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;HS256&quot;</span><span class="p">)</span>
+
+        <span class="n">user</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span>
+        <span class="k">return</span> <span class="n">user</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="UserLogInSerializer">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.UserLogInSerializer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserLogInSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serializer for user login.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        email: Email address.</span>
+<span class="sd">        password: Plain-text password.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        User data and JWT token.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">email</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">EmailField</span><span class="p">()</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">write_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="UserLogInSerializer.validate">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.UserLogInSerializer.validate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates email/password, find user and returns JWT token</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">email</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;email&quot;</span><span class="p">)</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;password&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">email</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">password</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Email and password are required.&quot;</span><span class="p">)</span>
+
+        <span class="n">user</span> <span class="o">=</span> <span class="n">CustomUser</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">({</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="s2">&quot;User not found&quot;</span><span class="p">})</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ph</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">password</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">VerifyMismatchError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">({</span><span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid password&quot;</span><span class="p">})</span>
+        <span class="k">except</span> <span class="n">InvalidHashError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">({</span><span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid password&quot;</span><span class="p">})</span>
+
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+            <span class="s2">&quot;exp&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span>
+            <span class="s2">&quot;iat&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+        <span class="p">}</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="s2">&quot;secret&quot;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;HS256&quot;</span><span class="p">)</span>
+
+        <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">token</span>
+        <span class="k">return</span> <span class="n">attrs</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="UserAuthSerializer">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.UserAuthSerializer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserAuthSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Seriazlier verify JWT token for user authentication.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token: JWT token.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        User instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">token</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+
+<div class="viewcode-block" id="UserAuthSerializer.validate">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.UserAuthSerializer.validate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates token</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;token&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="s2">&quot;secret&quot;</span><span class="p">,</span> <span class="n">algorithms</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;HS256&quot;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="n">jwt</span><span class="o">.</span><span class="n">ExpiredSignatureError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">({</span><span class="s2">&quot;token&quot;</span><span class="p">:</span> <span class="s2">&quot;Unauthenticated&quot;</span><span class="p">})</span>
+
+        <span class="n">user</span> <span class="o">=</span> <span class="n">CustomUser</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">payload</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">({</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="s2">&quot;User not found&quot;</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">user</span></div>
+</div>
+
+
+
+<span class="n">BASE_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
+<span class="n">load_dotenv</span><span class="p">(</span><span class="n">BASE_DIR</span> <span class="o">/</span> <span class="s2">&quot;.env&quot;</span><span class="p">)</span>
+<span class="n">GOOGLE_CLIENT_ID</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SOCIAL_AUTH_GOOGLE_OAUTH2_KEY&quot;</span><span class="p">)</span>
+<span class="n">GOOGLE_CLIENT_SECRET</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET&quot;</span><span class="p">)</span>
+<span class="n">REDIRECT_URI</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;REDIRECT_URL&quot;</span><span class="p">,</span> <span class="s2">&quot;http://localhost:8000&quot;</span><span class="p">)</span>
+
+<span class="n">GOOGLE_REDIRECT_URI</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">REDIRECT_URI</span><span class="si">}</span><span class="s2">/authentication/google/callback/&quot;</span>
+
+
+<div class="viewcode-block" id="GoogleAuthInitSerializer">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.GoogleAuthInitSerializer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GoogleAuthInitSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serializer to initiate Google OAuth2 flow.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Authentication Google url and state</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GoogleAuthInitSerializer.create">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.GoogleAuthInitSerializer.create">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validated_data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return google authorization url and state</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">OAuth2Session</span><span class="p">(</span><span class="n">GOOGLE_CLIENT_ID</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;openid email profile&quot;</span><span class="p">)</span>
+        <span class="n">uri</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">create_authorization_url</span><span class="p">(</span>
+            <span class="s2">&quot;https://accounts.google.com/o/oauth2/auth&quot;</span><span class="p">,</span>
+            <span class="n">redirect_uri</span><span class="o">=</span><span class="n">GOOGLE_REDIRECT_URI</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;auth_url&quot;</span><span class="p">:</span> <span class="n">uri</span><span class="p">,</span> <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">state</span><span class="p">}</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="GoogleAuthCallbackSerializer">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.GoogleAuthCallbackSerializer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GoogleAuthCallbackSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serializer to handle the callback from Google OAuth2.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        code: OAuth2 code returned by Google.</span>
+<span class="sd">        state: State token to prevent CSRF.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        User&#39;s email, id and JWT token</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">code</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GoogleAuthCallbackSerializer.create">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.GoogleAuthCallbackSerializer.create">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validated_data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifies OAuth2Session and sign up/in user and returns JWT token</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">OAuth2Session</span><span class="p">(</span>
+            <span class="n">GOOGLE_CLIENT_ID</span><span class="p">,</span>
+            <span class="n">state</span><span class="o">=</span><span class="n">validated_data</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">],</span>
+            <span class="n">redirect_uri</span><span class="o">=</span><span class="n">GOOGLE_REDIRECT_URI</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">session</span><span class="o">.</span><span class="n">fetch_token</span><span class="p">(</span>
+            <span class="s2">&quot;https://oauth2.googleapis.com/token&quot;</span><span class="p">,</span>
+            <span class="n">code</span><span class="o">=</span><span class="n">validated_data</span><span class="p">[</span><span class="s2">&quot;code&quot;</span><span class="p">],</span>
+            <span class="n">client_secret</span><span class="o">=</span><span class="n">GOOGLE_CLIENT_SECRET</span><span class="p">,</span>
+            <span class="n">auth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">userinfo</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://www.googleapis.com/oauth2/v1/userinfo&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="n">user</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">CustomUser</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span>
+            <span class="n">username</span><span class="o">=</span><span class="n">userinfo</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">],</span>
+            <span class="n">email</span><span class="o">=</span><span class="n">userinfo</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">],</span>
+            <span class="n">date_joined</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">set_unusable_password</span><span class="p">()</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+            <span class="s2">&quot;exp&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span>
+            <span class="s2">&quot;iat&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+        <span class="p">}</span>
+        <span class="n">jwttoken</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="s2">&quot;secret&quot;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;HS256&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+            <span class="s2">&quot;token&quot;</span><span class="p">:</span> <span class="n">jwttoken</span><span class="p">,</span>
+            <span class="s2">&quot;created&quot;</span><span class="p">:</span> <span class="n">created</span><span class="p">,</span>
+        <span class="p">}</span></div>
+</div>
+
+
+
+<span class="n">GITHUB_CLIENT_ID</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SOCIAL_AUTH_GITHUB_KEY&quot;</span><span class="p">)</span>
+<span class="n">GITHUB_CLIENT_SECRET</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;GITHUB_CLIENT_SECRET&quot;</span><span class="p">)</span>
+
+<span class="n">GITHUB_REDIRECT_URI</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">REDIRECT_URI</span><span class="si">}</span><span class="s2">/authentication/github/callback/&quot;</span>
+
+
+<div class="viewcode-block" id="GitHubAuthInitSerializer">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.GitHubAuthInitSerializer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GitHubAuthInitSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serializer to initiate Github OAuth2 flow.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Authentication Github url and state</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GitHubAuthInitSerializer.create">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.GitHubAuthInitSerializer.create">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validated_data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return github authorization url and state</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">OAuth2Session</span><span class="p">(</span>
+            <span class="n">GITHUB_CLIENT_ID</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;user:email&quot;</span><span class="p">,</span> <span class="n">redirect_uri</span><span class="o">=</span><span class="n">GITHUB_REDIRECT_URI</span>
+        <span class="p">)</span>
+        <span class="n">uri</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">create_authorization_url</span><span class="p">(</span>
+            <span class="s2">&quot;https://github.com/login/oauth/authorize&quot;</span><span class="p">,</span> <span class="n">redirect_uri</span><span class="o">=</span><span class="n">GITHUB_REDIRECT_URI</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;auth_url&quot;</span><span class="p">:</span> <span class="n">uri</span><span class="p">,</span> <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">state</span><span class="p">}</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="GitHubAuthCallbackSerializer">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.GitHubAuthCallbackSerializer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GitHubAuthCallbackSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serializer to handle the callback from Github OAuth2.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        code: OAuth2 code returned by Github.</span>
+<span class="sd">        state: State token to prevent CSRF.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        User&#39;s email, id and JWT token</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">code</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GitHubAuthCallbackSerializer.create">
+<a class="viewcode-back" href="../../auth_app_serializers.html#auth_app.serializers.GitHubAuthCallbackSerializer.create">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validated_data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifies OAuth2Session and sign up/in user and returns JWT token</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">OAuth2Session</span><span class="p">(</span>
+            <span class="n">GITHUB_CLIENT_ID</span><span class="p">,</span>
+            <span class="n">state</span><span class="o">=</span><span class="n">validated_data</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">],</span>
+            <span class="n">redirect_uri</span><span class="o">=</span><span class="n">GITHUB_REDIRECT_URI</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">token</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">fetch_token</span><span class="p">(</span>
+            <span class="s2">&quot;https://github.com/login/oauth/access_token&quot;</span><span class="p">,</span>
+            <span class="n">code</span><span class="o">=</span><span class="n">validated_data</span><span class="p">[</span><span class="s2">&quot;code&quot;</span><span class="p">],</span>
+            <span class="n">client_secret</span><span class="o">=</span><span class="n">GITHUB_CLIENT_SECRET</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">user_info</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://api.github.com/user&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">emails_info</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://api.github.com/user/emails&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">primary_email</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">e</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">emails_info</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;primary&quot;</span><span class="p">]),</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">user</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">CustomUser</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span>
+            <span class="n">username</span><span class="o">=</span><span class="n">user_info</span><span class="p">[</span><span class="s2">&quot;login&quot;</span><span class="p">],</span>
+            <span class="n">email</span><span class="o">=</span><span class="n">primary_email</span><span class="p">,</span>
+            <span class="n">date_joined</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">set_unusable_password</span><span class="p">()</span>
+
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+            <span class="s2">&quot;exp&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span>
+            <span class="s2">&quot;iat&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+        <span class="p">}</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="s2">&quot;secret&quot;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;HS256&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+            <span class="s2">&quot;token&quot;</span><span class="p">:</span> <span class="n">token</span><span class="p">,</span>
+            <span class="s2">&quot;created&quot;</span><span class="p">:</span> <span class="n">created</span><span class="p">,</span>
+        <span class="p">}</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, SK KG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

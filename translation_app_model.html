@@ -1,0 +1,433 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Translation App models documentation &mdash; CSV Translation Tool 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Translation App utils documentation" href="translation_app_utils.html" />
+    <link rel="prev" title="Translation App serializers documentation" href="translation_app_serializers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CSV Translation Tool
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="auth_app_serializers.html">Auth App serializers documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auth_app_model.html">Auth App models documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="translation_app_serializers.html">Translation App serializers documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Translation App models documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#translation_app.models.Cell"><code class="docutils literal notranslate"><span class="pre">Cell</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.Cell.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Cell.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.Cell.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Cell.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.Cell.detected_language"><code class="docutils literal notranslate"><span class="pre">Cell.detected_language</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.Cell.id"><code class="docutils literal notranslate"><span class="pre">Cell.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.Cell.is_translated"><code class="docutils literal notranslate"><span class="pre">Cell.is_translated</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.Cell.original_text"><code class="docutils literal notranslate"><span class="pre">Cell.original_text</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.Cell.row_number"><code class="docutils literal notranslate"><span class="pre">Cell.row_number</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.Cell.text"><code class="docutils literal notranslate"><span class="pre">Cell.text</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.Cell.to_dict"><code class="docutils literal notranslate"><span class="pre">Cell.to_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#translation_app.models.Column"><code class="docutils literal notranslate"><span class="pre">Column</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.Column.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Column.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.Column.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Column.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.Column.cells"><code class="docutils literal notranslate"><span class="pre">Column.cells</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.Column.column_number"><code class="docutils literal notranslate"><span class="pre">Column.column_number</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.Column.id"><code class="docutils literal notranslate"><span class="pre">Column.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.Column.name"><code class="docutils literal notranslate"><span class="pre">Column.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.Column.rows_number"><code class="docutils literal notranslate"><span class="pre">Column.rows_number</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.Column.to_dict"><code class="docutils literal notranslate"><span class="pre">Column.to_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#translation_app.models.File"><code class="docutils literal notranslate"><span class="pre">File</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.File.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">File.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.File.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">File.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.File.columns"><code class="docutils literal notranslate"><span class="pre">File.columns</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.File.columns_number"><code class="docutils literal notranslate"><span class="pre">File.columns_number</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.File.delete_file"><code class="docutils literal notranslate"><span class="pre">File.delete_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.File.get_next_by_upload_time"><code class="docutils literal notranslate"><span class="pre">File.get_next_by_upload_time()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.File.get_previous_by_upload_time"><code class="docutils literal notranslate"><span class="pre">File.get_previous_by_upload_time()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.File.id"><code class="docutils literal notranslate"><span class="pre">File.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.File.objects"><code class="docutils literal notranslate"><span class="pre">File.objects</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.File.revert_cell"><code class="docutils literal notranslate"><span class="pre">File.revert_cell()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.File.title"><code class="docutils literal notranslate"><span class="pre">File.title</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.File.to_dict"><code class="docutils literal notranslate"><span class="pre">File.to_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.File.update_cells"><code class="docutils literal notranslate"><span class="pre">File.update_cells()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation_app.models.File.upload_time"><code class="docutils literal notranslate"><span class="pre">File.upload_time</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="translation_app_utils.html">Translation App utils documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CSV Translation Tool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Translation App models documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/translation_app_model.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-translation_app.models">
+<span id="translation-app-models-documentation"></span><h1>Translation App models documentation<a class="headerlink" href="#module-translation_app.models" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="translation_app.models.Cell">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">translation_app.models.</span></span><span class="sig-name descname"><span class="pre">Cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translation_app/models.html#Cell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#translation_app.models.Cell" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">EmbeddedModel</span></code></p>
+<p>Represents a single cell in a column.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – Primary key.</p></li>
+<li><p><strong>text</strong> – Current cell content.</p></li>
+<li><p><strong>original_text</strong> – Original unmodified content.</p></li>
+<li><p><strong>row_number</strong> – Position of the row in the table.</p></li>
+<li><p><strong>is_translated</strong> – Whether the cell has been translated.</p></li>
+<li><p><strong>detected_language</strong> – Language detected from original text.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="translation_app.models.Cell.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#translation_app.models.Cell.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="translation_app.models.Cell.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#translation_app.models.Cell.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="translation_app.models.Cell.detected_language">
+<span class="sig-name descname"><span class="pre">detected_language</span></span><a class="headerlink" href="#translation_app.models.Cell.detected_language" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="translation_app.models.Cell.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#translation_app.models.Cell.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="translation_app.models.Cell.is_translated">
+<span class="sig-name descname"><span class="pre">is_translated</span></span><a class="headerlink" href="#translation_app.models.Cell.is_translated" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="translation_app.models.Cell.original_text">
+<span class="sig-name descname"><span class="pre">original_text</span></span><a class="headerlink" href="#translation_app.models.Cell.original_text" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="translation_app.models.Cell.row_number">
+<span class="sig-name descname"><span class="pre">row_number</span></span><a class="headerlink" href="#translation_app.models.Cell.row_number" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="translation_app.models.Cell.text">
+<span class="sig-name descname"><span class="pre">text</span></span><a class="headerlink" href="#translation_app.models.Cell.text" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="translation_app.models.Cell.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/translation_app/models.html#Cell.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#translation_app.models.Cell.to_dict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="translation_app.models.Column">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">translation_app.models.</span></span><span class="sig-name descname"><span class="pre">Column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translation_app/models.html#Column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#translation_app.models.Column" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">EmbeddedModel</span></code></p>
+<p>Represents a column in a table containing a list of Cell objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – Primary key.</p></li>
+<li><p><strong>name</strong> – Name of the column.</p></li>
+<li><p><strong>rows_number</strong> – Total number of rows in the column.</p></li>
+<li><p><strong>column_number</strong> – Index of the column.</p></li>
+<li><p><strong>cells</strong> – List of embedded Cell objects.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="translation_app.models.Column.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#translation_app.models.Column.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="translation_app.models.Column.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#translation_app.models.Column.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="translation_app.models.Column.cells">
+<span class="sig-name descname"><span class="pre">cells</span></span><a class="headerlink" href="#translation_app.models.Column.cells" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="translation_app.models.Column.column_number">
+<span class="sig-name descname"><span class="pre">column_number</span></span><a class="headerlink" href="#translation_app.models.Column.column_number" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="translation_app.models.Column.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#translation_app.models.Column.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="translation_app.models.Column.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#translation_app.models.Column.name" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="translation_app.models.Column.rows_number">
+<span class="sig-name descname"><span class="pre">rows_number</span></span><a class="headerlink" href="#translation_app.models.Column.rows_number" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="translation_app.models.Column.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/translation_app/models.html#Column.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#translation_app.models.Column.to_dict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="translation_app.models.File">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">translation_app.models.</span></span><span class="sig-name descname"><span class="pre">File</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translation_app/models.html#File"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#translation_app.models.File" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Represents an uploaded file with structured tabular content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – Primary key.</p></li>
+<li><p><strong>title</strong> – File name or title.</p></li>
+<li><p><strong>upload_time</strong> – When the file was uploaded.</p></li>
+<li><p><strong>columns</strong> – Embedded list of Column objects.</p></li>
+<li><p><strong>columns_number</strong> – Number of columns in the file.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="translation_app.models.File.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#translation_app.models.File.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="translation_app.models.File.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#translation_app.models.File.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="translation_app.models.File.columns">
+<span class="sig-name descname"><span class="pre">columns</span></span><a class="headerlink" href="#translation_app.models.File.columns" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="translation_app.models.File.columns_number">
+<span class="sig-name descname"><span class="pre">columns_number</span></span><a class="headerlink" href="#translation_app.models.File.columns_number" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="translation_app.models.File.delete_file">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translation_app/models.html#File.delete_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#translation_app.models.File.delete_file" title="Link to this definition"></a></dt>
+<dd><p>Atomic transaction deleting safely a file by ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_id</strong> – The ID of the file to delete.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="translation_app.models.File.get_next_by_upload_time">
+<span class="sig-name descname"><span class="pre">get_next_by_upload_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">upload_time&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#translation_app.models.File.get_next_by_upload_time" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="translation_app.models.File.get_previous_by_upload_time">
+<span class="sig-name descname"><span class="pre">get_previous_by_upload_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">upload_time&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#translation_app.models.File.get_previous_by_upload_time" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="translation_app.models.File.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#translation_app.models.File.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="translation_app.models.File.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#translation_app.models.File.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="translation_app.models.File.revert_cell">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">revert_cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row_num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translation_app/models.html#File.revert_cell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#translation_app.models.File.revert_cell" title="Link to this definition"></a></dt>
+<dd><p>Atomic transaction Reverting a specific cell to its original state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_id</strong> – File ID.</p></li>
+<li><p><strong>col_num</strong> – Column index.</p></li>
+<li><p><strong>row_num</strong> – Row index.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="translation_app.models.File.title">
+<span class="sig-name descname"><span class="pre">title</span></span><a class="headerlink" href="#translation_app.models.File.title" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="translation_app.models.File.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/translation_app/models.html#File.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#translation_app.models.File.to_dict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="translation_app.models.File.update_cells">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translation_app/models.html#File.update_cells"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#translation_app.models.File.update_cells" title="Link to this definition"></a></dt>
+<dd><p>Atomic transaction updating multiple cells within the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_id</strong> – ID of the file to update.</p></li>
+<li><p><strong>idx_list</strong> – (List[Tuple[int, int]])List with indexes of translated texts</p></li>
+<li><p><strong>text_list</strong></p></li>
+<li><p><strong>List</strong><strong>[</strong><strong>Tuple</strong><strong>[</strong><strong>str</strong></p></li>
+<li><p><strong>str</strong></p></li>
+<li><p><strong>status.</strong> (<em>bool</em><em>] </em><em>Translated text and detected language and</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="translation_app.models.File.upload_time">
+<span class="sig-name descname"><span class="pre">upload_time</span></span><a class="headerlink" href="#translation_app.models.File.upload_time" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="translation_app_serializers.html" class="btn btn-neutral float-left" title="Translation App serializers documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="translation_app_utils.html" class="btn btn-neutral float-right" title="Translation App utils documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, SK KG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

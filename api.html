@@ -1,0 +1,447 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Documentation &mdash; CSV Translation Tool 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Translation App utils documentation" href="translation_app_utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CSV Translation Tool
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="auth_app_serializers.html">Auth App serializers documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auth_app_model.html">Auth App models documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="translation_app_serializers.html">Translation App serializers documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="translation_app_model.html">Translation App models documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="translation_app_utils.html">Translation App utils documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CSV Translation Tool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-documentation">
+<h1>API Documentation<a class="headerlink" href="#api-documentation" title="Link to this heading"></a></h1>
+<dl class="http get">
+<dt class="sig sig-object http" id="get--authentication-github-">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/authentication/github/</span></span><a class="headerlink" href="#get--authentication-github-" title="Link to this definition"></a></dt>
+<dd><p>Start GitHub OAuth login and return authorization URL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Status Codes<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a></span> – Github url response</p></li>
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a></span> – Bad request</p></li>
+</ul>
+</dd>
+<dt class="field-even">Response JSON Object<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>state</strong> (<em>string</em>)</p></li>
+<li><p><strong>url</strong> (<em>string</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http" id="get--authentication-github-callback-">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/authentication/github/callback/</span></span><a class="headerlink" href="#get--authentication-github-callback-" title="Link to this definition"></a></dt>
+<dd><p>Handle GitHub OAuth callback and set JWT cookie.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Status Codes<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a></span> – Jwt token</p></li>
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a></span> – Bad request</p></li>
+</ul>
+</dd>
+<dt class="field-even">Response JSON Object<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>jwt</strong> (<em>string</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http" id="get--authentication-google-">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/authentication/google/</span></span><a class="headerlink" href="#get--authentication-google-" title="Link to this definition"></a></dt>
+<dd><p>Start Google OAuth login and return authorization URL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Status Codes<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a></span> – Google url response</p></li>
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a></span> – Bad request</p></li>
+</ul>
+</dd>
+<dt class="field-even">Response JSON Object<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>state</strong> (<em>string</em>)</p></li>
+<li><p><strong>url</strong> (<em>string</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http" id="get--authentication-google-callback-">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/authentication/google/callback/</span></span><a class="headerlink" href="#get--authentication-google-callback-" title="Link to this definition"></a></dt>
+<dd><p>Handle Google OAuth callback and set JWT cookie.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Status Codes<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a></span> – Jwt token</p></li>
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a></span> – Bad request</p></li>
+</ul>
+</dd>
+<dt class="field-even">Response JSON Object<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>jwt</strong> (<em>string</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http post">
+<dt class="sig sig-object http" id="post--authentication-log">
+<span class="sig-name descname"><span class="pre">POST</span> </span><span class="sig-name descname"><span class="pre">/authentication/log</span></span><a class="headerlink" href="#post--authentication-log" title="Link to this definition"></a></dt>
+<dd><p>Log in user and return a JWT token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Request JSON Object<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<em>string</em>) – (required)</p></li>
+<li><p><strong>password</strong> (<em>string</em>) – (required)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Status Codes<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a></span> – JWT token response</p></li>
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a></span> – Bad Request</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Response JSON Object<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>jwt</strong> (<em>string</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http post">
+<dt class="sig sig-object http" id="post--authentication-logout">
+<span class="sig-name descname"><span class="pre">POST</span> </span><span class="sig-name descname"><span class="pre">/authentication/logout</span></span><a class="headerlink" href="#post--authentication-logout" title="Link to this definition"></a></dt>
+<dd><p>Log out user by deleting the JWT cookie.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Status Codes<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a></span> – Success</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http post">
+<dt class="sig sig-object http" id="post--authentication-sign">
+<span class="sig-name descname"><span class="pre">POST</span> </span><span class="sig-name descname"><span class="pre">/authentication/sign</span></span><a class="headerlink" href="#post--authentication-sign" title="Link to this definition"></a></dt>
+<dd><p>Register a new user and return a JWT token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Request JSON Object<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<em>string</em>) – (required)</p></li>
+<li><p><strong>password</strong> (<em>string</em>) – (required)</p></li>
+<li><p><strong>username</strong> (<em>string</em>) – (required)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Status Codes<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a></span> – JWT token response</p></li>
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a></span> – Bad Request</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Response JSON Object<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>jwt</strong> (<em>string</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http" id="get--authentication-user">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/authentication/user</span></span><a class="headerlink" href="#get--authentication-user" title="Link to this definition"></a></dt>
+<dd><p>Get user’s profile using JWT from cookie.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Status Codes<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a></span> – User data response</p></li>
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a></span> – Bad request</p></li>
+</ul>
+</dd>
+<dt class="field-even">Request Headers<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>token</strong> (<span><em>jwt</em></span>) – JWT token from cookie</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Response JSON Object<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<em>string</em>)</p></li>
+<li><p><strong>username</strong> (<em>string</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http post">
+<dt class="sig sig-object http" id="post--translation-custom_update_cell">
+<span class="sig-name descname"><span class="pre">POST</span> </span><span class="sig-name descname"><span class="pre">/translation/custom_update_cell</span></span><a class="headerlink" href="#post--translation-custom_update_cell" title="Link to this definition"></a></dt>
+<dd><p>Manually update a specific cell with custom text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Status Codes<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2">201 Created</a></span> – </p></li>
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a></span> – Bad request</p></li>
+</ul>
+</dd>
+<dt class="field-even">Request Headers<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>token</strong> (<span><em>jwt</em></span>) – JWT token from cookie</p></li>
+<li><p><strong>idx</strong> (<span><em>Column</em></span>) – Column indexes list of csv file to update</p></li>
+<li><p><strong>idxt</strong> (<span><em>Row</em></span>) – Row indexes list of csv file to update</p></li>
+<li><p><strong>Text</strong> – Text to update cell</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http post">
+<dt class="sig sig-object http" id="post--translation-dowloand_csv">
+<span class="sig-name descname"><span class="pre">POST</span> </span><span class="sig-name descname"><span class="pre">/translation/dowloand_csv</span></span><a class="headerlink" href="#post--translation-dowloand_csv" title="Link to this definition"></a></dt>
+<dd><p>Download the user’s CSV file with translated values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Status Codes<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a></span> – Success response with attached file</p></li>
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a></span> – Bad request</p></li>
+</ul>
+</dd>
+<dt class="field-even">Request Headers<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>token</strong> (<span><em>jwt</em></span>) – JWT token from cookie</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Response JSON Object<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file</strong> (<em>file attached</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http" id="get--translation-get_user_csv">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/translation/get_user_csv</span></span><a class="headerlink" href="#get--translation-get_user_csv" title="Link to this definition"></a></dt>
+<dd><p>Get the currently active CSV file for the authenticated user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Status Codes<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a></span> – Found user’s file as dict</p></li>
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a></span> – Bad request</p></li>
+</ul>
+</dd>
+<dt class="field-even">Request Headers<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>token</strong> (<span><em>jwt</em></span>) – JWT token from cookie</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Response JSON Object<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file</strong> (<em>string</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http post">
+<dt class="sig sig-object http" id="post--translation-revert_cell">
+<span class="sig-name descname"><span class="pre">POST</span> </span><span class="sig-name descname"><span class="pre">/translation/revert_cell</span></span><a class="headerlink" href="#post--translation-revert_cell" title="Link to this definition"></a></dt>
+<dd><p>Revert a single translated cell back to its original state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Request JSON Object<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>column_idx</strong> (<em>integer</em>) – (required)</p></li>
+<li><p><strong>row_idx</strong> (<em>integer</em>) – (required)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Status Codes<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2">201 Created</a></span> – </p></li>
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a></span> – Bad request</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Request Headers<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>token</strong> (<span><em>jwt</em></span>) – JWT token from cookie</p></li>
+<li><p><strong>idx</strong> (<span><em>Row</em></span>) – Column indexes list of csv file to revert</p></li>
+<li><p><strong>idx</strong> – Row indexes list of csv file to revert</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http post">
+<dt class="sig sig-object http" id="post--translation-translate_cells">
+<span class="sig-name descname"><span class="pre">POST</span> </span><span class="sig-name descname"><span class="pre">/translation/translate_cells</span></span><a class="headerlink" href="#post--translation-translate_cells" title="Link to this definition"></a></dt>
+<dd><p>Translate selected cells in a CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Request JSON Object<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>column_idx_list[]</strong> (<em>integer</em>)</p></li>
+<li><p><strong>row_idx_list[]</strong> (<em>integer</em>)</p></li>
+<li><p><strong>source_language</strong> (<em>string</em>) – (required)</p></li>
+<li><p><strong>target_language</strong> (<em>string</em>) – (required)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Status Codes<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2">201 Created</a></span> – List of translated data</p></li>
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a></span> – Bad request</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Request Headers<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>token</strong> (<span><em>jwt</em></span>) – JWT token from cookie</p></li>
+<li><p><strong>list</strong> (<span><em>Row idx</em></span>) – Column indexes list of csv file to translate</p></li>
+<li><p><strong>list</strong> – Row indexes list of csv file to translate</p></li>
+<li><p><strong>language</strong> (<span><em>Target</em></span>) – Source language to translate from to || or “any” language</p></li>
+<li><p><strong>language</strong> – Target language to translate text to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Response JSON Object<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>column_idx_list[]</strong> (<em>integer</em>)</p></li>
+<li><p><strong>row_idx_list[]</strong> (<em>integer</em>)</p></li>
+<li><p><strong>source_language</strong> (<em>string</em>) – (required)</p></li>
+<li><p><strong>target_language</strong> (<em>string</em>) – (required)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http post">
+<dt class="sig sig-object http" id="post--translation-upload_csv">
+<span class="sig-name descname"><span class="pre">POST</span> </span><span class="sig-name descname"><span class="pre">/translation/upload_csv</span></span><a class="headerlink" href="#post--translation-upload_csv" title="Link to this definition"></a></dt>
+<dd><p>Upload a CSV file, parse it,store it in the database and delete from database user’s old csv.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Request JSON Object<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file</strong> (<em>string</em>) – (read only)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Status Codes<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a></span> – Success response with file data</p></li>
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a></span> – Bad request</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Request Headers<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>token</strong> (<span><em>jwt</em></span>) – JWT token from cookie</p></li>
+<li><p><strong>File</strong> (<span><em>.csv</em></span>) – File to be uploaded</p></li>
+</ul>
+</dd>
+<dt class="field-even">Response JSON Object<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>file_id</strong> (<em>string</em>)</p></li>
+<li><p><strong>file_title</strong> (<em>string</em>)</p></li>
+<li><p><strong>status</strong> (<em>string</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="translation_app_utils.html" class="btn btn-neutral float-left" title="Translation App utils documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, SK KG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
