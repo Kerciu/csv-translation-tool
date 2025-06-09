@@ -16,6 +16,13 @@
   <em>Architektura systemu tłumacza plików CSV</em>
 </p>
 
+## Schemat bazy danych
+
+<p align="center">
+  <img src="assets/images/screenshot_db.png" width="1000" alt="Architecture Diagram"/><br/>
+  <em>Schemat bazy danych używany jako wzór to implementacji w django</em>
+</p>
+
 
 ## Spędzony czas
 
